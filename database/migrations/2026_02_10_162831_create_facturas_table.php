@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('facturas', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('encargo_id')->constrained('encargos')->onDelete('cascade');
+            $table->decimal('importe_total', 10, 2);
+            $table->boolean('pagado')->default(false);
+            $table->date('fecha_pago')->nullable();
             $table->timestamps();
         });
     }

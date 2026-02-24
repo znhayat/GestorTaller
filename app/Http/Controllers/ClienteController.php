@@ -3,35 +3,44 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Cliente;
 
 class ClienteController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Lista la base de datos completa de clientes.
+     * Recupera todos los registros para mostrar en la tabla principal de administración.
      */
     public function index()
     {
-        //
+        $clientes = Cliente::all();
+        return view('content.clientes.index', compact('clientes'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Carga el formulario de registro.
+     * Proporciona la interfaz para dar de alta a nuevos clientes en el sistema.
      */
     public function create()
     {
-        //
+        return view('content.clientes.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Persiste el nuevo cliente en la base de datos.
+     * Se utiliza 'only' para filtrar la entrada por seguridad, permitiendo 
+     * solo los campos definidos en el esquema del taller.
      */
     public function store(Request $request)
     {
-        //
+        Cliente::create($request->only(['nombre', 'telefono']));
+
+        return redirect()->route('clientes.index')
+            ->with('success', 'Cliente registrado correctamente.');
     }
 
     /**
-     * Display the specified resource.
+     * Visualización detallada de un cliente.
      */
     public function show(string $id)
     {
@@ -39,26 +48,38 @@ class ClienteController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Obtiene los datos del cliente para modificarlos.
+     * El método findOrFail garantiza que si el cliente no existe (por ID inválido), 
+     * el sistema devuelva un error 404 controlado.
      */
     public function edit(string $id)
     {
-        //
+        $cliente = Cliente::findOrFail($id);
+        return view('content.clientes.edit', compact('cliente'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza la información del cliente.
+     * Al igual que en el guardado, se restringe la entrada de datos mediante 'only'
+     * para evitar la modificación de campos no autorizados.
      */
     public function update(Request $request, string $id)
     {
-        //
+        $cliente = Cliente::findOrFail($id);
+        $cliente->update($request->only(['nombre', 'telefono']));
+
+        return redirect()->route('clientes.index')
+            ->with('success', 'Datos del cliente actualizados.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina el registro del cliente de forma permanente.
      */
     public function destroy(string $id)
     {
-        //
+        Cliente::findOrFail($id)->delete();
+
+        return redirect()->route('clientes.index')
+            ->with('success', 'Cliente eliminado del sistema.');
     }
 }

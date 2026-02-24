@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('presupuestos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('encargo_id')->constrained('encargos')->onDelete('cascade');
+            $table->decimal('precio_materiales', 10, 2)->default(0);
+            $table->decimal('precio_horas', 10, 2)->default(0);
+            $table->decimal('total', 10, 2)->default(0);
+            $table->boolean('aceptado')->default(false);
             $table->timestamps();
         });
     }

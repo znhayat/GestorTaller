@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('fotos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('encargo_id')->constrained('encargos')->onDelete('cascade');
+            $table->string('ruta');
+            $table->string('descripcion')->nullable();
             $table->timestamps();
         });
     }

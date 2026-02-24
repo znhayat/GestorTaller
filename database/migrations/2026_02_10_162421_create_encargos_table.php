@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('encargos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('vehiculo_id')->constrained('vehiculos')->onDelete('cascade');
+            $table->text('descripcion');
+            $table->string('estado')->default('Pendiente');
+            $table->date('fecha_entrada')->nullable();
+            $table->date('fecha_salida')->nullable();
             $table->timestamps();
         });
     }

@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('materials', function (Blueprint $table) {
+        Schema::create('materiales', function (Blueprint $table) {
             $table->id();
+            $table->string('nombre');
+            $table->string('tipo'); // tela, espuma, etc.
+            $table->string('unidad'); // metros, unidades...
+            $table->decimal('precio_unitario', 10, 2);
             $table->timestamps();
         });
     }

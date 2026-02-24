@@ -149,6 +149,61 @@
       ]
     },
     {
+      "menuHeader": "Mi Taller"
+    },
+    {
+      "name": "Gestión Taller",
+      "icon": "menu-icon icon-base ri ri-tools-line",
+      "slug": "gestion-taller",
+      "submenu": [
+        {
+          "url": "clientes",
+          "name": "Clientes",
+          "slug": "clientes"
+        },
+        {
+          "url": "vehiculos",
+          "name": "Vehículos",
+          "slug": "vehiculos"
+        },
+        {
+          "url": "encargos",
+          "name": "Encargos",
+          "slug": "encargos"
+        },
+        {
+          "url": "materiales",
+          "name": "Materiales",
+          "slug": "materiales"
+        },
+        {
+          "url": "usos_materiales",
+          "name": "Usos Materiales",
+          "slug": "usos_materiales"
+        },
+        {
+          "url": "citas",
+          "name": "Citas",
+          "slug": "citas"
+        },
+        {
+          "url": "fotos",
+          "name": "Fotos",
+          "slug": "fotos"
+        },
+        {
+          "url": "facturas",
+          "name": "Facturas",
+          "slug": "facturas"
+        },
+        {
+          "url": "presupuestos",
+          "name": "Presupuestos",
+          "slug": "presupuestos"
+        }
+      ]
+    },
+    {
       "menuHeader": "Apps & Pages"
     },
     {
