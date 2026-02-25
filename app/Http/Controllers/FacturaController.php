@@ -8,22 +8,27 @@ use Illuminate\Http\Request;
 
 class FacturaController extends Controller
 {
-    // Listado principal de facturas
+    /**
+     * Lista el historial económico del taller.
+     * Recupera las facturas junto con la relación del vehículo y el titular
+     * para facilitar la identificación rápida de los cobros realizados o pendientes.
+     */
     public function index()
     {
         $facturas = Factura::with('encargo.vehiculo.cliente')->latest()->get();
         return view('content.facturas.index', compact('facturas'));
     }
 
-    // Formulario para crear factura
     public function create()
     {
-        // Traemos los encargos para asociarlos a la factura
         $encargos = Encargo::with('vehiculo.cliente')->get();
         return view('content.facturas.create', compact('encargos'));
     }
 
-    // Guardar factura en la BD
+    /**
+     * Registra la factura en el sistema.
+     * Procesa el estado de pago mediante la verificación del checkbox 'pagado'.
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -35,22 +40,28 @@ class FacturaController extends Controller
         Factura::create([
             'encargo_id' => $request->encargo_id,
             'importe_total' => $request->importe_total,
-            'pagado' => $request->has('pagado'), // true si el checkbox está marcado
+            'pagado' => $request->has('pagado'), 
             'fecha_pago' => $request->fecha_pago
         ]);
 
         return redirect()->route('facturas.index')->with('success', 'Factura generada con éxito.');
     }
 
-    // Formulario de edición
+    /**
+     * Incluye la carga de datos del cliente para proporcionar contexto al administrador.
+     */
     public function edit($id)
     {
         $factura = Factura::with('encargo.vehiculo.cliente')->findOrFail($id);
-        $encargos = Encargo::all(); // Por si se desea reasignar el encargo
+        $encargos = Encargo::all(); 
+        
         return view('content.facturas.edit', compact('factura', 'encargos'));
     }
 
-    // Actualizar datos
+    /**
+     * Actualiza la información financiera o el estado de cobro.
+     * Permite registrar pagos recibidos a posteriori de la emisión de la factura.
+     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -68,7 +79,10 @@ class FacturaController extends Controller
         return redirect()->route('facturas.index')->with('success', 'Factura actualizada.');
     }
 
-    // Eliminar factura
+    /**
+     * Elimina el registro contable de la factura.
+     * Se utiliza redirect()->back() para mantener al usuario en su flujo de trabajo actual.
+     */
     public function destroy($id)
     {
         Factura::findOrFail($id)->delete();

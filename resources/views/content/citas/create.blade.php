@@ -3,7 +3,6 @@
 @section('title', 'Programar Cita')
 
 @section('content')
-{{-- Encabezado con estilo Montserrat y "breadcrumbs" para guiar al usuario --}}
 <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Citas /</span> Nueva Cita</h4>
 
 <div class="card">

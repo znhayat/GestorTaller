@@ -47,11 +47,22 @@
                     </form>
                 </div>
             </div>
-            <!-- /Login -->
-            <!--<img src="{{ asset('assets/img/illustrations/tree-3.png') }}" alt="auth-tree" class="authentication-image-object-left d-none d-lg-block" />
+            <!-- register -->
+            <div class="text-center mt-3">
+                <p class="mb-0">
+                    <span>¿No tienes una cuenta?</span>
+                    <a href="{{route('register')}}">
+                        <span>Regístrate aquí</span>
+                    </a>
+                </p>
+            </div>
+
+
+            <!-- /Login 
+            <img src="{{ asset('assets/img/illustrations/tree-3.png') }}" alt="auth-tree" class="authentication-image-object-left d-none d-lg-block" />
             <img src="{{ asset('assets/img/illustrations/auth-basic-mask-light.png') }}" class="authentication-image d-none d-lg-block scaleX-n1-rtl" height="172" alt="triangle-bg" />
-            <img src="{{ asset('assets/img/illustrations/tree.png') }}" alt="auth-tree" class="authentication-image-object-right d-none d-lg-block" />
-        </div>-->
+            <img src="{{ asset('assets/img/illustrations/tree.png') }}" alt="auth-tree" class="authentication-image-object-right d-none d-lg-block" />-->
         </div>
     </div>
-    @endsection
+</div>
+@endsection

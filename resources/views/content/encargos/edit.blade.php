@@ -3,7 +3,6 @@
 @section('title', 'Editar Encargo')
 
 @section('content')
-{{-- Cabecera con el número de orden dinámico --}}
 <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Encargos /</span> Editar Orden #{{ $encargo->id }}</h4>
 
 {{-- SECCIÓN 1: Datos Generales de la Orden --}}

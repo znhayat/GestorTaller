@@ -8,6 +8,7 @@
     <h5 class="mb-0">Clientes Registrados</h5>
     <a href="{{ route('clientes.create') }}" class="btn btn-primary">Añadir Cliente</a>
   </div>
+
   <div class="table-responsive text-nowrap">
     <table class="table">
       <thead>
@@ -18,21 +19,25 @@
         </tr>
       </thead>
       <tbody>
+        {{-- Itero sobre la colección de clientes que nos envía el controlador --}}
         @foreach($clientes as $cliente)
         <tr>
           <td><strong>{{ $cliente->nombre }}</strong></td>
           <td>{{ $cliente->telefono }}</td>
           <td>
             <div class="d-flex align-items-center">
+              {{-- Botón nos lleva al formulario con los datos cargados --}}
               <a href="{{ route('clientes.edit', $cliente->id) }}" class="btn btn-primary btn-sm me-2">
                 <i class="ri-pencil-line me-1"></i> Editar
               </a>
 
+              {{-- Formulario de eliminación enviamos el ID por método DELETE --}}
               <form action="{{ route('clientes.destroy', $cliente->id) }}" method="POST" onsubmit="return confirm('¿Seguro que quieres eliminar este cliente?')">
                 @csrf
                 @method('DELETE')
                 <button type="submit"
                   class="btn btn-sm btn-outline-danger d-flex align-items-center"
+                  {{-- Doble confirmación para evitar borrar el historial de un cliente por error --}}
                   onclick="return confirm('¿Estás seguro de que deseas eliminar este cliente? Esta acción no se puede deshacer.')"
                   title="Eliminar cliente">
                   <i class="ri-delete-bin-line me-1"></i> Eliminar

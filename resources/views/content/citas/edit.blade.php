@@ -3,7 +3,6 @@
 @section('title', 'Editar Cita')
 
 @section('content')
-{{-- Encabezado con migas de pan para saber dónde estamos dentro del taller --}}
 <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Citas /</span> Editar Cita</h4>
 
 <div class="card">

@@ -8,18 +8,23 @@ use Illuminate\Http\Request;
 
 class PresupuestoController extends Controller
 {
+    // Listado de todos los presupuestos. 
+    // Uso latest para que los últimos que se hagan salgan los primeros en la tabla.
     public function index()
     {
         $presupuestos = Presupuesto::with('encargo.vehiculo.cliente')->latest()->get();
         return view('content.presupuestos.index', compact('presupuestos'));
     }
 
+    // Para crear uno nuevo, necesito la lista de encargos. 
     public function create()
     {
         $encargos = Encargo::with('vehiculo.cliente')->get();
         return view('content.presupuestos.create', compact('encargos'));
     }
 
+    // Guardamos el presupuesto. 
+    // Aquí hago la suma de materiales + horas a mano para que el "total" se guarde ya calculado en la BD.
     public function store(Request $request)
     {
         $request->validate([
@@ -33,12 +38,13 @@ class PresupuestoController extends Controller
             'precio_materiales' => $request->precio_materiales,
             'precio_horas' => $request->precio_horas,
             'total' => $request->precio_materiales + $request->precio_horas,
-            'aceptado' => $request->has('aceptado')
+            'aceptado' => $request->has('aceptado') // Si el check está marcado, es true
         ]);
 
         return redirect()->route('presupuestos.index')->with('success', 'Presupuesto creado.');
     }
 
+    // Buscamos el presupuesto para editarlo si nos hemos equivocado en algún precio.
     public function edit($id)
     {
         $presupuesto = Presupuesto::findOrFail($id);
@@ -46,6 +52,7 @@ class PresupuestoController extends Controller
         return view('content.presupuestos.edit', compact('presupuesto', 'encargos'));
     }
 
+    // Al actualizar, vuelvo a recalcular el total por si han cambiado las horas o los materiales.
     public function update(Request $request, $id)
     {
         $presupuesto = Presupuesto::findOrFail($id);
@@ -60,6 +67,8 @@ class PresupuestoController extends Controller
         return redirect()->route('presupuestos.index')->with('success', 'Presupuesto actualizado.');
     }
 
+    // Borramos el presupuesto. 
+    // Uso "back" para que te devuelva a la misma pantalla donde estabas.
     public function destroy($id)
     {
         Presupuesto::findOrFail($id)->delete();

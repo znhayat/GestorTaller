@@ -46,7 +46,7 @@
 
           <div class="mb-3">
             <label class="form-label">Descripción del Trabajo</label>
-            <textarea name="descripcion" class="form-control" rows="3" placeholder="Ej: Estado de la culata antes de limpiar..."></textarea>
+            <textarea name="descripcion" class="form-control" rows="3" placeholder="Ej: Estado del techo antes de limpiar..."></textarea>
           </div>
 
           <div class="mt-4">

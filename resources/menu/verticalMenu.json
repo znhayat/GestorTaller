@@ -204,53 +204,6 @@
       ]
     },
     {
-      "menuHeader": "Apps & Pages"
-    },
-    {
-      "url": "https://demos.themeselection.com/materio-bootstrap-html-laravel-admin-template/demo-1/app/email",
-      "name": "Email",
-      "icon": "menu-icon icon-base ri ri-mail-open-line",
-      "slug": "app-email",
-      "target": "_blank",
-      "badge": [
-        "label-primary fs-tiny",
-        "Pro"
-      ]
-    },
-    {
-      "url": "https://demos.themeselection.com/materio-bootstrap-html-laravel-admin-template/demo-1/app/chat",
-      "name": "Chat",
-      "icon": "menu-icon icon-base ri ri-wechat-line",
-      "slug": "app-chat",
-      "target": "_blank",
-      "badge": [
-        "label-primary fs-tiny",
-        "Pro"
-      ]
-    },
-    {
-      "url": "https://demos.themeselection.com/materio-bootstrap-html-laravel-admin-template/demo-1/app/calendar",
-      "name": "Calendar",
-      "icon": "menu-icon icon-base ri ri-calendar-line",
-      "slug": "app-calendar",
-      "target": "_blank",
-      "badge": [
-        "label-primary fs-tiny",
-        "Pro"
-      ]
-    },
-    {
-      "url": "https://demos.themeselection.com/materio-bootstrap-html-laravel-admin-template/demo-1/app/kanban",
-      "name": "Kanban",
-      "icon": "menu-icon icon-base ri ri-drag-drop-line",
-      "slug": "app-kanban",
-      "target": "_blank",
-      "badge": [
-        "label-primary fs-tiny",
-        "Pro"
-      ]
-    },
-    {
       "name": "Account Settings",
       "icon": "menu-icon icon-base ri ri-layout-left-line",
       "slug": "pages-account-settings",
@@ -296,34 +249,6 @@
           "target": "_blank"
         }
       ]
-    },
-    {
-      "name": "Misc",
-      "icon": "menu-icon icon-base ri ri-box-3-line",
-      "slug": "pages-misc",
-      "submenu": [
-        {
-          "url": "pages/misc-error",
-          "name": "Error",
-          "slug": "pages-misc-error",
-          "target": "_blank"
-        },
-        {
-          "url": "pages/misc-under-maintenance",
-          "name": "Under Maintenance",
-          "slug": "pages-misc-under-maintenance",
-          "target": "_blank"
-        }
-      ]
-    },
-    {
-      "menuHeader": "Components"
-    },
-    {
-      "name": "Cards",
-      "icon": "menu-icon icon-base ri ri-bank-card-2-line",
-      "slug": "cards-basic",
-      "url": "cards/basic"
     },
     {
       "name": "User interface",

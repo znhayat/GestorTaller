@@ -4,7 +4,6 @@
 
 @section('content')
 <div class="card">
-  {{-- Cabecera de la tabla con el botón para crear citas nuevas --}}
   <div class="card-header d-flex justify-content-between align-items-center">
     <h5 class="mb-0">Agenda de Citas</h5>
     <a href="{{ route('citas.create') }}" class="btn btn-primary">
@@ -27,7 +26,6 @@
       <tbody>
         @foreach($citas as $cita)
         <tr>
-          {{-- Pintamos la fecha y la hora con badges de colores para que resalten --}}
           <td>
             <span class="badge bg-label-primary">{{ $cita->fecha }}</span>
             <span class="badge bg-label-secondary">{{ $cita->hora }}</span>
@@ -37,7 +35,7 @@
           <td>{{ $cita->encargo->vehiculo->marca }} {{ $cita->encargo->vehiculo->modelo }}</td>
           <td>{{ $cita->encargo->vehiculo->cliente->nombre }}</td>
 
-          {{-- Acortamos el texto de la avería para que la fila no se haga gigante --}}
+          {{-- Acortamos el texto para que la fila no se haga gigante --}}
           <td><small>{{ Str::limit($cita->encargo->descripcion, 25) }}</small></td>
 
           <td>

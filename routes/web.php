@@ -23,6 +23,9 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+
 /*
 |--------------------------------------------------------------------------
 | Rutas Protegidas (Solo usuarios autenticados)
@@ -30,6 +33,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 */
 // El middleware 'auth' asegura que nadie extraño vea los datos de tus clientes o facturas
 Route::middleware(['auth'])->group(function () {
+
 
   // Página de inicio tras el login: un panel analítico (dashboard)
   Route::get('/', function () {

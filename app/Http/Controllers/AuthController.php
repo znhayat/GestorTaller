@@ -33,4 +33,28 @@ class AuthController extends Controller
         Auth::logout();
         return redirect('/login');
     }
+
+
+    public function showRegister()
+    {
+        return view('content.authentications.auth-register-basic'); // Ruta a tu vista del template
+    }
+
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = \App\Models\User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        Auth::login($user);
+        return redirect()->intended('/dashboard');
+    }
 }

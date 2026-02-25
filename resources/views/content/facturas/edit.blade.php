@@ -8,8 +8,7 @@
     <h4 style="font-family: 'Montserrat', sans-serif;">Editar Factura #{{ $factura->id }}</h4>
 
     <form action="{{ route('facturas.update', $factura->id) }}" method="POST">
-      @csrf @method('PUT') {{-- PUT es necesario para actualizar registros existentes --}}
-
+      @csrf @method('PUT') 
       <div class="row">
         {{-- Input numérico con step 0.01 para permitir decimales (céntimos) --}}
         <div class="mb-3 col-md-6">
