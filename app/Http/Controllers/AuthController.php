@@ -15,19 +15,23 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        // 1. Validar datos
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
+        // 2. Intentar autenticar (Laravel se encarga del Hash)
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+            return redirect()->route('dashboard-analytics');
         }
 
-        return back()->withErrors(['email' => 'Datos incorrectos']);
+        // 3. Si falla, volver con error
+        return back()->withErrors([
+            'email' => 'Las credenciales no coinciden con nuestros registros.',
+        ])->onlyInput('email');
     }
-
     public function logout()
     {
         Auth::logout();
