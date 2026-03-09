@@ -4,12 +4,21 @@
       "url": "/",
       "name": "Dashboards",
       "icon": "menu-icon icon-base ri ri-home-smile-line",
-      "slug": "dashboard",
+      "slug": "dashboard-analytics",
       "badge": [
         "danger",
         "5"
       ],
       "submenu": []
+    },
+    {
+      "menuHeader": "Añadir trabajo"
+    },
+    {
+      "url": "/nuevo-trabajo",
+      "name": "Nuevo Trabajo",
+      "icon": "menu-icon icon-base ri ri-add-line",
+      "slug": "nuevo-trabajo"
     },
     {
       "menuHeader": "Mi Taller"
@@ -118,6 +127,12 @@
       "icon": "menu-icon icon-base ri ri-remixicon-line",
       "name": "Icons",
       "slug": "icons-ri"
+    },
+    {
+      "url": "/profile",
+      "name": "Mi Perfil",
+      "icon": "mdi mdi-account-outline",
+      "slug": "profile"
     }
   ]
 }

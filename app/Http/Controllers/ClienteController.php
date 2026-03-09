@@ -33,7 +33,7 @@ class ClienteController extends Controller
      */
     public function store(Request $request)
     {
-        Cliente::create($request->only(['nombre', 'telefono']));
+        Cliente::create($request->only(['nombre', 'apellido', 'telefono', 'correo']));
 
         return redirect()->route('clientes.index')
             ->with('success', 'Cliente registrado correctamente.');
@@ -66,7 +66,7 @@ class ClienteController extends Controller
     public function update(Request $request, string $id)
     {
         $cliente = Cliente::findOrFail($id);
-        $cliente->update($request->only(['nombre', 'telefono']));
+        $cliente->update($request->only(['nombre', 'apellido', 'telefono', 'correo']));
 
         return redirect()->route('clientes.index')
             ->with('success', 'Datos del cliente actualizados.');

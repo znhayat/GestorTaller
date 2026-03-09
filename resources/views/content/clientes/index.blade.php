@@ -14,7 +14,9 @@
       <thead>
         <tr>
           <th>Nombre</th>
+          <th>Apellido</th>
           <th>Teléfono</th>
+          <th>Correo</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -23,7 +25,9 @@
         @foreach($clientes as $cliente)
         <tr>
           <td><strong>{{ $cliente->nombre }}</strong></td>
+          <td>{{ $cliente->apellido }}</td>
           <td>{{ $cliente->telefono }}</td>
+          <td>{{ $cliente->correo }}</td>
           <td>
             <div class="d-flex align-items-center">
               {{-- Botón nos lleva al formulario con los datos cargados --}}
