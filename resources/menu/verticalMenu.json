@@ -4,7 +4,7 @@
       "url": "/",
       "name": "Dashboards",
       "icon": "menu-icon icon-base ri ri-home-smile-line",
-      "slug": "dashboard-analytics",
+      "slug": "dashboard",
       "badge": [
         "danger",
         "5"
