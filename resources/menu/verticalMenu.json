@@ -2,7 +2,7 @@
   "menu": [
     {
       "url": "/",
-      "name": "Dashboards",
+      "name": "Dashboard",
       "icon": "menu-icon icon-base ri ri-home-smile-line",
       "slug": "dashboard",
       "badge": [
@@ -12,7 +12,7 @@
       "submenu": []
     },
     {
-      "menuHeader": "Añadir trabajo"
+      "menuHeader": "Acciones Rápidas"
     },
     {
       "url": "/nuevo-trabajo",
@@ -21,52 +21,22 @@
       "slug": "nuevo-trabajo"
     },
     {
-      "menuHeader": "Mi Taller"
+      "menuHeader": "Gestión de Operaciones"
     },
     {
-      "name": "Gestión Taller",
+      "name": "Taller",
       "icon": "menu-icon icon-base ri ri-tools-line",
       "slug": "gestion-taller",
       "submenu": [
-        {
-          "url": "clientes",
-          "name": "Clientes",
-          "slug": "clientes"
-        },
-        {
-          "url": "vehiculos",
-          "name": "Vehículos",
-          "slug": "vehiculos"
-        },
-        {
-          "url": "encargos",
-          "name": "Encargos",
-          "slug": "encargos"
-        },
-        {
-          "url": "materiales",
-          "name": "Materiales",
-          "slug": "materiales"
-        },
-        {
-          "url": "usos_materiales",
-          "name": "Usos Materiales",
-          "slug": "usos_materiales"
-        },
         {
           "url": "citas",
           "name": "Citas",
           "slug": "citas"
         },
         {
-          "url": "fotos",
-          "name": "Fotos",
-          "slug": "fotos"
-        },
-        {
-          "url": "facturas",
-          "name": "Facturas",
-          "slug": "facturas"
+          "url": "encargos",
+          "name": "Encargos",
+          "slug": "encargos"
         },
         {
           "url": "presupuestos",
@@ -76,63 +46,58 @@
       ]
     },
     {
-      "name": "Account Settings",
+      "menuHeader": "Recursos"
+    },
+    {
+      "name": "Catálogo",
+      "icon": "menu-icon icon-base ri ri-box-3-line",
+      "slug": "recursos-taller",
+      "submenu": [
+        {
+          "url": "materiales",
+          "name": "Materiales",
+          "slug": "materiales"
+        },
+        {
+          "url": "vehiculos",
+          "name": "Vehículos",
+          "slug": "vehiculos"
+        },
+        {
+          "url": "clientes",
+          "name": "Clientes",
+          "slug": "clientes"
+        }
+      ]
+    },
+    {
+      "menuHeader": "Administración"
+    },
+    {
+      "url": "facturas",
+      "name": "Facturas",
+      "icon": "menu-icon icon-base ri ri-file-list-3-line",
+      "slug": "facturas"
+    },
+    {
+      "menuHeader": "Configuración"
+    },
+    {
+      "name": "Cuenta",
       "icon": "menu-icon icon-base ri ri-layout-left-line",
       "slug": "pages-account-settings",
       "submenu": [
         {
           "url": "pages/account-settings-account",
-          "name": "Account",
-          "slug": "pages-account-settings-account"
+          "name": "Perfil",
+          "slug": "profile"
         },
         {
           "url": "pages/account-settings-notifications",
-          "name": "Notifications",
-          "slug": "pages-account-settings-notifications"
-        },
-        {
-          "url": "pages/account-settings-connections",
-          "name": "Connections",
-          "slug": "pages-account-settings-connections"
+          "name": "Notificaciones",
+          "slug": "notifications"
         }
       ]
-    },
-    {
-      "name": "Authentications",
-      "icon": "menu-icon icon-base ri ri-shield-keyhole-line",
-      "slug": "auth",
-      "submenu": [
-        {
-          "url": "auth/login-basic",
-          "name": "Login",
-          "slug": "auth-login-basic",
-          "target": "_blank"
-        },
-        {
-          "url": "auth/register-basic",
-          "name": "Register",
-          "slug": "auth-register-basic",
-          "target": "_blank"
-        },
-        {
-          "url": "auth/forgot-password-basic",
-          "name": "Forgot Password",
-          "slug": "auth-forgot-password-basic",
-          "target": "_blank"
-        }
-      ]
-    },
-    {
-      "url": "icons/icons-ri",
-      "icon": "menu-icon icon-base ri ri-remixicon-line",
-      "name": "Icons",
-      "slug": "icons-ri"
-    },
-    {
-      "url": "/profile",
-      "name": "Mi Perfil",
-      "icon": "mdi mdi-account-outline",
-      "slug": "profile"
     }
   ]
 }

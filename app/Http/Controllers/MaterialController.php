@@ -7,28 +7,34 @@ use Illuminate\Http\Request;
 
 class MaterialController extends Controller
 {
-    // Listado de todo lo que tenemos en el almacén
-    public function index()
+    // Vista principal: si no hay $tipo, muestra los bloques. Si hay $tipo, muestra la tabla.
+    public function index($tipo = null)
     {
-        $materiales = Material::all();
-        return view('content.materiales.index', compact('materiales'));
+        if ($tipo) {
+            // MOSTRAR TABLA DE UNA CATEGORÍA
+            $items = Material::where('tipo', $tipo)->get();
+            return view('content.materiales.index', compact('items', 'tipo'));
+        } else {
+            // MOSTRAR BLOQUES DE CATEGORÍAS
+            $categorias = Material::distinct()->pluck('tipo');
+            return view('content.materiales.index', compact('categorias'));
+        }
     }
 
-    // Solo nos lleva a la vista para dar de alta un producto nuevo
     public function create()
     {
-        return view('content.materiales.create');
+        // Pasamos las categorías existentes para el select
+        $categorias = Material::distinct()->pluck('tipo');
+        return view('content.materiales.create', compact('categorias'));
     }
 
-    // Aquí es donde guardamos el material nuevo. 
-    // Usamos el 'all' para pillar todos los campos del formulario (nombre, stock, precio...)
     public function store(Request $request)
     {
+        // Guardamos todo el request (incluyendo el nuevo tipo si el JS lo envía correctamente)
         Material::create($request->all());
         return redirect()->route('materiales.index');
     }
 
-    // Buscamos un material específico para ver qué tenemos que cambiar.
     public function edit($id)
     {
         $material = Material::findOrFail($id);
@@ -42,7 +48,6 @@ class MaterialController extends Controller
         return redirect()->route('materiales.index');
     }
 
-    // Borramos el material de la lista. 
     public function destroy($id)
     {
         Material::findOrFail($id)->delete();

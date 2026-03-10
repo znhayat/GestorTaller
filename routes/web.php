@@ -14,7 +14,8 @@ use App\Http\Controllers\PresupuestoController;
 use App\Http\Controllers\AltaTrabajoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AnalyticsController;
-use App\Http\Controllers\dashboard\Analytics; // <--- Añadimos \dashboard\
+use App\Http\Controllers\dashboard\Analytics;
+
 /*
 |--------------------------------------------------------------------------
 | RUTAS PÚBLICAS (Sin autenticación)
@@ -44,8 +45,15 @@ Route::middleware(['auth'])->group(function () {
   // --- MÓDULO ALTA RÁPIDA  ---
   Route::get('/nuevo-trabajo', [AltaTrabajoController::class, 'create'])->name('trabajo.create');
   Route::post('/nuevo-trabajo', [AltaTrabajoController::class, 'store'])->name('trabajo.store');
+  // Ruta per veure la llista de materials d'una categoria concreta
 
+  // CRUD completo (incluye index, create, store, edit, update, destroy)
+  Route::resource('materiales', MaterialController::class);
 
+  // Ruta extra para ver una categoría específica (que redirige al index)
+  Route::get('/materiales/categoria/{tipo}', [MaterialController::class, 'index'])->name('materiales.categoria');
+  // Ruta principal (el teu Dashboard de blocs)
+  Route::get('/materiales', [MaterialController::class, 'index'])->name('materiales.index');
   // --- MÓDULOS PRINCIPALES (CRUDs) ---
   Route::resource('vehiculos', VehiculoController::class);
   Route::resource('encargos', EncargoController::class);

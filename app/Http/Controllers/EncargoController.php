@@ -23,6 +23,14 @@ class EncargoController extends Controller
      * Prepara el formulario de apertura de orden de trabajo.
      * Recupera los vehículos con sus respectivos dueños 
      */
+
+    public function show($id)
+    {
+        // Carga el encargo, el cliente, el vehículo y los materiales relacionados
+        $encargo = Encargo::with(['cliente', 'vehiculo', 'materiales'])->findOrFail($id);
+
+        return view('encargos.show', compact('encargo'));
+    }
     public function create()
     {
         $vehiculos = Vehiculo::with('cliente')->get();
@@ -48,7 +56,7 @@ class EncargoController extends Controller
     {
         // Se carga el encargo con el detalle de materiales para controlar el stock utilizado
         $encargo = Encargo::with(['vehiculo.cliente', 'usos_materiales.material'])->findOrFail($id);
-        
+
         $vehiculos = Vehiculo::with('cliente')->get();
         $materiales_lista = \App\Models\Material::all();
 
@@ -63,7 +71,7 @@ class EncargoController extends Controller
     {
         $encargo = Encargo::findOrFail($id);
         $encargo->update($request->all());
-        
+
         return redirect()->route('encargos.index')
             ->with('success', 'Orden de trabajo actualizada.');
     }
