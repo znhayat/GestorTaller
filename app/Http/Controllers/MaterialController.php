@@ -30,7 +30,6 @@ class MaterialController extends Controller
 
     public function store(Request $request)
     {
-        // Guardamos todo el request (incluyendo el nuevo tipo si el JS lo envía correctamente)
         Material::create($request->all());
         return redirect()->route('materiales.index');
     }

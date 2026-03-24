@@ -49,11 +49,11 @@
               <h6 class="text-primary fw-bold">2. Información del Vehículo</h6>
               <div class="row g-3">
                 <div class="col-md-6">
-                  <label class="form-label">Matrícula</label>
-                  <input type="text" name="matricula" class="form-control text-uppercase" placeholder="1234BBB">
+                  <label class="form-label">Marca</label>
+                  <input type="text" name="marca" class="form-control" placeholder="Ej: Audi" required>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label">Marca / Modelo</label>
+                  <label class="form-label">Modelo</label>
                   <input type="text" name="modelo" class="form-control" placeholder="Ej: Audi A4">
                 </div>
               </div>
@@ -104,6 +104,7 @@
     for (let i = 1; i <= 3; i++) {
       const btn = document.getElementById('btn-step' + i);
       btn.className = (i === step) ? 'btn btn-primary btn-sm ms-2' : 'btn btn-outline-secondary btn-sm ms-2';
+      btn.disabled = (i > step);
     }
   }
 </script>

@@ -80,4 +80,8 @@ Route::middleware(['auth'])->group(function () {
   Route::prefix('tables')->group(function () {
     Route::get('/basic', [App\Http\Controllers\tables\Basic::class, 'index'])->name('tables-basic');
   });
+
+  Route::get('/taller/tablero', [EncargoController::class, 'kanban'])->name('encargos.kanban');
+  // También la ruta para que los botones de mover funcionen
+  Route::post('/encargos/{id}/status', [EncargoController::class, 'cambiarEstado'])->name('encargos.updateStatus');
 });

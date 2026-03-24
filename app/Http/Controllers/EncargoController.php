@@ -18,6 +18,25 @@ class EncargoController extends Controller
         $encargos = Encargo::with('vehiculo.cliente')->get();
         return view('content.encargos.index', compact('encargos'));
     }
+    public function kanban()
+    {
+        // Cargamos los encargos con sus clientes y vehículos para que no den error
+        $encargos = Encargo::with('vehiculo.cliente')->get();
+        return view('content.taller.kanban', compact('encargos'));
+    }
+
+    public function cambiarEstado(Request $request, $id)
+    {
+        $encargo = Encargo::findOrFail($id);
+        $encargo->estado = $request->estado;
+
+        if ($request->estado == 'Finalizado') {
+            $encargo->fecha_salida = now();
+        }
+
+        $encargo->save();
+        return back()->with('success', 'Estado actualizado');
+    }
 
     /**
      * Prepara el formulario de apertura de orden de trabajo.

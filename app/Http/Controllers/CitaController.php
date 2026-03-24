@@ -19,7 +19,7 @@ class CitaController extends Controller
         $citas = Cita::with('encargo.vehiculo.cliente')
             ->orderBy('fecha')
             ->orderBy('hora')
-            ->get();
+            ->get();  
 
         return view('content.citas.index', compact('citas'));
     }
@@ -33,7 +33,6 @@ class CitaController extends Controller
         $encargos = Encargo::with('vehiculo.cliente')->get();
         return view('content.citas.create', compact('encargos'));
     }
-
     /**
      * Almacena la cita en la base de datos.
      * Utiliza asignación masiva. Es fundamental que el modelo Cita 
