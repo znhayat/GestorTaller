@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Cliente;
 use App\Models\Vehiculo;
 use App\Models\Encargo;
+use App\Models\Presupuesto;
 use Illuminate\Support\Facades\DB;
 
 class AltaTrabajoController extends Controller
@@ -17,7 +18,7 @@ class AltaTrabajoController extends Controller
 
     public function store(Request $request)
     {
-        //Validación de los campos que vienen del formulario
+        // Validación de campos
         $request->validate([
             'nombre'      => 'required|string',
             'apellido'    => 'required|string',
@@ -26,11 +27,14 @@ class AltaTrabajoController extends Controller
             'marca'       => 'required|string',
             'modelo'      => 'required|string',
             'descripcion' => 'required|string',
+            'precio_materiales' => 'required|numeric|min:0',
+            'precio_horas' => 'required|numeric|min:0',
         ]);
 
         try {
             return DB::transaction(function () use ($request) {
 
+                // 1️⃣ Crear o encontrar cliente
                 $cliente = Cliente::firstOrCreate(
                     ['telefono' => $request->telefono],
                     [
@@ -40,26 +44,38 @@ class AltaTrabajoController extends Controller
                     ]
                 );
 
-                // El Vehículo
+                // 2️⃣ Crear vehículo
                 $vehiculo = Vehiculo::create([
                     'cliente_id' => $cliente->id,
                     'marca'      => $request->marca,
                     'modelo'     => $request->modelo,
                 ]);
 
-                // El Encargo (Detalles y fechas)
-                Encargo::create([
+                // 3️⃣ Crear encargo (estado inicial: Cita Agendada)
+                $encargo = Encargo::create([
                     'vehiculo_id'   => $vehiculo->id,
                     'descripcion'   => $request->descripcion,
-                    'estado'        => 'Pendiente',
+                    'estado'        => 'Cita Agendada',
                     'fecha_entrada' => now(),
-                    'fecha_salida'  => null,
                 ]);
 
-                return redirect()->route('encargos.index')->with('success', '¡Trabajo registrado correctamente!');
+                // 4️⃣ Crear presupuesto inicial (NO aceptado)
+                $total = $request->precio_materiales + $request->precio_horas;
+
+                Presupuesto::create([
+                    'encargo_id' => $encargo->id,
+                    'precio_materiales' => $request->precio_materiales,
+                    'precio_horas' => $request->precio_horas,
+                    'total' => $total,
+                    'aceptado' => false
+                ]);
+
+                // 5️⃣ Redirigir al Kanban de Recepción con mensaje de éxito
+                return redirect()->route('encargos.recepcion')
+                    ->with('success', '✅ ¡Trabajo creado correctamente! Aparecerá en la columna "Cita Agendada".');
             });
         } catch (\Exception $e) {
-            return back()->withErrors('Error al guardar: ' . $e->getMessage())->withInput();
+            return back()->withErrors('❌ Error al guardar: ' . $e->getMessage())->withInput();
         }
     }
 }

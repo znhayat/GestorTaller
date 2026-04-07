@@ -81,7 +81,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/basic', [App\Http\Controllers\tables\Basic::class, 'index'])->name('tables-basic');
   });
 
-  Route::get('/taller/tablero', [EncargoController::class, 'kanban'])->name('encargos.kanban');
+  Route::get('/taller/recepcion', [EncargoController::class, 'kanbanRecepcion'])->name('encargos.recepcion');
+  Route::get('/taller/produccion', [EncargoController::class, 'kanbanProduccion'])->name('encargos.produccion');
   // También la ruta para que los botones de mover funcionen
   Route::post('/encargos/{id}/status', [EncargoController::class, 'cambiarEstado'])->name('encargos.updateStatus');
+  Route::post('/encargos/{id}/status/ajax', [EncargoController::class, 'cambiarEstadoAjax'])->name('encargos.updateStatusAjax');
 });

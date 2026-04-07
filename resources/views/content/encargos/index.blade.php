@@ -5,7 +5,8 @@
   <div class="card-header d-flex justify-content-between align-items-center">
     <h5 class="mb-0">Órdenes de Trabajo (Encargos)</h5>
     <a href="{{ route('encargos.create') }}" class="btn btn-primary">Nuevo Encargo</a>
-    <a href="{{ route('encargos.kanban') }}" class="btn btn-outline-primary">Ver Tablero</a>
+    <a href="{{ route('encargos.recepcion') }}" class="btn btn-outline-primary">Ver Tablero Recepción</a>
+    <a href="{{ route('encargos.produccion') }}" class="btn btn-outline-primary">Ver Tablero Producción</a>
   </div>
 
   <div class="table-responsive text-nowrap">

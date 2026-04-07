@@ -4,24 +4,22 @@
       "url": "/",
       "name": "Dashboard",
       "icon": "menu-icon icon-base ri ri-home-smile-line",
-      "slug": "dashboard",
-      "badge": [
-        "danger",
-        "5"
-      ],
-      "submenu": []
-    },
-    {
-      "menuHeader": "Acciones Rápidas"
-    },
-    {
-      "url": "/nuevo-trabajo",
-      "name": "Nuevo Trabajo",
-      "icon": "menu-icon icon-base ri ri-add-line",
-      "slug": "nuevo-trabajo"
+      "slug": "dashboard-analytics"
     },
     {
       "menuHeader": "Gestión de Operaciones"
+    },
+    {
+      "url": "/taller/recepcion",
+      "name": "Tablero Recepción",
+      "icon": "menu-icon icon-base ri ri-phone-line",
+      "slug": "encargos.recepcion"
+    },
+    {
+      "url": "/taller/produccion",
+      "name": "Tablero Producción",
+      "icon": "menu-icon icon-base ri ri-tools-line",
+      "slug": "encargos.produccion"
     },
     {
       "name": "Taller",

@@ -8,67 +8,103 @@ use Illuminate\Http\Request;
 
 class PresupuestoController extends Controller
 {
-    // Listado de todos los presupuestos. 
-    // Uso latest para que los últimos que se hagan salgan los primeros en la tabla.
     public function index()
     {
         $presupuestos = Presupuesto::with('encargo.vehiculo.cliente')->latest()->get();
         return view('content.presupuestos.index', compact('presupuestos'));
     }
 
-    // Para crear uno nuevo, necesito la lista de encargos. 
-    public function create()
+    public function create(Request $request)
     {
         $encargos = Encargo::with('vehiculo.cliente')->get();
-        return view('content.presupuestos.create', compact('encargos'));
+        $encargoSeleccionado = null;
+
+        if ($request->has('encargo_id')) {
+            $encargoSeleccionado = Encargo::with('vehiculo.cliente')->find($request->encargo_id);
+        }
+
+        return view('content.presupuestos.create', compact('encargos', 'encargoSeleccionado'));
     }
 
-    // Guardamos el presupuesto. 
-    // Aquí hago la suma de materiales + horas a mano para que el "total" se guarde ya calculado en la BD.
     public function store(Request $request)
     {
         $request->validate([
             'encargo_id' => 'required|exists:encargos,id',
-            'precio_materiales' => 'required|numeric',
-            'precio_horas' => 'required|numeric',
+            'precio_materiales' => 'required|numeric|min:0',
+            'precio_horas' => 'required|numeric|min:0',
         ]);
 
-        Presupuesto::create([
+        $aceptado = $request->has('aceptado');
+
+        $presupuesto = Presupuesto::create([
             'encargo_id' => $request->encargo_id,
             'precio_materiales' => $request->precio_materiales,
             'precio_horas' => $request->precio_horas,
             'total' => $request->precio_materiales + $request->precio_horas,
-            'aceptado' => $request->has('aceptado') // Si el check está marcado, es true
+            'aceptado' => $aceptado
         ]);
 
-        return redirect()->route('presupuestos.index')->with('success', 'Presupuesto creado.');
+        // Cambiar el estado del encargo según si se acepta o no
+        $encargo = Encargo::findOrFail($request->encargo_id);
+
+        if ($aceptado) {
+            // ACEPTADO: Pasa a PRODUCCIÓN con estado "Pendiente de Inicio"
+            $encargo->estado = 'Pendiente de Inicio';
+            $encargo->save();
+
+            return redirect()->route('encargos.produccion')
+                ->with('success', '¡Presupuesto ACEPTADO! El trabajo ha pasado al TABLERO DE PRODUCCIÓN.');
+        } else {
+            // NO ACEPTADO: Se queda en recepción
+            $encargo->estado = 'Presupuesto Enviado';
+            $encargo->save();
+
+            return redirect()->route('encargos.recepcion')
+                ->with('info', 'Presupuesto guardado. Esperando confirmación del cliente.');
+        }
     }
 
-    // Buscamos el presupuesto para editarlo si nos hemos equivocado en algún precio.
     public function edit($id)
     {
         $presupuesto = Presupuesto::findOrFail($id);
-        $encargos = Encargo::all();
+        $encargos = Encargo::with('vehiculo.cliente')->get();
         return view('content.presupuestos.edit', compact('presupuesto', 'encargos'));
     }
 
-    // Al actualizar, vuelvo a recalcular el total por si han cambiado las horas o los materiales.
     public function update(Request $request, $id)
     {
         $presupuesto = Presupuesto::findOrFail($id);
+        $aceptadoAnterior = $presupuesto->aceptado;
+        $aceptadoNuevo = $request->has('aceptado');
 
         $presupuesto->update([
             'precio_materiales' => $request->precio_materiales,
             'precio_horas' => $request->precio_horas,
             'total' => $request->precio_materiales + $request->precio_horas,
-            'aceptado' => $request->has('aceptado')
+            'aceptado' => $aceptadoNuevo
         ]);
 
-        return redirect()->route('presupuestos.index')->with('success', 'Presupuesto actualizado.');
+        $encargo = $presupuesto->encargo;
+
+        if ($aceptadoNuevo && !$aceptadoAnterior) {
+            // CAMBIO A ACEPTADO: Pasa a producción
+            $encargo->estado = 'Pendiente de Inicio';
+            $encargo->save();
+
+            return redirect()->route('encargos.produccion')
+                ->with('success', '¡Presupuesto ACEPTADO! El trabajo ha pasado al TABLERO DE PRODUCCIÓN.');
+        } elseif (!$aceptadoNuevo && $aceptadoAnterior) {
+            $encargo->estado = 'Presupuesto Enviado';
+            $encargo->save();
+
+            return redirect()->route('encargos.recepcion')
+                ->with('warning', 'Presupuesto marcado como no aceptado.');
+        }
+
+        return redirect()->route('presupuestos.index')
+            ->with('success', 'Presupuesto actualizado correctamente.');
     }
 
-    // Borramos el presupuesto. 
-    // Uso "back" para que te devuelva a la misma pantalla donde estabas.
     public function destroy($id)
     {
         Presupuesto::findOrFail($id)->delete();
