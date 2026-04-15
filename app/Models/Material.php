@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Material extends Model
 {
+    use \Illuminate\Database\Eloquent\SoftDeletes;
     protected $table = 'materiales';
     protected $fillable = ['nombre', 'tipo', 'unidad', 'precio_unitario'];
 

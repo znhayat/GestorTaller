@@ -4,9 +4,22 @@
 
 @section('content')
 <div class="card">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0" style="font-family: 'Montserrat', sans-serif;">Historial de Facturas</h5>
-    <a href="{{ route('facturas.create') }}" class="btn btn-primary">Nueva Factura</a>
+  <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <h5 class="mb-0">Historial de Facturas</h5>
+    <div class="d-flex flex-wrap align-items-center gap-2 ms-auto">
+      <!-- Buscador -->
+      <form method="GET" action="{{ route('facturas.index') }}" class="d-flex position-relative me-2" style="min-width: 250px;">
+        <input type="text" name="search" class="form-control ps-5 pe-4 w-100" placeholder="Buscar por cliente o vehículo..." value="{{ request('search') }}">
+        <i class="ri-search-line position-absolute" style="top: 50%; transform: translateY(-50%); left: 15px; color: #a1acb8;"></i>
+        @if(request('search'))
+        <a href="{{ route('facturas.index') }}" class="position-absolute" style="top: 50%; transform: translateY(-50%); right: 10px; color: #a1acb8; cursor: pointer;" title="Limpiar búsqueda">
+          <i class="ri-close-circle-line"></i>
+        </a>
+        @endif
+      </form>
+
+      <a href="{{ route('facturas.create') }}" class="btn btn-primary"><i class="ri-add-line me-1"></i> Nueva Factura</a>
+    </div>
   </div>
 
   <div class="table-responsive text-nowrap">
@@ -17,59 +30,53 @@
           <th>Cliente / Vehículo</th>
           <th>Importe Total</th>
           <th>Estado</th>
+          <th>Fecha</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        @foreach($facturas as $f)
+        @forelse($facturas as $f)
         <tr>
-          {{-- ID de la factura resaltado --}}
           <td><strong>#{{ $f->id }}</strong></td>
-
           <td>
-            {{-- Mostramos el cliente y, justo debajo, los datos del coche asociado al encargo --}}
             <span class="fw-medium">{{ $f->encargo->vehiculo->cliente->nombre }}</span><br>
-            <small class="text-muted">{{ $f->encargo->vehiculo->marca }} ({{ $f->encargo->vehiculo->matricula }})</small>
+            <small class="text-muted">{{ $f->encargo->vehiculo->marca }} {{ $f->encargo->vehiculo->modelo }}</small>
           </td>
-
-          {{-- Formateo de moneda para asegurar los dos decimales del importe --}}
           <td>{{ number_format($f->importe_total, 2) }}€</td>
-
           <td>
-            {{-- Badge condicional: verde si está pagada, rojo si está pendiente --}}
             @if($f->pagado)
             <span class="badge bg-label-success">Pagado</span>
             @else
             <span class="badge bg-label-danger">Pendiente</span>
             @endif
           </td>
-
+          <td>{{ $f->created_at->format('d/m/Y') }}</td>
           <td>
-            <div class="d-flex align-items-center gap-2">
-              {{-- Acceso rápido para modificar datos de la factura o el estado del pago --}}
-              <a href="{{ route('facturas.edit', $f->id) }}"
-                class="btn btn-sm btn-primary d-flex align-items-center"
-                title="Editar factura">
-                <i class="ri-edit-line me-1"></i> Editar
-              </a>
-
-              {{-- Borrado con advertencia de seguridad para evitar descuadres contables por error --}}
-              <form action="{{ route('facturas.destroy', $f->id) }}" method="POST" class="d-inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit"
-                  class="btn btn-sm btn-outline-danger d-flex align-items-center"
-                  onclick="return confirm('¿Estás seguro de que deseas eliminar esta factura? Esta acción no se puede deshacer.')"
-                  title="Eliminar factura">
-                  <i class="ri-delete-bin-line me-1"></i> Eliminar
-                </button>
+            <div class="d-flex gap-2">
+              <a href="{{ route('facturas.edit', $f->id) }}" class="btn btn-sm btn-primary">Editar</a>
+              <form action="{{ route('facturas.destroy', $f->id) }}" method="POST">
+                @csrf @method('DELETE')
+                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar factura?')">Eliminar</button>
               </form>
             </div>
           </td>
         </tr>
-        @endforeach
+        @empty
+        <tr>
+          <td colspan="6" class="text-center py-4">
+            <i class="ri-inbox-line fs-1 text-muted"></i>
+            <p class="mt-2">No se encontraron facturas</p>
+          </td>
+        </tr>
+        @endforelse
       </tbody>
     </table>
   </div>
+
+  @if($facturas->hasPages())
+  <div class="card-footer">
+    {{ $facturas->appends(['search' => request('search')])->links() }}
+  </div>
+  @endif
 </div>
 @endsection

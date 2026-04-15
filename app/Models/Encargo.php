@@ -7,13 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Encargo extends Model
 {
-    use HasFactory;
-    protected $fillable = ['vehiculo_id', 'descripcion', 'estado', 'fecha_entrada', 'fecha_salida'];
+    use HasFactory, \Illuminate\Database\Eloquent\SoftDeletes;
+    protected $fillable = ['vehiculo_id', 'descripcion', 'estado', 'fecha_entrada', 'fecha_salida', 'cita_revision', 'hora_cita', 'cita_recogida', 'recordatorio_enviado', 'notas_internas'];
 
     // El Encargo pertenece a un Vehículo específico
     public function vehiculo()
     {
-        return $this->belongsTo(Vehiculo::class);
+        return $this->belongsTo(Vehiculo::class)->withTrashed();
     }
 
     // Relación 1 a 1: Cada encargo tiene un presupuesto único
@@ -40,5 +40,17 @@ class Encargo extends Model
     public function usos_materiales()
     {
         return $this->hasMany(UsoMaterial::class);
+    }
+
+    protected static function booted()
+    {
+        static::deleting(function ($encargo) {
+            if ($encargo->presupuesto) {
+                $encargo->presupuesto->delete();
+            }
+            $encargo->citas()->delete();
+            $encargo->fotos()->delete();
+            $encargo->usos_materiales()->delete();
+        });
     }
 }

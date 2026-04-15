@@ -8,17 +8,19 @@ use Illuminate\Http\Request;
 class MaterialController extends Controller
 {
     // Vista principal: si no hay $tipo, muestra los bloques. Si hay $tipo, muestra la tabla.
-    public function index($tipo = null)
+    public function index(Request $request)
     {
-        if ($tipo) {
-            // MOSTRAR TABLA DE UNA CATEGORÍA
-            $items = Material::where('tipo', $tipo)->get();
-            return view('content.materiales.index', compact('items', 'tipo'));
-        } else {
-            // MOSTRAR BLOQUES DE CATEGORÍAS
-            $categorias = Material::distinct()->pluck('tipo');
-            return view('content.materiales.index', compact('categorias'));
-        }
+        $search = $request->get('search');
+
+        $materiales = Material::when($search, function ($query, $search) {
+            return $query->where('nombre', 'like', "%{$search}%")
+                ->orWhere('categoria', 'like', "%{$search}%")
+                ->orWhere('unidad', 'like', "%{$search}%");
+        })
+            ->orderBy('nombre')
+            ->paginate(15);
+
+        return view('content.materiales.index', compact('materiales', 'search'));
     }
 
     public function create()

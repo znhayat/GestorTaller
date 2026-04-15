@@ -18,7 +18,6 @@ class AltaTrabajoController extends Controller
 
     public function store(Request $request)
     {
-        // Validación de campos
         $request->validate([
             'nombre'      => 'required|string',
             'apellido'    => 'required|string',
@@ -29,12 +28,15 @@ class AltaTrabajoController extends Controller
             'descripcion' => 'required|string',
             'precio_materiales' => 'required|numeric|min:0',
             'precio_horas' => 'required|numeric|min:0',
+            'cita_revision' => 'required|date|after_or_equal:today', // Validación: fecha hoy o futura
+            'hora_cita' => 'required|date_format:H:i',
+            'cita_recogida' => 'nullable|date|after_or_equal:cita_revision' // Fecha de entrega
         ]);
 
         try {
             return DB::transaction(function () use ($request) {
 
-                // 1️⃣ Crear o encontrar cliente
+                // 1. Crear o encontrar cliente
                 $cliente = Cliente::firstOrCreate(
                     ['telefono' => $request->telefono],
                     [
@@ -44,22 +46,26 @@ class AltaTrabajoController extends Controller
                     ]
                 );
 
-                // 2️⃣ Crear vehículo
+                // 2. Crear vehículo
                 $vehiculo = Vehiculo::create([
                     'cliente_id' => $cliente->id,
                     'marca'      => $request->marca,
                     'modelo'     => $request->modelo,
                 ]);
 
-                // 3️⃣ Crear encargo (estado inicial: Cita Agendada)
+                // 3. Crear encargo
                 $encargo = Encargo::create([
                     'vehiculo_id'   => $vehiculo->id,
                     'descripcion'   => $request->descripcion,
                     'estado'        => 'Cita Agendada',
                     'fecha_entrada' => now(),
+                    'cita_revision' => $request->cita_revision,
+                    'hora_cita'     => $request->hora_cita,
+                    'cita_recogida' => $request->cita_recogida, // Fecha límite o entrega
+                    'recordatorio_enviado' => false,
                 ]);
 
-                // 4️⃣ Crear presupuesto inicial (NO aceptado)
+                // 4. Crear presupuesto inicial
                 $total = $request->precio_materiales + $request->precio_horas;
 
                 Presupuesto::create([
@@ -70,12 +76,11 @@ class AltaTrabajoController extends Controller
                     'aceptado' => false
                 ]);
 
-                // 5️⃣ Redirigir al Kanban de Recepción con mensaje de éxito
                 return redirect()->route('encargos.recepcion')
-                    ->with('success', '✅ ¡Trabajo creado correctamente! Aparecerá en la columna "Cita Agendada".');
+                    ->with('success', 'Trabajo creado. Cita agendada para el ' . date('d/m/Y', strtotime($request->cita_revision)));
             });
         } catch (\Exception $e) {
-            return back()->withErrors('❌ Error al guardar: ' . $e->getMessage())->withInput();
+            return back()->withErrors('Error al guardar: ' . $e->getMessage())->withInput();
         }
     }
 }

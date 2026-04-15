@@ -13,10 +13,19 @@ class FacturaController extends Controller
      * Recupera las facturas junto con la relación del vehículo y el titular
      * para facilitar la identificación rápida de los cobros realizados o pendientes.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $facturas = Factura::with('encargo.vehiculo.cliente')->latest()->get();
-        return view('content.facturas.index', compact('facturas'));
+        $search = $request->get('search');
+        $facturas = Factura::with('encargo.vehiculo.cliente')
+            ->when($search, function ($query, $search) {
+                return $query->whereHas('encargo.vehiculo.cliente', function ($q) use ($search) {
+                    $q->where('nombre', 'like', "%{$search}%")
+                        ->orWhere('apellido', 'like', "%{$search}%");
+                })->orWhere('importe_total', 'like', "%{$search}%");
+            })
+            ->latest()->paginate(15);
+            
+        return view('content.facturas.index', compact('facturas', 'search'));
     }
 
     public function create()

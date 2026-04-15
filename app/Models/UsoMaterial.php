@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UsoMaterial extends Model
 {
+    use \Illuminate\Database\Eloquent\SoftDeletes;
     // Le indicamos a Laravel el nombre exacto de la tabla, ya que al ser 
     // un nombre compuesto se lia
     protected $table = 'usos_materiales';
@@ -20,7 +21,7 @@ class UsoMaterial extends Model
      */
     public function encargo()
     {
-        return $this->belongsTo(Encargo::class);
+        return $this->belongsTo(Encargo::class)->withTrashed();
     }
 
     /**

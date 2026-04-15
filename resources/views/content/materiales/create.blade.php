@@ -23,7 +23,6 @@
             @endforeach
             <option value="NEW" class="text-primary fw-bold">+ Añadir nueva categoría</option>
           </select>
-
           {{-- Input ocult per escriure la nova categoria --}}
           <input type="text" name="nuevo_tipo" id="nuevoTipoInput" class="form-control mt-2"
             placeholder="Escribe el nombre de la nueva categoría" style="display:none;">
@@ -38,7 +37,6 @@
             <option value="Rollos">Rollos</option>
           </select>
         </div>
-
         <div class="mb-3 col-md-6">
           <label class="form-label">Precio Unitario (€)</label>
           <input type="number" step="0.01" name="precio_unitario" class="form-control" placeholder="0.00" required>
@@ -62,7 +60,7 @@
     } else {
       input.style.display = 'none';
       input.required = false;
-      select.name = "tipo"; // 
+      select.name = "tipo"; 
       input.name = "nuevo_tipo";
     }
   }

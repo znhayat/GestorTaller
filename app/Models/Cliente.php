@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Cliente extends Model
 {
-    use HasFactory;
+    use HasFactory, \Illuminate\Database\Eloquent\SoftDeletes;
 
     protected $fillable = [
         'nombre',
@@ -20,5 +20,12 @@ class Cliente extends Model
     public function vehiculos()
     {
         return $this->hasMany(Vehiculo::class);
+    }
+
+    protected static function booted()
+    {
+        static::deleting(function ($cliente) {
+            $cliente->vehiculos()->delete();
+        });
     }
 }

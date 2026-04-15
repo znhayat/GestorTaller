@@ -5,13 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\Presupuesto;
 use App\Models\Encargo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PresupuestoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $presupuestos = Presupuesto::with('encargo.vehiculo.cliente')->latest()->get();
-        return view('content.presupuestos.index', compact('presupuestos'));
+        $search = $request->get('search');
+        $presupuestos = Presupuesto::with('encargo.vehiculo.cliente')
+            ->when($search, function ($query, $search) {
+                return $query->whereHas('encargo.vehiculo.cliente', function ($q) use ($search) {
+                    $q->where('nombre', 'like', "%{$search}%")
+                        ->orWhere('apellido', 'like', "%{$search}%");
+                });
+            })
+            ->latest()->paginate(15);
+
+        return view('content.presupuestos.index', compact('presupuestos', 'search'));
     }
 
     public function create(Request $request)
@@ -30,38 +40,30 @@ class PresupuestoController extends Controller
     {
         $request->validate([
             'encargo_id' => 'required|exists:encargos,id',
-            'precio_materiales' => 'required|numeric|min:0',
-            'precio_horas' => 'required|numeric|min:0',
+            'precio_materiales' => 'required|numeric',
+            'precio_horas' => 'required|numeric',
         ]);
 
-        $aceptado = $request->has('aceptado');
+        $total = $request->precio_materiales + $request->precio_horas;
 
-        $presupuesto = Presupuesto::create([
-            'encargo_id' => $request->encargo_id,
-            'precio_materiales' => $request->precio_materiales,
-            'precio_horas' => $request->precio_horas,
-            'total' => $request->precio_materiales + $request->precio_horas,
-            'aceptado' => $aceptado
-        ]);
+        DB::transaction(function () use ($request, $total) {
+            $presupuesto = Presupuesto::updateOrCreate(
+                ['encargo_id' => $request->encargo_id],
+                [
+                    'precio_materiales' => $request->precio_materiales,
+                    'precio_horas' => $request->precio_horas,
+                    'total' => $total,
+                    'aceptado' => false,
+                ]
+            );
 
-        // Cambiar el estado del encargo según si se acepta o no
-        $encargo = Encargo::findOrFail($request->encargo_id);
-
-        if ($aceptado) {
-            // ACEPTADO: Pasa a PRODUCCIÓN con estado "Pendiente de Inicio"
-            $encargo->estado = 'Pendiente de Inicio';
-            $encargo->save();
-
-            return redirect()->route('encargos.produccion')
-                ->with('success', '¡Presupuesto ACEPTADO! El trabajo ha pasado al TABLERO DE PRODUCCIÓN.');
-        } else {
-            // NO ACEPTADO: Se queda en recepción
+            // Cambiar estado del encargo a 'Presupuesto Enviado'
+            $encargo = Encargo::find($request->encargo_id);
             $encargo->estado = 'Presupuesto Enviado';
             $encargo->save();
+        });
 
-            return redirect()->route('encargos.recepcion')
-                ->with('info', 'Presupuesto guardado. Esperando confirmación del cliente.');
-        }
+        return redirect()->route('encargos.recepcion')->with('success', 'Presupuesto guardado y enviado al cliente');
     }
 
     public function edit($id)

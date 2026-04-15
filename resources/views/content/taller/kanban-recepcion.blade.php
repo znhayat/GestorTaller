@@ -1,227 +1,135 @@
 @extends('layouts/contentNavbarLayout')
 
-@section('vendor-style')
-<style>
-  .kanban-column {
-    background: #f8f9fa;
-    border-radius: 0.75rem;
-    min-height: 550px;
-    transition: all 0.2s;
-  }
-
-  .kanban-item {
-    cursor: grab;
-    transition: all 0.2s;
-    border-left: 4px solid;
-  }
-
-  .kanban-item:active {
-    cursor: grabbing;
-  }
-
-  .kanban-item.dragging {
-    opacity: 0.4;
-  }
-
-  .kanban-column.drag-over {
-    background: #e9ecef;
-    border: 2px dashed #696cff;
-    transform: scale(1.01);
-  }
-
-  .card-eliminando {
-    animation: fadeOut 0.3s ease-out forwards;
-  }
-
-  @keyframes fadeOut {
-    to {
-      opacity: 0;
-      transform: translateX(-100px);
-    }
-  }
-
-  /* Estilos mejorados para botones */
-  .btn-action {
-    transition: all 0.2s;
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-  }
-
-  .btn-action:hover {
-    transform: translateY(-1px);
-  }
-
-  .card-header-custom {
-    border-radius: 0.75rem 0.75rem 0 0;
-  }
-
-  /* Scroll personalizado */
-  .kanban-column::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .kanban-column::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-  }
-
-  .kanban-column::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 10px;
-  }
-
-  .kanban-column::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-  }
-</style>
-@endsection
-
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-  <!-- Cabecera -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
     <div>
-      <h4 class="fw-bold mb-1">
-        <i class="ri-phone-line me-2 text-primary"></i> Tablero de Recepción
-      </h4>
-      <p class="text-muted mb-0">Arrastra las tarjetas para cambiar el estado</p>
+      <h4 class="fw-bold mb-1">Tablero de Recepcion</h4>
+      <p class="text-muted mb-0">Arrastre las tarjetas para avanzar el trabajo</p>
     </div>
     <a href="{{ route('trabajo.create') }}" class="btn btn-primary">
       <i class="ri-add-line me-1"></i> Nuevo Trabajo
     </a>
   </div>
 
-  <!-- Columnas Kanban -->
   <div class="row g-4">
     @foreach($estados as $estadoKey => $config)
-    <div class="col-md-4">
-      <div class="card h-100 shadow-sm">
-        <!-- Cabecera de columna -->
-        <div class="card-header {{ $config['bg'] }} text-white py-3 card-header-custom">
+    <div class="col-lg-4 col-md-6 col-12">
+      <div class="card h-100">
+        <div class="card-header {{ $config['bg'] }} text-white">
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <h5 class="mb-0 text-white">{{ $config['title'] }}</h5>
               <small class="text-white-50">{{ $config['description'] }}</small>
             </div>
-            <span class="badge bg-white text-dark rounded-pill fs-6 px-3 py-1">
-              {{ $encargos->where('estado', $estadoKey)->count() }}
-            </span>
+            <span class="badge bg-white text-dark rounded-pill">{{ $encargos->where('estado', $estadoKey)->count() }}</span>
           </div>
         </div>
-
-        <!-- Contenedor de tarjetas -->
-        <div class="kanban-column p-3" data-estado="{{ $estadoKey }}" style="min-height: 500px; max-height: 600px; overflow-y: auto;">
-
-          @foreach($encargos->where('estado', $estadoKey) as $encargo)
-          <div class="card kanban-item mb-3 shadow-sm border-start border-{{ $config['color'] }} border-3"
-            data-id="{{ $encargo->id }}"
-            data-estado-actual="{{ $estadoKey }}">
-            <div class="card-body p-3">
-              <!-- Info vehículo -->
-              <div class="d-flex justify-content-between align-items-start mb-2">
-                <div>
-                  <h6 class="mb-0 fw-bold">
-                    <i class="ri-car-line me-1 text-{{ $config['color'] }}"></i>
-                    {{ $encargo->vehiculo->marca }} {{ $encargo->vehiculo->modelo }}
-                  </h6>
-                  <small class="text-muted">
-                    <i class="ri-user-line me-1"></i>{{ $encargo->vehiculo->cliente->nombre }} {{ $encargo->vehiculo->cliente->apellido }}
-                  </small>
+        <div class="card-body bg-light p-3" style="min-height: 550px; max-height: 600px; overflow-y: auto;">
+          <div class="kanban-column" data-estado="{{ $estadoKey }}">
+            @forelse($encargos->where('estado', $estadoKey) as $encargo)
+            <div class="card mb-3 shadow-sm border-start border-{{ $config['color'] }} border-3 kanban-item" data-id="{{ $encargo->id }}" data-estado-actual="{{ $estadoKey }}" style="cursor: grab;">
+              <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div>
+                    <h6 class="mb-0 fw-bold">{{ $encargo->vehiculo->marca }} {{ $encargo->vehiculo->modelo }}</h6>
+                    <small class="text-muted">{{ $encargo->vehiculo->cliente->nombre }} {{ $encargo->vehiculo->cliente->apellido }}</small>
+                  </div>
+                  <span class="badge bg-{{ $config['color'] }}">{{ $config['title'] }}</span>
                 </div>
-                <span class="badge bg-{{ $config['color'] }}">{{ $config['title'] }}</span>
-              </div>
 
-              <!-- Contacto -->
-              <div class="mb-2">
-                <small class="text-muted d-flex align-items-center gap-1">
-                  <i class="ri-phone-line"></i> {{ $encargo->vehiculo->cliente->telefono }}
-                </small>
-                <small class="text-muted d-flex align-items-center gap-1">
-                  <i class="ri-mail-line"></i> {{ $encargo->vehiculo->cliente->correo }}
-                </small>
-                @if($encargo->cita_revision)
-                <small class="text-primary d-flex align-items-center gap-1 mt-1">
-                  <i class="ri-calendar-line"></i> Cita: {{ date('d/m/Y', strtotime($encargo->cita_revision)) }}
-                </small>
-                @endif
-              </div>
-
-              <!-- Descripción -->
-              <div class="bg-light rounded p-2 mb-2">
-                <small class="text-secondary d-flex">
-                  <i class="ri-file-text-line me-1"></i>
-                  {{ Str::limit($encargo->descripcion, 80) }}
-                </small>
-              </div>
-
-              <!-- Presupuesto -->
-              @if($encargo->presupuesto)
-              <div class="alert alert-info py-1 px-2 mb-2 small">
-                <div class="d-flex justify-content-between align-items-center">
-                  <span>
-                    <i class="ri-money-euro-circle-line me-1"></i>
-                    <strong>Total:</strong> {{ number_format($encargo->presupuesto->total, 2) }}€
-                  </span>
-                  @if($encargo->presupuesto->aceptado)
-                  <span class="badge bg-success">Aceptado</span>
+                <div class="mb-2">
+                  <small class="text-muted d-block"><i class="ri-phone-line me-1"></i> {{ $encargo->vehiculo->cliente->telefono }}</small>
+                  <small class="text-muted d-block"><i class="ri-mail-line me-1"></i> {{ $encargo->vehiculo->cliente->correo }}</small>
+                  @if($encargo->cita_revision)
+                  <small class="text-primary d-block mt-2"><i class="ri-calendar-line me-1"></i> <strong>Revision:</strong> {{ date('d/m/Y', strtotime($encargo->cita_revision)) }} - {{ \Carbon\Carbon::parse($encargo->hora_cita)->format('H:i') }}h</small>
                   @endif
                 </div>
-                <small>Materiales: {{ number_format($encargo->presupuesto->precio_materiales, 2) }}€ | Horas: {{ number_format($encargo->presupuesto->precio_horas, 2) }}€</small>
-              </div>
-              @endif
 
-              <!-- Botones de acción -->
-              <div class="d-flex gap-2 mt-2">
-                @if($estadoKey == 'Cita Agendada')
-                <button class="btn btn-info btn-action flex-grow-1" onclick="moverEstado({{ $encargo->id }}, 'En Revision')">
-                  <i class="ri-tools-line me-1"></i> Iniciar Revisión
-                </button>
+                <div class="bg-white rounded p-2 mb-3 border">
+                  <small class="text-secondary">{{ Str::limit($encargo->descripcion, 80) }}</small>
+                </div>
+
+                @if($encargo->presupuesto && $estadoKey == 'En Revision')
+                <div class="alert alert-info py-2 px-2 mb-3 small">
+                  <strong>Presupuesto:</strong> {{ number_format($encargo->presupuesto->total, 2) }} €
+                </div>
                 @endif
 
-                @if($estadoKey == 'En Revision')
-                @if($encargo->presupuesto)
-                <a href="{{ route('presupuestos.edit', $encargo->presupuesto->id) }}" class="btn btn-warning btn-action flex-grow-1">
-                  <i class="ri-edit-line me-1"></i> Modificar Presupuesto
-                </a>
-                @else
-                <a href="{{ route('presupuestos.create', ['encargo_id' => $encargo->id]) }}" class="btn btn-warning btn-action flex-grow-1">
-                  <i class="ri-file-copy-line me-1"></i> Crear Presupuesto
-                </a>
-                @endif
-                @endif
+                <div class="d-flex gap-2 flex-wrap">
+                  @if($estadoKey == 'En Revision')
+                  @if($encargo->presupuesto)
+                  <a href="{{ route('presupuestos.edit', $encargo->presupuesto->id) }}" class="btn btn-warning btn-sm flex-grow-1">
+                    <i class="ri-edit-line me-1"></i> Modificar
+                  </a>
+                  @else
+                  <a href="{{ route('presupuestos.create', ['encargo_id' => $encargo->id]) }}" class="btn btn-warning btn-sm flex-grow-1">
+                    <i class="ri-file-copy-line me-1"></i> Crear
+                  </a>
+                  @endif
+                  @endif
 
-                @if($estadoKey == 'Presupuesto Enviado')
-                <button class="btn btn-success btn-action flex-grow-1" onclick="moverEstado({{ $encargo->id }}, 'Pendiente Inicio')">
-                  <i class="ri-check-line me-1"></i> Aceptar
-                </button>
-                <button class="btn btn-danger btn-action flex-grow-1" onclick="moverEstado({{ $encargo->id }}, 'Cancelado')">
-                  <i class="ri-close-line me-1"></i> Cancelar
-                </button>
-                @endif
+                  @if($estadoKey == 'Presupuesto Enviado')
+                  <button type="button" class="btn btn-success btn-sm flex-grow-1" onclick="mostrarModalFechaTrabajo({{ $encargo->id }})">
+                    <i class="ri-check-line me-1"></i> Aceptar
+                  </button>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="moverEstado({{ $encargo->id }}, 'Cancelado')">
+                    <i class="ri-close-line me-1"></i> Rechazar
+                  </button>
+                  @endif
 
-                <!-- Botón Editar - Ahora con estilo visible -->
-                <a href="{{ route('encargos.edit', $encargo->id) }}"
-                  class="btn btn-outline-secondary btn-action"
-                  title="Editar encargo"
-                  style="background-color: white;">
-                  <i class="ri-edit-line me-1"></i> Editar
-                </a>
+                  <a href="{{ route('encargos.edit', $encargo->id) }}" class="btn btn-primary btn-sm">
+                    <i class="ri-edit-line me-1"></i> Editar
+                  </a>
+                  <button type="button" class="btn btn-danger btn-sm" onclick="eliminarEncargo({{ $encargo->id }})">
+                    <i class="ri-delete-bin-line me-1"></i> Eliminar
+                  </button>
+                </div>
+
+                <div class="text-center mt-2">
+                  <small class="text-muted"><i class="ri-arrow-left-right-line me-1"></i> Arrastre para avanzar</small>
+                </div>
               </div>
             </div>
+            @empty
+            <div class="text-center text-muted py-5">
+              <i class="ri-inbox-line fs-1"></i>
+              <p class="mt-2 mb-0">No hay trabajos</p>
+            </div>
+            @endforelse
           </div>
-          @endforeach
-
-          <!-- Mensaje vacío -->
-          @if($encargos->where('estado', $estadoKey)->count() == 0)
-          <div class="text-center text-muted py-5">
-            <i class="ri-inbox-line fs-1"></i>
-            <p class="mb-0 mt-2">No hay elementos</p>
-          </div>
-          @endif
         </div>
       </div>
     </div>
     @endforeach
+  </div>
+</div>
+
+<!-- Modal para programar fecha de inicio -->
+<div class="modal fade" id="modalFechaTrabajo" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Programar Inicio del Trabajo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="encargo_id_work">
+        <div class="mb-3">
+          <label class="form-label">Fecha de inicio del trabajo</label>
+          <input type="date" id="fecha_inicio_trabajo" class="form-control" min="{{ date('Y-m-d') }}" required>
+          <div class="form-text">El cliente ha aceptado el presupuesto. Programe la fecha para realizar el trabajo.</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Hora de inicio</label>
+          <input type="time" id="hora_inicio_trabajo" class="form-control" value="08:00" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="aceptarYProgramar()">Aceptar y Programar</button>
+      </div>
+    </div>
   </div>
 </div>
 @endsection
@@ -230,40 +138,130 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+  // Esperar a que el DOM esté completamente cargado
   document.addEventListener('DOMContentLoaded', function() {
-    const columns = document.querySelectorAll('.kanban-column');
+    console.log('DOM cargado, inicializando Sortable...');
 
-    columns.forEach(column => {
+    // Obtener todas las columnas kanban
+    var columns = document.querySelectorAll('.kanban-column');
+    console.log('Columnas encontradas:', columns.length);
+
+    // Configurar Sortable para cada columna
+    columns.forEach(function(column, index) {
+      console.log('Inicializando columna', index, 'con estado:', column.getAttribute('data-estado'));
+
       new Sortable(column, {
         group: {
           name: 'kanban',
           pull: true,
           revertClone: false
         },
-        animation: 200,
-        ghostClass: 'dragging',
+        animation: 300,
+        ghostClass: 'opacity-50',
+        dragClass: 'cursor-grabbing',
         onEnd: function(evt) {
-          const item = evt.item;
-          const newEstado = evt.to.getAttribute('data-estado');
-          const encargoId = item.getAttribute('data-id');
-          const oldEstado = item.getAttribute('data-estado-actual');
+          console.log('Drag ended');
+          var item = evt.item;
+          var newEstado = evt.to.getAttribute('data-estado');
+          var encargoId = item.getAttribute('data-id');
+          var oldEstado = item.getAttribute('data-estado-actual');
+
+          console.log('Movimiento:', oldEstado, '->', newEstado, 'ID:', encargoId);
 
           if (newEstado && encargoId && newEstado !== oldEstado) {
             moverEstado(encargoId, newEstado);
+          } else if (newEstado !== oldEstado) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Movimiento no permitido',
+              text: 'No puede mover esta tarjeta a esa columna',
+              confirmButtonText: 'Entendido'
+            });
+            location.reload();
           }
         }
       });
     });
   });
 
+  function mostrarModalFechaTrabajo(encargoId) {
+    document.getElementById('encargo_id_work').value = encargoId;
+    var modal = new bootstrap.Modal(document.getElementById('modalFechaTrabajo'));
+    modal.show();
+  }
+
+  function aceptarYProgramar() {
+    var encargoId = document.getElementById('encargo_id_work').value;
+    var fechaInicio = document.getElementById('fecha_inicio_trabajo').value;
+    var horaInicio = document.getElementById('hora_inicio_trabajo').value;
+
+    if (!fechaInicio) {
+      Swal.fire('Error', 'Debe seleccionar una fecha de inicio', 'error');
+      return;
+    }
+
+    Swal.fire({
+      title: 'Actualizando...',
+      allowOutsideClick: false,
+      didOpen: function() {
+        Swal.showLoading();
+      }
+    });
+
+    fetch('/encargos/' + encargoId + '/aceptar-programar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+          fecha_inicio: fechaInicio,
+          hora_inicio: horaInicio
+        })
+      })
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(data) {
+        if (data.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Actualizado',
+            text: data.message,
+            timer: 1500,
+            showConfirmButton: false
+          });
+          setTimeout(function() {
+            location.reload();
+          }, 1500);
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: data.message
+          });
+        }
+      })
+      .catch(function(error) {
+        console.error('Error:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un problema al actualizar'
+        });
+      });
+  }
+
   function moverEstado(encargoId, nuevoEstado) {
     Swal.fire({
       title: 'Actualizando...',
       allowOutsideClick: false,
-      didOpen: () => Swal.showLoading()
+      didOpen: function() {
+        Swal.showLoading();
+      }
     });
 
-    fetch(`/encargos/${encargoId}/status`, {
+    fetch('/encargos/' + encargoId + '/status', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -273,28 +271,21 @@
           estado: nuevoEstado
         })
       })
-      .then(response => response.json())
-      .then(data => {
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(data) {
         if (data.success) {
-          if (data.cancelado) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Cancelado',
-              text: 'El trabajo ha sido cancelado',
-              timer: 1500,
-              showConfirmButton: false
-            });
-            setTimeout(() => location.reload(), 1500);
-          } else {
-            Swal.fire({
-              icon: 'success',
-              title: 'Actualizado',
-              text: data.message,
-              timer: 1500,
-              showConfirmButton: false
-            });
-            setTimeout(() => location.reload(), 1500);
-          }
+          Swal.fire({
+            icon: 'success',
+            title: 'Actualizado',
+            text: data.message,
+            timer: 1500,
+            showConfirmButton: false
+          });
+          setTimeout(function() {
+            location.reload();
+          }, 1500);
         } else {
           Swal.fire({
             icon: 'error',
@@ -303,13 +294,76 @@
           });
         }
       })
-      .catch(() => {
+      .catch(function(error) {
+        console.error('Error:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
           text: 'Hubo un problema al actualizar'
         });
       });
+  }
+
+  function eliminarEncargo(id) {
+    Swal.fire({
+      title: 'Eliminar trabajo',
+      text: 'Esta accion no se puede deshacer',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Si, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then(function(result) {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Eliminando...',
+          allowOutsideClick: false,
+          didOpen: function() {
+            Swal.showLoading();
+          }
+        });
+
+        fetch('/encargos/' + id, {
+            method: 'DELETE',
+            headers: {
+              'X-CSRF-TOKEN': '{{ csrf_token() }}',
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(function(response) {
+            return response.json();
+          })
+          .then(function(data) {
+            if (data.success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Eliminado',
+                text: data.message,
+                timer: 1500,
+                showConfirmButton: false
+              });
+              setTimeout(function() {
+                location.reload();
+              }, 1500);
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message
+              });
+            }
+          })
+          .catch(function(error) {
+            console.error('Error:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo eliminar'
+            });
+          });
+      }
+    });
   }
 </script>
 @endsection

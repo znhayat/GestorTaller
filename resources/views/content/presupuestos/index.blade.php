@@ -2,9 +2,22 @@
 
 @section('content')
 <div class="card">
-  <div class="card-header d-flex justify-content-between align-items-center">
+  <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-3">
     <h5 class="mb-0">Presupuestos Enviados</h5>
-    <a href="{{ route('presupuestos.create') }}" class="btn btn-primary">Nuevo Presupuesto</a>
+    <div class="d-flex flex-wrap align-items-center gap-2 ms-auto">
+      <!-- Buscador -->
+      <form method="GET" action="{{ route('presupuestos.index') }}" class="d-flex position-relative me-2" style="min-width: 250px;">
+        <input type="text" name="search" class="form-control ps-5 pe-4 w-100" placeholder="Buscar por cliente..." value="{{ request('search') }}">
+        <i class="ri-search-line position-absolute" style="top: 50%; transform: translateY(-50%); left: 15px; color: #a1acb8;"></i>
+        @if(request('search'))
+        <a href="{{ route('presupuestos.index') }}" class="position-absolute" style="top: 50%; transform: translateY(-50%); right: 10px; color: #a1acb8; cursor: pointer;" title="Limpiar búsqueda">
+          <i class="ri-close-circle-line"></i>
+        </a>
+        @endif
+      </form>
+
+      <a href="{{ route('presupuestos.create') }}" class="btn btn-primary"><i class="ri-add-line me-1"></i> Nuevo Presupuesto</a>
+    </div>
   </div>
 
   <div class="table-responsive">
@@ -54,6 +67,9 @@
         @endforeach
       </tbody>
     </table>
+  </div>
+  <div class="card-footer d-flex justify-content-center">
+    {{ $presupuestos->appends(['search' => request('search')])->links() }}
   </div>
 </div>
 @endsection

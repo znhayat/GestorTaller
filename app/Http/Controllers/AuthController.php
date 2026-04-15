@@ -41,7 +41,7 @@ class AuthController extends Controller
 
     public function showRegister()
     {
-        return view('content.authentications.auth-register-basic'); // Ruta a tu vista del template
+        return view('content.authentications.auth-register-basic'); 
     }
 
     public function register(Request $request)

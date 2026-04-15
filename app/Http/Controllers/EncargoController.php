@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Encargo;
 use App\Models\Vehiculo;
 use App\Models\Presupuesto;
+use App\MOdels\Cita;
 use App\Models\Factura;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,12 +15,31 @@ class EncargoController extends Controller
     /**
      * Lista de encargos (vista clásica)
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->get('search');
+
         $encargos = Encargo::with('vehiculo.cliente', 'presupuesto')
             ->whereNotIn('estado', ['Cancelado', 'Entregado'])
-            ->get();
-        return view('content.encargos.index', compact('encargos'));
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('descripcion', 'like', "%{$search}%")
+                        ->orWhere('estado', 'like', "%{$search}%")
+                        ->orWhereHas('vehiculo', function ($q) use ($search) {
+                            $q->where('marca', 'like', "%{$search}%")
+                                ->orWhere('modelo', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('vehiculo.cliente', function ($q) use ($search) {
+                            $q->where('nombre', 'like', "%{$search}%")
+                                ->orWhere('apellido', 'like', "%{$search}%")
+                                ->orWhere('telefono', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return view('content.encargos.index', compact('encargos', 'search'));
     }
 
     /**
@@ -73,6 +93,7 @@ class EncargoController extends Controller
         return view('content.encargos.edit', compact('encargo', 'vehiculos', 'materiales_lista'));
     }
 
+
     /**
      * Actualizar un encargo
      */
@@ -102,20 +123,55 @@ class EncargoController extends Controller
         try {
             $encargo = Encargo::findOrFail($id);
 
-            // Eliminar el presupuesto asociado primero
-            if ($encargo->presupuesto) {
-                $encargo->presupuesto->delete();
-            }
-
-            // Eliminar el encargo
+            // Borrado lógico. La cascada segura está programada en el modelo Encargo
+            // protegiendo y omitiendo a las facturas para que la contabilidad global siga OK.
             $encargo->delete();
 
-            return redirect()->route('encargos.index')
-                ->with('success', 'Encargo eliminado correctamente.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Trabajo eliminado correctamente'
+            ]);
         } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Error al eliminar el encargo: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
         }
+    }
+    public function aceptarYProgramar(Request $request, $id)
+    {
+        $request->validate([
+            'fecha_inicio' => 'required|date',
+            'hora_inicio' => 'required'
+        ]);
+
+        $encargo = Encargo::findOrFail($id);
+
+        DB::transaction(function () use ($request, $encargo) {
+            $encargo->estado = 'Pendiente Inicio';
+            $encargo->fecha_inicio_trabajo = $request->fecha_inicio;
+            $encargo->hora_inicio_trabajo = $request->hora_inicio;
+
+            if ($encargo->presupuesto) {
+                $encargo->presupuesto->aceptado = true;
+                $encargo->presupuesto->save();
+            }
+
+            $encargo->save();
+
+            Cita::create([
+                'encargo_id' => $encargo->id,
+                'tipo' => 'trabajo',
+                'fecha' => $request->fecha_inicio,
+                'hora' => $request->hora_inicio,
+                'notas' => 'Trabajo programado tras aceptacion del presupuesto'
+            ]);
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Presupuesto aceptado. Cita de trabajo programada para el ' . date('d/m/Y', strtotime($request->fecha_inicio)) . ' a las ' . $request->hora_inicio . ' horas.'
+        ]);
     }
 
     /**
@@ -203,6 +259,13 @@ class EncargoController extends Controller
             'En Produccion' => ['Esperando Recogida'],
             'Esperando Recogida' => ['Entregado'],
         ];
+
+        if ($estadoAnterior == 'Cancelado') {
+            return response()->json([
+                'success' => false,
+                'message' => "Un trabajo Cancelado está bloqueado y no puede reactivarse hacia otros tableros."
+            ], 422);
+        }
 
         if (!isset($transiciones[$estadoAnterior]) || !in_array($nuevoEstado, $transiciones[$estadoAnterior])) {
             return response()->json([
