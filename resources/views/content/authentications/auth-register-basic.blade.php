@@ -65,7 +65,7 @@
                     </form>
                     <p class="text-center mb-5">
                         <span>Ya tienes una cuenta?</span>
-                        <a href="{{ url('/login') }}">
+                        <a href="{{ route('login') }}">
                             <span>Inicia sesión</span>
                         </a>
                     </p>

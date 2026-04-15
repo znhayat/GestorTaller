@@ -17,9 +17,13 @@
 
         <h6 class="mb-3 text-primary"><i class="ri-user-line me-1"></i> Datos del Cliente</h6>
         <div class="row">
+        </div>
+
+        <div class="row">
           <div class="col-md-6 mb-3"><label class="form-label">Nombre</label><input type="text" name="nombre" class="form-control" required></div>
           <div class="col-md-6 mb-3"><label class="form-label">Apellido</label><input type="text" name="apellido" class="form-control" required></div>
         </div>
+
         <div class="row">
           <div class="col-md-6 mb-3"><label class="form-label">Telefono</label><input type="text" name="telefono" class="form-control" required></div>
           <div class="col-md-6 mb-3"><label class="form-label">Correo</label><input type="email" name="correo" class="form-control" required></div>

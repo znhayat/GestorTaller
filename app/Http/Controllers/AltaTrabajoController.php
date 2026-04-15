@@ -36,15 +36,13 @@ class AltaTrabajoController extends Controller
         try {
             return DB::transaction(function () use ($request) {
 
-                // 1. Crear o encontrar cliente
-                $cliente = Cliente::firstOrCreate(
-                    ['telefono' => $request->telefono],
-                    [
-                        'nombre'   => $request->nombre,
-                        'apellido' => $request->apellido,
-                        'correo'   => $request->correo,
-                    ]
-                );
+                // 1. Crear nuevo cliente (Siempre separado y limpio por cada trabajo, sin reescribir datos pasados o solaparse con teléfonos idénticos por error)
+                $cliente = Cliente::create([
+                    'telefono' => $request->telefono,
+                    'nombre'   => $request->nombre,
+                    'apellido' => $request->apellido,
+                    'correo'   => $request->correo,
+                ]);
 
                 // 2. Crear vehículo
                 $vehiculo = Vehiculo::create([
