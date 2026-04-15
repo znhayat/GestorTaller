@@ -21,9 +21,6 @@
                 </div>
                 <!-- /Logo -->
                 <div class="card-body mt-1">
-                    <h4 class="mb-1">Adventure starts here 🚀</h4>
-                    <p class="mb-5">Make your app management easy and fun!</p>
-
                     @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul class="mb-0">
@@ -67,9 +64,9 @@
                         <button class="btn btn-primary d-grid w-100 mb-5" type="submit">Registrarse</button>
                     </form>
                     <p class="text-center mb-5">
-                        <span>Already have an account?</span>
-                        <a href="{{ url('auth/login-basic') }}">
-                            <span>Sign in instead</span>
+                        <span>Ya tienes una cuenta?</span>
+                        <a href="{{ url('/login') }}">
+                            <span>Inicia sesión</span>
                         </a>
                     </p>
                 </div>
