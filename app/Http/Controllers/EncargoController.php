@@ -179,6 +179,16 @@ class EncargoController extends Controller
      */
     public function kanbanRecepcion()
     {
+        // -------------------------------------------------------------------------
+        // LÓGICA AUTOMÁTICA DE CITAS (Actualización Diaria)
+        // Movemos automáticamente todos los encargos con 'Cita Agendada' al estado
+        // 'En Revisión' si la fecha del sistema ya alcanzó o superó el día de la cita.
+        // -------------------------------------------------------------------------
+        Encargo::where('estado', 'Cita Agendada')
+            ->whereDate('cita_revision', '<=', now()->toDateString())
+            ->update(['estado' => 'En Revision']);
+
+        // Definición formal de los estados correspondientes a este tablero
         $estados = [
             'Cita Agendada' => [
                 'title' => 'Cita Agendada',

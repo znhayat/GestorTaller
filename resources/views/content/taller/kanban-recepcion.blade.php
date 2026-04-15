@@ -168,17 +168,28 @@
 
           console.log('Movimiento:', oldEstado, '->', newEstado, 'ID:', encargoId);
 
-          if (newEstado && encargoId && newEstado !== oldEstado) {
-            moverEstado(encargoId, newEstado);
-          } else if (newEstado !== oldEstado) {
-            Swal.fire({
-              icon: 'warning',
-              title: 'Movimiento no permitido',
-              text: 'No puede mover esta tarjeta a esa columna',
-              confirmButtonText: 'Entendido'
-            });
-            location.reload();
+          // Diccionario formal de transiciones válidas dictado por lógica de negocio
+          const transiciones = {
+            'Cita Agendada': ['En Revision'],
+            'En Revision': ['Presupuesto Enviado'],
+            'Presupuesto Enviado': ['Pendiente Inicio', 'Cancelado']
+          };
+
+          if (oldEstado === newEstado) return;
+
+          // Verificamos estricamente en el cliente si es un salto inválido o retroceso
+          if (!transiciones[oldEstado] || !transiciones[oldEstado].includes(newEstado)) {
+             Swal.fire({
+                icon: 'warning',
+                title: 'Movimiento Denegado',
+                text: 'El proceso requiere seguir un orden lineal. No se puede retroceder de departamento ni realizar saltos.',
+                confirmButtonText: 'Entendido'
+             });
+             evt.from.appendChild(item); // Retorna inmediatamente la tarjeta visualmente a su origen
+             return;
           }
+
+          moverEstado(encargoId, newEstado, item, evt.from);
         }
       });
     });
@@ -252,7 +263,7 @@
       });
   }
 
-  function moverEstado(encargoId, nuevoEstado) {
+  function moverEstado(encargoId, nuevoEstado, item = null, fromColumn = null) {
     Swal.fire({
       title: 'Actualizando...',
       allowOutsideClick: false,
@@ -289,9 +300,10 @@
         } else {
           Swal.fire({
             icon: 'error',
-            title: 'Error',
+            title: 'Error Operativo',
             text: data.message
           });
+          if (item && fromColumn) fromColumn.appendChild(item); // Rollback en caso de error de base de datos
         }
       })
       .catch(function(error) {
