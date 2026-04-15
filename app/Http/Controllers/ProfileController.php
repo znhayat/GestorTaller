@@ -34,11 +34,17 @@ class ProfileController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
+            'password' => 'nullable|min:8|confirmed',
         ]);
 
         // Actualizamos los datos
         $user->name = $request->name;
         $user->email = $request->email;
+        
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+        
         $user->save();
 
         return back()->with('success', 'Perfil actualitzat correctament.');

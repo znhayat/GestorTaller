@@ -7,6 +7,12 @@
       "slug": "dashboard-analytics"
     },
     {
+      "url": "/calendario",
+      "name": "Calendario Central",
+      "icon": "menu-icon icon-base ri ri-calendar-todo-line",
+      "slug": "citas.calendario"
+    },
+    {
       "menuHeader": "Gestión de Operaciones"
     },
     {
@@ -79,23 +85,6 @@
     },
     {
       "menuHeader": "Configuración"
-    },
-    {
-      "name": "Cuenta",
-      "icon": "menu-icon icon-base ri ri-layout-left-line",
-      "slug": "pages-account-settings",
-      "submenu": [
-        {
-          "url": "pages/account-settings-account",
-          "name": "Perfil",
-          "slug": "profile"
-        },
-        {
-          "url": "pages/account-settings-notifications",
-          "name": "Notificaciones",
-          "slug": "notifications"
-        }
-      ]
     }
   ]
 }

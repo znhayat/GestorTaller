@@ -56,6 +56,8 @@ Route::middleware(['auth'])->group(function () {
   Route::get('/materiales', [MaterialController::class, 'index'])->name('materiales.index');
   // --- MÓDULOS PRINCIPALES (CRUDs) ---
   Route::resource('vehiculos', VehiculoController::class);
+  Route::get('/calendario', [CitaController::class, 'showCalendar'])->name('citas.calendario');
+  Route::get('/api/eventos', [CitaController::class, 'getEvents']);
   Route::resource('encargos', EncargoController::class);
   Route::resource('materiales', MaterialController::class);
   Route::resource('citas', CitaController::class);
@@ -83,7 +85,7 @@ Route::middleware(['auth'])->group(function () {
 
   Route::get('/taller/recepcion', [EncargoController::class, 'kanbanRecepcion'])->name('encargos.recepcion');
   Route::get('/taller/produccion', [EncargoController::class, 'kanbanProduccion'])->name('encargos.produccion');
-  // También la ruta para que los botones de mover funcionen
   Route::post('/encargos/{id}/status', [EncargoController::class, 'cambiarEstado'])->name('encargos.updateStatus');
+  Route::post('/encargos/{id}/aceptar-programar', [EncargoController::class, 'aceptarYProgramar'])->name('encargos.aceptarProgramar');
   Route::post('/encargos/{id}/status/ajax', [EncargoController::class, 'cambiarEstadoAjax'])->name('encargos.updateStatusAjax');
 });

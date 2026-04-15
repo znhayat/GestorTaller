@@ -8,6 +8,54 @@ use Illuminate\Http\Request;
 
 class CitaController extends Controller
 {
+    public function showCalendar()
+    {
+        return view('content.citas.calendario');
+    }
+
+    /**
+     * Endpoint API JSON consumido por FullCalendar JS para repintar las tarjetas.
+     */
+    public function getEvents()
+    {
+        $eventos = [];
+
+        // 1. Citas de revisión del nuevo trabajo
+        $revisiones = Encargo::with('vehiculo.cliente')
+            ->whereNotNull('cita_revision')
+            ->whereNotIn('estado', ['Cancelado', 'Entregado'])
+            ->get();
+            
+        foreach ($revisiones as $rev) {
+            $titulo = "Revisión: " . $rev->vehiculo->marca . ' ' . $rev->vehiculo->modelo . ' (' . $rev->vehiculo->cliente->nombre . ')';
+            $fechaHora = $rev->cita_revision . 'T' . ($rev->hora_cita ?? '00:00:00');
+            $eventos[] = [
+                'title' => $titulo,
+                'start' => $fechaHora,
+                'color' => '#696cff', // Info
+                'url' => route('encargos.recepcion')
+            ];
+        }
+
+        // 2. Entregas estimadas
+        $entregas = Encargo::with('vehiculo.cliente')
+            ->whereNotNull('cita_recogida')
+            ->whereNotIn('estado', ['Cancelado', 'Entregado'])
+            ->get();
+            
+        foreach ($entregas as $ent) {
+            $eventos[] = [
+                'title' => "Entrega/Recogida: " . $ent->vehiculo->marca . ' ' . $ent->vehiculo->modelo,
+                'start' => $ent->cita_recogida,
+                'color' => '#71dd37', // Success
+                'allDay' => true,
+                'url' => route('encargos.produccion')
+            ];
+        }
+
+        return response()->json($eventos);
+    }
+
     /**
      * Muestra el listado de la agenda.
      * Carga las relaciones en cascada (Encargo -> Vehículo -> Cliente) 

@@ -142,7 +142,8 @@ class EncargoController extends Controller
     {
         $request->validate([
             'fecha_inicio' => 'required|date',
-            'hora_inicio' => 'required'
+            'hora_inicio' => 'required',
+            'fecha_recogida' => 'required|date',
         ]);
 
         $encargo = Encargo::findOrFail($id);
@@ -151,6 +152,7 @@ class EncargoController extends Controller
             $encargo->estado = 'Pendiente Inicio';
             $encargo->fecha_inicio_trabajo = $request->fecha_inicio;
             $encargo->hora_inicio_trabajo = $request->hora_inicio;
+            $encargo->cita_recogida = $request->fecha_recogida;
 
             if ($encargo->presupuesto) {
                 $encargo->presupuesto->aceptado = true;

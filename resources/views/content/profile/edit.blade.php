@@ -43,6 +43,19 @@
               <input class="form-control" type="text" id="email" name="email" value="{{ $user->email }}" />
             </div>
           </div>
+
+          <hr class="my-4">
+          <h6 class="mb-3 text-primary"><i class="ri-lock-password-line me-1"></i> Seguridad y Acceso</h6>
+          <div class="row">
+            <div class="mb-3 col-md-6">
+              <label for="password" class="form-label">Nueva Contraseña</label>
+              <input class="form-control" type="password" id="password" name="password" placeholder="Dejar en blanco si no deseas cambiarla" />
+            </div>
+            <div class="mb-3 col-md-6">
+              <label for="password_confirmation" class="form-label">Confirmar Contraseña</label>
+              <input class="form-control" type="password" id="password_confirmation" name="password_confirmation" placeholder="Repite la nueva contraseña" />
+            </div>
+          </div>
           <div class="mt-4 d-flex justify-content-end">
             <button type="submit" class="btn btn-primary btn-lg px-5">Guardar Cambios</button>
           </div>

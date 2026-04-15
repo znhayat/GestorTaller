@@ -124,6 +124,11 @@
           <label class="form-label">Hora de inicio</label>
           <input type="time" id="hora_inicio_trabajo" class="form-control" value="08:00" required>
         </div>
+        <div class="mb-3">
+          <label class="form-label text-success fw-bold"><i class="ri-calendar-check-line"></i> Previsto Fin / Recogida</label>
+          <input type="date" id="fecha_recogida_estimada" class="form-control" min="{{ date('Y-m-d') }}" required>
+          <div class="form-text">Asigna el día aproximado que el coche estará terminado para entrega.</div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -205,9 +210,10 @@
     var encargoId = document.getElementById('encargo_id_work').value;
     var fechaInicio = document.getElementById('fecha_inicio_trabajo').value;
     var horaInicio = document.getElementById('hora_inicio_trabajo').value;
+    var fechaRecogida = document.getElementById('fecha_recogida_estimada').value;
 
-    if (!fechaInicio) {
-      Swal.fire('Error', 'Debe seleccionar una fecha de inicio', 'error');
+    if (!fechaInicio || !fechaRecogida) {
+      Swal.fire('Error', 'Debe seleccionar una fecha de inicio y una fecha prevista de recogida.', 'error');
       return;
     }
 
@@ -227,7 +233,8 @@
         },
         body: JSON.stringify({
           fecha_inicio: fechaInicio,
-          hora_inicio: horaInicio
+          hora_inicio: horaInicio,
+          fecha_recogida: fechaRecogida
         })
       })
       .then(function(response) {
