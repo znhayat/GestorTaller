@@ -23,6 +23,14 @@ class AuthController extends Controller
 
         // 2. Intentar autenticar (Laravel se encarga del Hash)
         if (Auth::attempt($credentials)) {
+            // Comprobar si está aprobado
+            if (!Auth::user()->is_approved) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Tu cuenta está pendiente de aprobación por parte de un administrador.',
+                ])->onlyInput('email');
+            }
+
             $request->session()->regenerate();
             return redirect()->route('dashboard-analytics');
         }
@@ -35,7 +43,7 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect('/login');
+        return redirect('/');
     }
 
 
@@ -58,7 +66,6 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        Auth::login($user);
-        return redirect()->intended('/dashboard');
+        return redirect()->route('login')->with('success', 'Registro completado. Tu cuenta debe ser aprobada por un administrador antes de poder acceder.');
     }
 }

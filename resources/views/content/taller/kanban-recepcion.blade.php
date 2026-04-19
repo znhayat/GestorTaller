@@ -78,11 +78,11 @@
                   </button>
                   @endif
 
-                  <a href="{{ route('encargos.edit', $encargo->id) }}" class="btn btn-primary btn-sm">
-                    <i class="ri-edit-line me-1"></i> Editar
+                  <a href="{{ route('encargos.edit', $encargo->id) }}" class="btn btn-primary btn-sm" aria-label="Editar encargo de {{ $encargo->vehiculo->marca }}">
+                    <i class="ri-edit-line me-1" aria-hidden="true"></i> Editar
                   </a>
-                  <button type="button" class="btn btn-danger btn-sm" onclick="eliminarEncargo({{ $encargo->id }})">
-                    <i class="ri-delete-bin-line me-1"></i> Eliminar
+                  <button type="button" class="btn btn-danger btn-sm" onclick="eliminarEncargo({{ $encargo->id }})" aria-label="Eliminar encargo de {{ $encargo->vehiculo->marca }}">
+                    <i class="ri-delete-bin-line me-1" aria-hidden="true"></i> Eliminar
                   </button>
                 </div>
 
@@ -106,26 +106,26 @@
 </div>
 
 <!-- Modal para programar fecha de inicio -->
-<div class="modal fade" id="modalFechaTrabajo" tabindex="-1">
+<div class="modal fade" id="modalFechaTrabajo" tabindex="-1" aria-labelledby="modalFechaTrabajoTitle" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Programar Inicio del Trabajo</h5>
+        <h5 class="modal-title" id="modalFechaTrabajoTitle">Programar Inicio del Trabajo</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="encargo_id_work">
         <div class="mb-3">
-          <label class="form-label">Fecha de inicio del trabajo</label>
+          <label class="form-label" for="fecha_inicio_trabajo">Fecha de inicio del trabajo</label>
           <input type="date" id="fecha_inicio_trabajo" class="form-control" min="{{ date('Y-m-d') }}" required>
           <div class="form-text">El cliente ha aceptado el presupuesto. Programe la fecha para realizar el trabajo.</div>
         </div>
         <div class="mb-3">
-          <label class="form-label">Hora de inicio</label>
+          <label class="form-label" for="hora_inicio_trabajo">Hora de inicio</label>
           <input type="time" id="hora_inicio_trabajo" class="form-control" value="08:00" required>
         </div>
         <div class="mb-3">
-          <label class="form-label text-success fw-bold"><i class="ri-calendar-check-line"></i> Previsto Fin / Recogida</label>
+          <label class="form-label text-success fw-bold" for="fecha_recogida_estimada"><i class="ri-calendar-check-line" aria-hidden="true"></i> Previsto Fin / Recogida</label>
           <input type="date" id="fecha_recogida_estimada" class="form-control" min="{{ date('Y-m-d') }}" required>
           <div class="form-text">Asigna el día aproximado que el coche estará terminado para entrega.</div>
         </div>
@@ -191,6 +191,13 @@
                 confirmButtonText: 'Entendido'
              });
              evt.from.appendChild(item); // Retorna inmediatamente la tarjeta visualmente a su origen
+             return;
+          }
+
+          // Si pasamos a "Pendiente Inicio", mostramos el calendario/modal en vez de mover directo
+          if (newEstado === 'Pendiente Inicio' && oldEstado === 'Presupuesto Enviado') {
+             evt.from.appendChild(item); // Retorna la tarjeta temporalmente a origen hasta que acabe el modal
+             mostrarModalFechaTrabajo(encargoId);
              return;
           }
 

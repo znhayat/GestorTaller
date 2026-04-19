@@ -16,13 +16,18 @@
                 <div class="app-brand justify-content-center mt-5">
                     <a href="{{ url('/') }}" class="app-brand-link gap-3">
                         <span class="app-brand-logo demo">@include('_partials.macros')</span>
-                        <span class="app-brand-text demo text-heading fw-semibold">Gestor</span>
+                        <span class="app-brand-text demo text-heading fw-semibold" style="text-transform: uppercase;">ZANA</span>
                     </a>
                 </div>
                 <!-- /Logo -->
 
                 <div class="card-body mt-1">
                     <h4 class="mb-1">Bienvenido</h4>
+                    @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                    @endif
                     @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul class="mb-0">

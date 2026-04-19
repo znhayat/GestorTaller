@@ -20,33 +20,33 @@
         </div>
 
         <div class="row">
-          <div class="col-md-6 mb-3"><label class="form-label">Nombre</label><input type="text" name="nombre" class="form-control" required></div>
-          <div class="col-md-6 mb-3"><label class="form-label">Apellido</label><input type="text" name="apellido" class="form-control" required></div>
+          <div class="col-md-6 mb-3"><label class="form-label" for="trabajo-nombre">Nombre</label><input type="text" id="trabajo-nombre" name="nombre" class="form-control" required></div>
+          <div class="col-md-6 mb-3"><label class="form-label" for="trabajo-apellido">Apellido</label><input type="text" id="trabajo-apellido" name="apellido" class="form-control" required></div>
         </div>
 
         <div class="row">
-          <div class="col-md-6 mb-3"><label class="form-label">Telefono</label><input type="text" name="telefono" class="form-control" required></div>
-          <div class="col-md-6 mb-3"><label class="form-label">Correo</label><input type="email" name="correo" class="form-control" required></div>
+          <div class="col-md-6 mb-3"><label class="form-label" for="trabajo-telefono">Telefono</label><input type="text" id="trabajo-telefono" name="telefono" class="form-control" required></div>
+          <div class="col-md-6 mb-3"><label class="form-label" for="trabajo-correo">Correo</label><input type="email" id="trabajo-correo" name="correo" class="form-control" required></div>
         </div>
 
         <h6 class="mb-3 text-primary mt-3"><i class="ri-car-line me-1"></i> Datos del Vehiculo</h6>
         <div class="row">
-          <div class="col-md-6 mb-3"><label class="form-label">Marca</label><input type="text" name="marca" class="form-control" required></div>
-          <div class="col-md-6 mb-3"><label class="form-label">Modelo</label><input type="text" name="modelo" class="form-control" required></div>
+          <div class="col-md-6 mb-3"><label class="form-label" for="trabajo-marca">Marca</label><input type="text" id="trabajo-marca" name="marca" class="form-control" required></div>
+          <div class="col-md-6 mb-3"><label class="form-label" for="trabajo-modelo">Modelo</label><input type="text" id="trabajo-modelo" name="modelo" class="form-control" required></div>
         </div>
 
-        <div class="mb-3"><label class="form-label">Descripcion</label><textarea name="descripcion" class="form-control" rows="3" required></textarea></div>
+        <div class="mb-3"><label class="form-label" for="trabajo-descripcion">Descripcion</label><textarea id="trabajo-descripcion" name="descripcion" class="form-control" rows="3" required></textarea></div>
 
         <h6 class="mb-3 text-primary mt-3"><i class="ri-calendar-line me-1"></i> Cita de Revision</h6>
         <div class="row">
-          <div class="col-md-6 mb-3"><label class="form-label">Fecha</label><input type="date" name="cita_revision" class="form-control" value="{{ date('Y-m-d', strtotime('+1 days')) }}" required></div>
-          <div class="col-md-6 mb-3"><label class="form-label">Hora</label><input type="time" name="hora_cita" class="form-control" value="09:00" required></div>
+          <div class="col-md-6 mb-3"><label class="form-label" for="trabajo-fecha">Fecha</label><input type="date" id="trabajo-fecha" name="cita_revision" class="form-control" value="{{ date('Y-m-d', strtotime('+1 days')) }}" required></div>
+          <div class="col-md-6 mb-3"><label class="form-label" for="trabajo-hora">Hora</label><input type="time" id="trabajo-hora" name="hora_cita" class="form-control" value="09:00" required></div>
         </div>
 
         <h6 class="mb-3 text-primary mt-3"><i class="ri-money-euro-circle-line me-1"></i> Presupuesto Inicial</h6>
         <div class="row">
-          <div class="col-md-6 mb-3"><label class="form-label">Materiales (€)</label><input type="number" step="0.01" name="precio_materiales" class="form-control" value="0" required></div>
-          <div class="col-md-6 mb-3"><label class="form-label">Horas (€)</label><input type="number" step="0.01" name="precio_horas" class="form-control" value="0" required></div>
+          <div class="col-md-6 mb-3"><label class="form-label" for="trabajo-materiales">Materiales (€)</label><input type="number" id="trabajo-materiales" step="0.01" name="precio_materiales" class="form-control" value="0" required></div>
+          <div class="col-md-6 mb-3"><label class="form-label" for="trabajo-horas">Horas (€)</label><input type="number" id="trabajo-horas" step="0.01" name="precio_horas" class="form-control" value="0" required></div>
         </div>
 
         <div class="alert alert-info">El trabajo aparecera en el Tablero de Recepcion en la columna "Cita Agendada".</div>

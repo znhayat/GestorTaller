@@ -1,9 +1,9 @@
 <?php
 // Variables
 return [
-  "creatorName" => "Gestor",
+  "creatorName" => "ZANA",
   "creatorUrl" => "#",
-  "templateName" => "Gestor",
+  "templateName" => "ZANA",
   "templateSuffix" => "Gestor de Taller",
   "templateVersion" => "1.0.0",
   "templateFree" => false,

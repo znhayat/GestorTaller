@@ -10,7 +10,7 @@
   </div>
 
   <div class="table-responsive text-nowrap">
-    <table class="table">
+    <table class="table" aria-label="Listado de clientes registrados">
       <thead>
         <tr>
           <th>Nombre</th>
@@ -31,20 +31,21 @@
           <td>
             <div class="d-flex align-items-center">
               {{-- Botón nos lleva al formulario con los datos cargados --}}
-              <a href="{{ route('clientes.edit', $cliente->id) }}" class="btn btn-primary btn-sm me-2">
-                <i class="ri-pencil-line me-1"></i> Editar
+              <a href="{{ route('clientes.edit', $cliente->id) }}" class="btn btn-primary btn-sm me-2" aria-label="Editar cliente {{ $cliente->nombre }} {{ $cliente->apellido }}">
+                <i class="ri-pencil-line me-1" aria-hidden="true"></i> Editar
               </a>
 
               {{-- Formulario de eliminación enviamos el ID por método DELETE --}}
-              <form action="{{ route('clientes.destroy', $cliente->id) }}" method="POST" onsubmit="return confirm('¿Seguro que quieres eliminar este cliente?')">
+              <form action="{{ route('clientes.destroy', $cliente->id) }}" method="POST">
                 @csrf
                 @method('DELETE')
                 <button type="submit"
                   class="btn btn-sm btn-outline-danger d-flex align-items-center"
                   {{-- Doble confirmación para evitar borrar el historial de un cliente por error --}}
-                  onclick="return confirm('¿Estás seguro de que deseas eliminar este cliente? Esta acción no se puede deshacer.')"
-                  title="Eliminar cliente">
-                  <i class="ri-delete-bin-line me-1"></i> Eliminar
+                  onclick="return confirm('¿Estás seguro de que deseas eliminar a {{ addslashes($cliente->nombre) }}? Esta acción no se puede deshacer.')"
+                  title="Eliminar cliente"
+                  aria-label="Eliminar a {{ $cliente->nombre }} {{ $cliente->apellido }}">
+                  <i class="ri-delete-bin-line me-1" aria-hidden="true"></i> Eliminar
                 </button>
               </form>
             </div>

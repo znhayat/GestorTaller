@@ -14,6 +14,7 @@ use App\Http\Controllers\PresupuestoController;
 use App\Http\Controllers\AltaTrabajoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\dashboard\Analytics;
 
 /*
@@ -21,6 +22,10 @@ use App\Http\Controllers\dashboard\Analytics;
 | RUTAS PÚBLICAS (Sin autenticación)
 |--------------------------------------------------------------------------
 */
+
+Route::get('/', function () {
+    return view('content.pages.landing');
+})->name('landing');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -35,57 +40,59 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 */
 Route::middleware(['auth'])->group(function () {
 
-  // --- DASHBOARD ---
-  Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
+  // --- RUTAS CRÍTICAS DE EDICIÓN Y CREACIÓN (Solamente Administradores) ---
+  Route::middleware(['admin'])->group(function () {
+      Route::get('/nuevo-trabajo', [AltaTrabajoController::class, 'create'])->name('trabajo.create');
+      Route::post('/nuevo-trabajo', [AltaTrabajoController::class, 'store'])->name('trabajo.store');
+      
+      // Cruds Críticos (Excepto Index/Show)
+      Route::resource('materiales', MaterialController::class)->except(['index', 'show']);
+      Route::resource('vehiculos', VehiculoController::class)->except(['index', 'show']);
+      Route::resource('encargos', EncargoController::class)->except(['index', 'show']);
+      Route::resource('citas', CitaController::class)->except(['index', 'show']);
+      Route::resource('usos_materiales', UsoMaterialController::class)->except(['index', 'show']);
+      Route::resource('fotos', FotoController::class)->except(['index', 'show']);
+      Route::resource('facturas', FacturaController::class)->except(['index', 'show']);
+      Route::resource('presupuestos', PresupuestoController::class)->except(['index', 'show']);
+      Route::resource('clientes', ClienteController::class)->except(['index', 'show']);
 
-  // --- GESTIÓN DE PERFIL ---
+      // GESTIÓN DE USUARIOS
+      Route::get('/usuarios', [UserController::class, 'index'])->name('usuarios.index');
+      Route::put('/usuarios/{usuario}', [UserController::class, 'update'])->name('usuarios.update');
+      Route::delete('/usuarios/{usuario}', [UserController::class, 'destroy'])->name('usuarios.destroy');
+  });
+
+  // --- RUTAS DE VISUALIZACIÓN Y TRABAJO (Admins y Operarios) ---
+
+  Route::get('/dashboard', [Analytics::class, 'index'])->name('dashboard-analytics');
   Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
   Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-  // --- MÓDULO ALTA RÁPIDA  ---
-  Route::get('/nuevo-trabajo', [AltaTrabajoController::class, 'create'])->name('trabajo.create');
-  Route::post('/nuevo-trabajo', [AltaTrabajoController::class, 'store'])->name('trabajo.store');
-  // Ruta per veure la llista de materials d'una categoria concreta
-
-  // CRUD completo (incluye index, create, store, edit, update, destroy)
-  Route::resource('materiales', MaterialController::class);
-
-  // Ruta extra para ver una categoría específica (que redirige al index)
+  // Módulos Read-Only
   Route::get('/materiales/categoria/{tipo}', [MaterialController::class, 'index'])->name('materiales.categoria');
-  // Ruta principal (el teu Dashboard de blocs)
   Route::get('/materiales', [MaterialController::class, 'index'])->name('materiales.index');
-  // --- MÓDULOS PRINCIPALES (CRUDs) ---
-  Route::resource('vehiculos', VehiculoController::class);
+  Route::resource('materiales', MaterialController::class)->only(['show']);
+
+  Route::resource('vehiculos', VehiculoController::class)->only(['index', 'show']);
+  Route::resource('encargos', EncargoController::class)->only(['index', 'show']);
+  
   Route::get('/calendario', [CitaController::class, 'showCalendar'])->name('citas.calendario');
-  Route::get('/api/eventos', [CitaController::class, 'getEvents']);
-  Route::resource('encargos', EncargoController::class);
-  Route::resource('materiales', MaterialController::class);
-  Route::resource('citas', CitaController::class);
-  Route::resource('usos_materiales', UsoMaterialController::class);
-  Route::resource('fotos', FotoController::class);
-  Route::resource('facturas', FacturaController::class);
-  Route::resource('presupuestos', PresupuestoController::class);
-
-  // Clientes
+  Route::get('/api/eventos', [CitaController::class, 'getEvents'])->name('api.eventos');
+  Route::resource('citas', CitaController::class)->only(['index', 'show']);
+  
+  Route::resource('usos_materiales', UsoMaterialController::class)->only(['index', 'show']);
+  Route::resource('fotos', FotoController::class)->only(['index', 'show']);
+  Route::resource('facturas', FacturaController::class)->only(['index', 'show']);
+  Route::resource('presupuestos', PresupuestoController::class)->only(['index', 'show']);
+  
   Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
-  Route::resource('clientes', ClienteController::class)->except(['index']);
+  Route::resource('clientes', ClienteController::class)->only(['show']);
 
-  // --- COMPONENTES UI ---
-  Route::prefix('ui')->group(function () {
-    Route::get('/buttons', [App\Http\Controllers\user_interface\Buttons::class, 'index'])->name('ui-buttons');
-  });
-
-  Route::prefix('forms')->group(function () {
-    Route::get('/basic-inputs', [App\Http\Controllers\form_elements\BasicInput::class, 'index'])->name('forms-basic-inputs');
-  });
-
-  Route::prefix('tables')->group(function () {
-    Route::get('/basic', [App\Http\Controllers\tables\Basic::class, 'index'])->name('tables-basic');
-  });
-
+  // Kanbans y Flujos de Taller (Operarios deben poder mover tarjetas)
   Route::get('/taller/recepcion', [EncargoController::class, 'kanbanRecepcion'])->name('encargos.recepcion');
   Route::get('/taller/produccion', [EncargoController::class, 'kanbanProduccion'])->name('encargos.produccion');
   Route::post('/encargos/{id}/status', [EncargoController::class, 'cambiarEstado'])->name('encargos.updateStatus');
-  Route::post('/encargos/{id}/aceptar-programar', [EncargoController::class, 'aceptarYProgramar'])->name('encargos.aceptarProgramar');
   Route::post('/encargos/{id}/status/ajax', [EncargoController::class, 'cambiarEstadoAjax'])->name('encargos.updateStatusAjax');
+  Route::post('/encargos/{id}/aceptar-programar', [EncargoController::class, 'aceptarYProgramar'])->name('encargos.aceptar-programar');
+
 });

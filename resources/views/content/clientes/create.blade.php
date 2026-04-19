@@ -14,27 +14,27 @@
       @csrf
 
       <div class="mb-3">
-        <label class="form-label">Nombre</label>
+        <label for="cliente-nombre" class="form-label">Nombre</label>
         {{-- Usamos placeholder para dar una pista de qué escribir --}}
-        <input type="text" name="nombre" class="form-control" placeholder="Juan" required>
+        <input type="text" id="cliente-nombre" name="nombre" class="form-control" placeholder="Juan" required>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Apellido</label>
+        <label for="cliente-apellido" class="form-label">Apellido</label>
         {{-- Usamos placeholder para dar una pista de qué escribir --}}
-        <input type="text" name="apellido" class="form-control" placeholder="Pérez" required>
+        <input type="text" id="cliente-apellido" name="apellido" class="form-control" placeholder="Pérez" required>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Teléfono</label>
+        <label for="cliente-telefono" class="form-label">Teléfono</label>
         {{-- Campo requerido para asegurar que siempre tengamos cómo contactar al dueño --}}
-        <input type="text" name="telefono" class="form-control" placeholder="600000000" required>
+        <input type="text" id="cliente-telefono" name="telefono" class="form-control" placeholder="600000000" required>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Correo</label>
+        <label for="cliente-correo" class="form-label">Correo</label>
         {{-- Campo requerido para asegurar que siempre tengamos cómo contactar al dueño --}}
-        <input type="email" name="correo" class="form-control" placeholder="juan.perez@example.com" required>
+        <input type="email" id="cliente-correo" name="correo" class="form-control" placeholder="juan.perez@example.com" required>
       </div>
 
       {{-- Botonera: Guardar envía el formulario, Cancelar nos devuelve al listado --}}

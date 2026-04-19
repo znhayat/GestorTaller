@@ -9,11 +9,12 @@
     <div class="d-flex flex-wrap align-items-center gap-2 ms-auto">
       <!-- Buscador -->
       <form method="GET" action="{{ route('facturas.index') }}" class="d-flex position-relative me-2" style="min-width: 250px;">
-        <input type="text" name="search" class="form-control ps-5 pe-4 w-100" placeholder="Buscar por cliente o vehículo..." value="{{ request('search') }}">
-        <i class="ri-search-line position-absolute" style="top: 50%; transform: translateY(-50%); left: 15px; color: #a1acb8;"></i>
+        <label for="search-facturas" class="visually-hidden">Buscar facturas</label>
+        <input type="text" id="search-facturas" name="search" class="form-control ps-5 pe-4 w-100" placeholder="Buscar por cliente o vehículo..." value="{{ request('search') }}">
+        <i class="ri-search-line position-absolute" style="top: 50%; transform: translateY(-50%); left: 15px; color: #a1acb8;" aria-hidden="true"></i>
         @if(request('search'))
-        <a href="{{ route('facturas.index') }}" class="position-absolute" style="top: 50%; transform: translateY(-50%); right: 10px; color: #a1acb8; cursor: pointer;" title="Limpiar búsqueda">
-          <i class="ri-close-circle-line"></i>
+        <a href="{{ route('facturas.index') }}" class="position-absolute" style="top: 50%; transform: translateY(-50%); right: 10px; color: #a1acb8; cursor: pointer;" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">
+          <i class="ri-close-circle-line" aria-hidden="true"></i>
         </a>
         @endif
       </form>
@@ -23,7 +24,7 @@
   </div>
 
   <div class="table-responsive text-nowrap">
-    <table class="table table-hover">
+    <table class="table table-hover" aria-label="Historial de facturas">
       <thead>
         <tr>
           <th># Factura</th>
@@ -53,17 +54,17 @@
           <td>{{ $f->created_at->format('d/m/Y') }}</td>
           <td>
             <div class="d-flex gap-2">
-              <a href="{{ route('facturas.edit', $f->id) }}" class="btn btn-sm btn-primary">Editar</a>
+              <a href="{{ route('facturas.edit', $f->id) }}" class="btn btn-sm btn-primary" aria-label="Editar factura #{{ $f->id }}">Editar</a>
               <form action="{{ route('facturas.destroy', $f->id) }}" method="POST">
                 @csrf @method('DELETE')
-                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar factura?')">Eliminar</button>
+                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar factura?')" aria-label="Eliminar factura #{{ $f->id }}">Eliminar</button>
               </form>
             </div>
           </td>
         </tr>
         @empty
         <tr>
-          <td colspan="6" class="text-center py-4">
+          <td colspan="6" class="text-center py-4" aria-live="polite">
             <i class="ri-inbox-line fs-1 text-muted"></i>
             <p class="mt-2">No se encontraron facturas</p>
           </td>

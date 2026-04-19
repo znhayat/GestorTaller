@@ -7,11 +7,12 @@
     <div class="d-flex flex-wrap align-items-center gap-2 ms-auto">
       <!-- Buscador -->
       <form method="GET" action="{{ route('presupuestos.index') }}" class="d-flex position-relative me-2" style="min-width: 250px;">
-        <input type="text" name="search" class="form-control ps-5 pe-4 w-100" placeholder="Buscar por cliente..." value="{{ request('search') }}">
-        <i class="ri-search-line position-absolute" style="top: 50%; transform: translateY(-50%); left: 15px; color: #a1acb8;"></i>
+        <label for="search-presupuestos" class="visually-hidden">Buscar presupuestos</label>
+        <input type="text" id="search-presupuestos" name="search" class="form-control ps-5 pe-4 w-100" placeholder="Buscar por cliente..." value="{{ request('search') }}">
+        <i class="ri-search-line position-absolute" style="top: 50%; transform: translateY(-50%); left: 15px; color: #a1acb8;" aria-hidden="true"></i>
         @if(request('search'))
-        <a href="{{ route('presupuestos.index') }}" class="position-absolute" style="top: 50%; transform: translateY(-50%); right: 10px; color: #a1acb8; cursor: pointer;" title="Limpiar búsqueda">
-          <i class="ri-close-circle-line"></i>
+        <a href="{{ route('presupuestos.index') }}" class="position-absolute" style="top: 50%; transform: translateY(-50%); right: 10px; color: #a1acb8; cursor: pointer;" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">
+          <i class="ri-close-circle-line" aria-hidden="true"></i>
         </a>
         @endif
       </form>
@@ -21,7 +22,7 @@
   </div>
 
   <div class="table-responsive">
-    <table class="table table-hover">
+    <table class="table table-hover" aria-label="Listado de presupuestos">
       <thead>
         <tr>
           <th>Encargo</th>
@@ -56,10 +57,10 @@
 
           <td>
             <div class="d-flex gap-2">
-              <a href="{{ route('presupuestos.edit', $p->id) }}" class="btn btn-sm btn-primary">Editar</a>
+              <a href="{{ route('presupuestos.edit', $p->id) }}" class="btn btn-sm btn-primary" aria-label="Editar presupuesto para encargo #{{ $p->encargo_id }}">Editar</a>
               <form action="{{ route('presupuestos.destroy', $p->id) }}" method="POST">
                 @csrf @method('DELETE')
-                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar?')">Borrar</button>
+                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar?')" aria-label="Eliminar presupuesto de encargo #{{ $p->encargo_id }}">Borrar</button>
               </form>
             </div>
           </td>

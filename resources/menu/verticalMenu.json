@@ -1,7 +1,7 @@
 {
   "menu": [
     {
-      "url": "/",
+      "url": "/dashboard",
       "name": "Dashboard",
       "icon": "menu-icon icon-base ri ri-home-smile-line",
       "slug": "dashboard-analytics"
@@ -76,6 +76,12 @@
     },
     {
       "menuHeader": "Administración"
+    },
+    {
+      "url": "usuarios",
+      "name": "Usuarios",
+      "icon": "menu-icon icon-base ri ri-user-settings-line",
+      "slug": "usuarios"
     },
     {
       "url": "facturas",

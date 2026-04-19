@@ -60,6 +60,13 @@ $container = ($container ?? 'container-xxl');
                     <div class="{{ $container }} flex-grow-1 container-p-y">
                         @endif
 
+                        @if(session('error'))
+                        <div class="alert alert-danger mx-4 mt-4 alert-dismissible fade show" role="alert">
+                            <i class="ri-error-warning-line me-2"></i> {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                        </div>
+                        @endif
+
                         @yield('content')
 
                     </div>
