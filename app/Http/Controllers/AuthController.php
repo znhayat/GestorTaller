@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class AuthController extends Controller
 {
     public function showLogin()
     {
-        return view('content.authentications.auth-login-basic'); // Ruta a tu vista del template
+        return view('content.authentications.auth-login-basic');
     }
 
     public function login(Request $request)
@@ -21,7 +22,7 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        // 2. Intentar autenticar (Laravel se encarga del Hash)
+        // 2. Intentar autenticar
         if (Auth::attempt($credentials)) {
             // Comprobar si está aprobado
             if (!Auth::user()->is_approved) {
@@ -40,16 +41,16 @@ class AuthController extends Controller
             'email' => 'Las credenciales no coinciden con nuestros registros.',
         ])->onlyInput('email');
     }
+
     public function logout()
     {
         Auth::logout();
         return redirect('/');
     }
 
-
     public function showRegister()
     {
-        return view('content.authentications.auth-register-basic'); 
+        return view('content.authentications.auth-register-basic');
     }
 
     public function register(Request $request)
@@ -60,12 +61,39 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        $user = \App\Models\User::create([
+        // Verificar si es el primer usuario (no hay ningun usuario en la base de datos)
+        $isFirstUser = User::count() == 0;
+
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'is_approved' => $isFirstUser, // El primer usuario se aprueba automaticamente
+            'role' => $isFirstUser ? 'admin' : 'user', // El primer usuario es admin
         ]);
 
+        if ($isFirstUser) {
+            // El primer usuario inicia sesion automaticamente
+            Auth::login($user);
+            return redirect()->route('dashboard-analytics')->with('success', 'Bienvenido. Eres el administrador principal.');
+        }
+
         return redirect()->route('login')->with('success', 'Registro completado. Tu cuenta debe ser aprobada por un administrador antes de poder acceder.');
+    }
+
+    // Metodo para que el admin pueda aprobar usuarios (añadir a otro controller o aqui mismo)
+    public function pendingUsers()
+    {
+        $pendingUsers = User::where('is_approved', false)->get();
+        return view('content.users.pending', compact('pendingUsers'));
+    }
+
+    public function approveUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->is_approved = true;
+        $user->save();
+
+        return redirect()->back()->with('success', 'Usuario aprobado correctamente');
     }
 }

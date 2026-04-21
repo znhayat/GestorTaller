@@ -42,6 +42,16 @@
         </div>
       </div>
 
+      <!-- Panel de disponibilidad de la Agenda -->
+      <div class="card bg-lighter mb-4 mt-3 border shadow-none">
+        <div class="card-body p-3">
+            <h6 class="card-title fw-bold text-secondary mb-2"><i class="ri-calendar-event-line me-1"></i> Agenda para el día seleccionado</h6>
+            <div id="agenda-preview-container" class="small text-muted">
+              Cargando disponibilidad...
+            </div>
+        </div>
+      </div>
+
       <div class="mt-3">
         {{-- Botón principal con icono de calendario para hacerlo más visual --}}
         <button type="submit" class="btn btn-primary me-2">
@@ -53,4 +63,42 @@
     </form>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fechaInput = document.querySelector('input[name="fecha"]');
+    const agendaPreview = document.getElementById('agenda-preview-container');
+
+    function checkAvailability() {
+        const date = fechaInput.value;
+        if (!date) return;
+        
+        agendaPreview.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Comprobando disponibilidad...';
+        
+        fetch(`/api/disponibilidad?date=${date}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length === 0) {
+                    agendaPreview.innerHTML = '<span class="text-success fw-bold"><i class="ri-checkbox-circle-line me-1"></i> Todo el día está libre.</span> Puedes elegir cualquier hora.';
+                } else {
+                    let html = '<span class="text-warning fw-bold mb-2 d-block"><i class="ri-error-warning-line me-1"></i> Horarios ocupados:</span>';
+                    html += '<ul class="mb-1 ps-3">';
+                    data.forEach(item => {
+                        html += `<li><strong>${item.hora}h</strong> - ${item.titulo}</li>`;
+                    });
+                    html += '</ul><span class="text-success"><i class="ri-information-line me-1"></i> El resto del horario está libre.</span>';
+                    agendaPreview.innerHTML = html;
+                }
+            })
+            .catch(err => {
+                agendaPreview.innerHTML = '<span class="text-danger">Error al consultar la agenda. Inténtalo de nuevo.</span>';
+            });
+    }
+
+    if (fechaInput) {
+        fechaInput.addEventListener('change', checkAvailability);
+        checkAvailability();
+    }
+});
+</script>
 @endsection

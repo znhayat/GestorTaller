@@ -78,6 +78,12 @@
       "menuHeader": "Administración"
     },
     {
+      "url": "galeria",
+      "name": "Galería Web",
+      "icon": "menu-icon icon-base ri ri-image-line",
+      "slug": "galeria"
+    },
+    {
       "url": "usuarios",
       "name": "Usuarios",
       "icon": "menu-icon icon-base ri ri-user-settings-line",

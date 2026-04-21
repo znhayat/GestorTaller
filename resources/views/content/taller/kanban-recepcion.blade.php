@@ -78,7 +78,7 @@
                   </button>
                   @endif
 
-                  <a href="{{ route('encargos.edit', $encargo->id) }}" class="btn btn-primary btn-sm" aria-label="Editar encargo de {{ $encargo->vehiculo->marca }}">
+                  <a href="{{ route('encargos.edit', $encargo->id) }}?origin=recepcion" class="btn btn-primary btn-sm" aria-label="Editar encargo de {{ $encargo->vehiculo->marca }}">
                     <i class="ri-edit-line me-1" aria-hidden="true"></i> Editar
                   </a>
                   <button type="button" class="btn btn-danger btn-sm" onclick="eliminarEncargo({{ $encargo->id }})" aria-label="Eliminar encargo de {{ $encargo->vehiculo->marca }}">

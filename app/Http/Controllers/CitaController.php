@@ -57,6 +57,67 @@ class CitaController extends Controller
     }
 
     /**
+     * Devuelve las horas ocupadas para una fecha concreta (API AJAX)
+     */
+    public function checkAvailability(Request $request)
+    {
+        $fecha = $request->get('date');
+        if (!$fecha) return response()->json([]);
+
+        $ocupadas = [];
+
+        // 1. Revisiones de nuevo trabajo (Encargo)
+        $encargos = Encargo::with('vehiculo.cliente')
+            ->whereDate('cita_revision', $fecha)
+            ->whereNotIn('estado', ['Cancelado', 'Entregado'])
+            ->get();
+
+        foreach ($encargos as $enc) {
+            if ($enc->hora_cita) {
+                // Formato simple HH:MM
+                $horaStr = substr($enc->hora_cita, 0, 5);
+                $cliente = $enc->vehiculo && $enc->vehiculo->cliente ? $enc->vehiculo->cliente->nombre : 'Desconocido';
+                $coche = $enc->vehiculo ? $enc->vehiculo->marca . ' ' . $enc->vehiculo->modelo : 'Vehículo Desconocido';
+                
+                $ocupadas[] = [
+                    'hora' => $horaStr,
+                    'titulo' => 'Revisión: ' . $coche . ' (' . $cliente . ')'
+                ];
+            }
+        }
+
+        // 2. Citas programadas generales (Cita)
+        $citas = Cita::with('encargo.vehiculo.cliente')
+            ->whereDate('fecha', $fecha)
+            ->get();
+
+        foreach ($citas as $c) {
+            if ($c->hora) {
+                $horaStr = substr($c->hora, 0, 5);
+                $titulo = 'Cita / Reparación';
+                
+                if ($c->encargo && $c->encargo->vehiculo) {
+                    $coche = $c->encargo->vehiculo->marca . ' ' . $c->encargo->vehiculo->modelo;
+                    $cliente = $c->encargo->vehiculo->cliente ? $c->encargo->vehiculo->cliente->nombre : 'Desconocido';
+                    $titulo .= ' - ' . $coche . ' (' . $cliente . ')';
+                }
+                
+                $ocupadas[] = [
+                    'hora' => $horaStr,
+                    'titulo' => $titulo
+                ];
+            }
+        }
+
+        // Ordenamos por hora
+        usort($ocupadas, function($a, $b) {
+            return strcmp($a['hora'], $b['hora']);
+        });
+
+        return response()->json($ocupadas);
+    }
+
+    /**
      * Muestra el listado de la agenda.
      * Carga las relaciones en cascada (Encargo -> Vehículo -> Cliente) 
      * para evitar consultas excesivas a la base de datos.

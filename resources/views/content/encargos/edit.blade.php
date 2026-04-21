@@ -11,6 +11,7 @@
     <form action="{{ route('encargos.update', $encargo->id) }}" method="POST">
       @csrf
       @method('PUT')
+      <input type="hidden" name="origin" value="{{ request('origin') }}">
       <div class="row">
         {{-- Selección de vehículo: vincula la orden a un coche y su dueño --}}
         <div class="mb-3 col-md-12">
@@ -53,13 +54,24 @@
         </div>
       </div>
       <div class="mt-4">
-        <button type="submit" class="btn btn-primary me-2"><i class="ri-save-line me-1"></i> Actualizar Encargo</button>
-        <a href="{{ route('encargos.index') }}" class="btn btn-outline-secondary">Volver</a>
+        @php
+          $origen = request('origin');
+          if ($origen == 'recepcion') $urlVolver = route('encargos.recepcion');
+          elseif ($origen == 'produccion') $urlVolver = route('encargos.produccion');
+          else $urlVolver = route('encargos.index');
+        @endphp
+        <button type="submit" class="btn btn-primary me-2"><i class="ri-save-line me-1"></i> Guardar Cambios y Volver</button>
+        <a href="{{ $urlVolver }}" class="btn btn-outline-secondary">Cancelar y Volver</a>
       </div>
     </form>
   </div>
 </div>
 
+@php
+  $esDesdeTablero = in_array(request('origin'), ['recepcion', 'produccion']);
+@endphp
+
+@if(!$esDesdeTablero)
 <div class="row">
   {{-- SECCIÓN 2: Gestión de Materiales (Costos) --}}
   <div class="col-md-7">
@@ -167,4 +179,5 @@
     </div>
   </div>
 </div>
+@endif
 @endsection

@@ -24,7 +24,8 @@ use App\Http\Controllers\dashboard\Analytics;
 */
 
 Route::get('/', function () {
-    return view('content.pages.landing');
+    $fotos = \App\Models\Foto::where('es_publica', true)->latest()->get();
+    return view('content.pages.landing', compact('fotos'));
 })->name('landing');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -60,6 +61,9 @@ Route::middleware(['auth'])->group(function () {
       Route::get('/usuarios', [UserController::class, 'index'])->name('usuarios.index');
       Route::put('/usuarios/{usuario}', [UserController::class, 'update'])->name('usuarios.update');
       Route::delete('/usuarios/{usuario}', [UserController::class, 'destroy'])->name('usuarios.destroy');
+
+      // CMS GALERÍA PÚBLICA
+      Route::resource('galeria', \App\Http\Controllers\GaleriaController::class)->only(['index', 'store', 'destroy']);
   });
 
   // --- RUTAS DE VISUALIZACIÓN Y TRABAJO (Admins y Operarios) ---
@@ -78,6 +82,7 @@ Route::middleware(['auth'])->group(function () {
   
   Route::get('/calendario', [CitaController::class, 'showCalendar'])->name('citas.calendario');
   Route::get('/api/eventos', [CitaController::class, 'getEvents'])->name('api.eventos');
+  Route::get('/api/disponibilidad', [CitaController::class, 'checkAvailability'])->name('api.disponibilidad');
   Route::resource('citas', CitaController::class)->only(['index', 'show']);
   
   Route::resource('usos_materiales', UsoMaterialController::class)->only(['index', 'show']);

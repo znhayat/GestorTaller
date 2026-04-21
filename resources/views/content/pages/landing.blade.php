@@ -6,7 +6,7 @@
 <!-- Barra de Navegación Simple para Login -->
 <nav class="navbar navbar-expand-lg bg-white shadow-sm mb-0">
   <div class="container">
-    <a class="navbar-brand fw-bold text-primary" href="#">ZANA TAPICERÍA</a>
+    <a class="navbar-brand fw-bold text-primary" href="#"></a>
     <div class="d-flex ms-auto">
       <a href="{{ route('login') }}" class="btn btn-outline-primary rounded-pill">
         <i class="ri-user-settings-line me-2"></i> Acceso Equipo
@@ -19,7 +19,7 @@
 <div class="bg-primary text-white py-5 mb-5 text-center position-relative">
   <div class="container py-sm-5">
     <h1 class="display-3 fw-bold text-white mb-3">Dale una nueva vida a tu vehículo</h1>
-    <p class="lead mb-4">Especialistas en tapizado automotriz premium. Recuperamos el interior de tu coche como el primer día.</p>
+    <p class="lead mb-4">Especialistas en tapizado automotriz. Recuperamos el interior de tu coche como el primer día.</p>
     <a href="#galeria" class="btn btn-light btn-lg rounded-pill">Ver Nuestros Trabajos</a>
   </div>
 </div>
@@ -34,41 +34,25 @@
     </div>
     
     <div class="row">
-      <!-- Card Trabajo 1 -->
-      <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-none border">
-          <img class="card-img-top" src="{{ asset('assets/img/elements/1.jpg') }}" alt="Trabajo volante" style="height: 200px; object-fit: cover;">
-          <div class="card-body">
-            <h5 class="card-title">Restauración de Volante</h5>
-            <p class="card-text">Retapizado completo en cuero de primera calidad con costuras deportivas rojas. Desgaste 100% eliminado.</p>
-            <span class="badge bg-label-primary">Volantes</span>
+      @if($fotos->count() > 0)
+        @foreach($fotos as $foto)
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow-none border">
+            <img class="card-img-top" src="{{ asset($foto->ruta) }}" alt="{{ $foto->titulo_galeria }}" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+              <h5 class="card-title">{{ $foto->titulo_galeria }}</h5>
+              <p class="card-text">{{ $foto->descripcion }}</p>
+              <span class="badge bg-label-{{ $foto->categoria_badge }}">{{ $foto->categoria_texto }}</span>
+            </div>
           </div>
         </div>
-      </div>
-      
-      <!-- Card Trabajo 2 -->
-      <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-none border">
-          <img class="card-img-top" src="{{ asset('assets/img/elements/2.jpg') }}" alt="Trabajo asientos" style="height: 200px; object-fit: cover;">
-          <div class="card-body">
-            <h5 class="card-title">Juego de Asientos</h5>
-            <p class="card-text">Cambio de tapicería de tela a cuero sintético premium reforzado. Adaptación a medida para máximo confort.</p>
-            <span class="badge bg-label-info">Asientos</span>
-          </div>
+        @endforeach
+      @else
+        <div class="col-12 text-center py-5">
+            <h4 class="text-muted"></h4>
+            <p>Estamos construyendo nuestro portfolio digital.</p>
         </div>
-      </div>
-      
-      <!-- Card Trabajo 3 -->
-      <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-none border">
-          <img class="card-img-top" src="{{ asset('assets/img/elements/3.jpg') }}" alt="Trabajo techos" style="height: 200px; object-fit: cover;">
-          <div class="card-body">
-            <h5 class="card-title">Tapizado de Techo Caído</h5>
-            <p class="card-text">Solución completa para techos despegados. Uso de tela FOAM especial en tono gis original.</p>
-            <span class="badge bg-label-success">Techos</span>
-          </div>
-        </div>
-      </div>
+      @endif
     </div>
   </div>
 
@@ -89,7 +73,7 @@
                   <span class="avatar-initial rounded bg-label-primary"><i class="ri-map-pin-line fs-3"></i></span>
                 </div>
                 <h6 class="mb-1">Ubicación del Taller</h6>
-                <p class="mb-0 text-muted">Calle Ficticia del Motor 123,<br>Nave 4, Localidad, Madrid.</p>
+                <p class="mb-0 text-muted"><br></p>
               </div>
             </div>
             <div class="col-sm-6">
@@ -98,7 +82,7 @@
                   <span class="avatar-initial rounded bg-label-success"><i class="ri-phone-line fs-3"></i></span>
                 </div>
                 <h6 class="mb-1">Llámanos</h6>
-                <p class="mb-0 text-muted">+34 900 000 000<br>Lun-Vie: 8:00 a 18:00</p>
+                <p class="mb-0 text-muted"><br></p>
               </div>
             </div>
           </div>

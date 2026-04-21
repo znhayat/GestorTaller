@@ -111,6 +111,13 @@ class EncargoController extends Controller
             'estado' => $request->estado ?? $encargo->estado,
         ]);
 
+        $origin = $request->input('origin');
+        if ($origin == 'recepcion') {
+            return redirect()->route('encargos.recepcion')->with('success', 'Encargo actualizado correctamente');
+        } elseif ($origin == 'produccion') {
+            return redirect()->route('encargos.produccion')->with('success', 'Encargo actualizado correctamente');
+        }
+
         return redirect()->route('encargos.index')
             ->with('success', 'Encargo actualizado correctamente');
     }
