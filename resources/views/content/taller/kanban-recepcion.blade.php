@@ -141,6 +141,17 @@
             </div>
         </div>
 
+        <!-- Módulo Dinámico de Disponibilidad Ocupada -->
+        <div id="disponibilidadContenedor" class="alert alert-secondary d-none mb-4" style="border-left: 4px solid var(--bs-secondary);">
+            <div class="d-flex align-items-center mb-2">
+                <i class="ri-calendar-event-fill text-dark me-2 fs-5"></i>
+                <h6 class="mb-0 fw-bold text-dark">Agenda de este día</h6>
+            </div>
+            <ul id="listaOcupadas" class="mb-0 ps-3 small text-muted font-monospace" style="list-style-type: square;">
+                <!-- Rellenado por JS -->
+            </ul>
+        </div>
+
         <div class="alert alert-primary d-flex align-items-center mb-0" role="alert" style="border-left: 4px solid var(--bs-primary);">
             <i class="ri-information-line me-3 fs-4"></i>
             <div class="small">
@@ -244,9 +255,35 @@
             minDate: "today",
             locale: "es",
             time_24hr: true,
-            defaultHour: 9,
+            defaultHour: 8,
+            minTime: "08:00",
+            maxTime: "20:00",
+            disable: [
+                function(date) {
+                    // Deshabilitar Sábado (6) y Domingo (0)
+                    return (date.getDay() === 0 || date.getDay() === 6);
+                }
+            ],
             onChange: function(selectedDates, dateStr, instance) {
-                if(fpFin) fpFin.set("minDate", dateStr);
+                if(selectedDates.length > 0) {
+                    let d = selectedDates[0];
+                    let fechaSolo = dateStr.split(" ")[0];
+                    if(fpFin) fpFin.set("minDate", fechaSolo);
+                    
+                    // Control de horario partido (15:00 a 17:00 cerrado)
+                    let hour = d.getHours();
+                    if(hour >= 15 && hour < 17) {
+                        d.setHours(17);
+                        d.setMinutes(0);
+                        instance.setDate(d, false);
+                        Swal.fire({
+                            toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
+                            icon: 'info', title: 'Taller cerrado de 15:00 a 17:00. Hora ajustada.'
+                        });
+                    }
+
+                    verificarDisponibilidad(fechaSolo);
+                }
             }
         });
     } else {
@@ -257,7 +294,12 @@
         fpFin = flatpickr("#fecha_recogida_estimada", {
             dateFormat: "Y-m-d",
             minDate: "today",
-            locale: "es"
+            locale: "es",
+            disable: [
+                function(date) {
+                    return (date.getDay() === 0 || date.getDay() === 6);
+                }
+            ]
         });
     } else {
         fpFin.clear();
@@ -333,6 +375,34 @@
           text: 'Hubo un problema al actualizar'
         });
       });
+  }
+
+  // Consulta AJAX al hacer clic en el calendario de Flatpickr
+  function verificarDisponibilidad(fechaIso) {
+      let divC = document.getElementById('disponibilidadContenedor');
+      let ulList = document.getElementById('listaOcupadas');
+      
+      divC.classList.add('d-none');
+      ulList.innerHTML = '';
+
+      fetch('/api/disponibilidad?date=' + fechaIso)
+        .then(response => response.json())
+        .then(ocupadas => {
+            if(ocupadas && ocupadas.length > 0) {
+                ocupadas.forEach(cita => {
+                    let li = document.createElement('li');
+                    li.innerHTML = `<strong class="text-dark">${cita.hora}h</strong> - ${cita.titulo}`;
+                    ulList.appendChild(li);
+                });
+                divC.classList.remove('d-none');
+            } else {
+                let li = document.createElement('li');
+                li.innerHTML = '<span class="text-success"><i class="ri-check-line"></i> Día completamente libre de citas</span>';
+                ulList.appendChild(li);
+                divC.classList.remove('d-none');
+            }
+        })
+        .catch(error => console.error("Error AJAX Disponibilidad:", error));
   }
 
   function moverEstado(encargoId, nuevoEstado, item = null, fromColumn = null) {
