@@ -321,14 +321,14 @@ class EncargoController extends Controller
             'Esperando Recogida' => ['Entregado'],
         ];
 
-        if ($estadoAnterior == 'Cancelado') {
+        if ($estadoAnterior == 'Cancelado' && $nuevoEstado != 'En Revision') {
             return response()->json([
                 'success' => false,
-                'message' => "Un trabajo Cancelado está bloqueado y no puede reactivarse hacia otros tableros."
+                'message' => "Un trabajo Cancelado solo puede reactivarse devolviéndolo a 'En Revisión'."
             ], 422);
         }
 
-        if (!isset($transiciones[$estadoAnterior]) || !in_array($nuevoEstado, $transiciones[$estadoAnterior])) {
+        if ($estadoAnterior != 'Cancelado' && (!isset($transiciones[$estadoAnterior]) || !in_array($nuevoEstado, $transiciones[$estadoAnterior]))) {
             return response()->json([
                 'success' => false,
                 'message' => "No se puede mover de '$estadoAnterior' a '$nuevoEstado'"

@@ -69,16 +69,16 @@
 
                 <div class="d-flex gap-2 flex-wrap">
                   @if($estadoKey == 'Esperando Recogida')
-                  <button type="button" class="btn btn-success btn-sm flex-grow-1" onclick="moverEstado({{ $encargo->id }}, 'Entregado')">
-                    <i class="ri-hand-heart-line me-1"></i> Entregar y Facturar
+                  <button type="button" class="btn btn-success btn-sm flex-grow-1" onclick="moverEstado({{ $encargo->id }}, 'Entregado')" title="Entregar Vehículo al Cliente">
+                    <i class="ri-hand-heart-line me-1"></i> Entregar Vehículo
                   </button>
                   @endif
 
-                  <a href="{{ route('encargos.edit', $encargo->id) }}?origin=produccion" class="btn btn-primary btn-sm" aria-label="Editar encargo de {{ $encargo->vehiculo->marca }}">
-                    <i class="ri-edit-line me-1" aria-hidden="true"></i> Editar
+                  <a href="{{ route('encargos.edit', $encargo->id) }}?origin=produccion" class="btn btn-primary btn-sm flex-grow-1" aria-label="Editar encargo de {{ $encargo->vehiculo->marca }}" title="Ver Ficha y Subir Fotos">
+                    <i class="ri-edit-line me-1" aria-hidden="true"></i> Ficha Técnico
                   </a>
-                  <button type="button" class="btn btn-danger btn-sm" onclick="eliminarEncargo({{ $encargo->id }})" aria-label="Eliminar encargo de {{ $encargo->vehiculo->marca }}">
-                    <i class="ri-delete-bin-line me-1" aria-hidden="true"></i> Eliminar
+                  <button type="button" class="btn btn-danger btn-sm" onclick="eliminarEncargo({{ $encargo->id }})" aria-label="Eliminar exp." title="Eliminar del Sistema">
+                    <i class="ri-delete-bin-line me-1" aria-hidden="true"></i> Borrar
                   </button>
                 </div>
 

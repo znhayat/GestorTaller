@@ -59,30 +59,30 @@
                 <div class="d-flex gap-2 flex-wrap">
                   @if($estadoKey == 'En Revision')
                   @if($encargo->presupuesto)
-                  <a href="{{ route('presupuestos.edit', $encargo->presupuesto->id) }}" class="btn btn-warning btn-sm flex-grow-1">
-                    <i class="ri-edit-line me-1"></i> Modificar
+                  <a href="{{ route('presupuestos.edit', $encargo->presupuesto->id) }}" class="btn btn-warning btn-sm flex-grow-1" title="Modificar Presupuesto">
+                    <i class="ri-edit-line me-1"></i> Modif. PPT
                   </a>
                   @else
-                  <a href="{{ route('presupuestos.create', ['encargo_id' => $encargo->id]) }}" class="btn btn-warning btn-sm flex-grow-1">
-                    <i class="ri-file-copy-line me-1"></i> Crear
+                  <a href="{{ route('presupuestos.create', ['encargo_id' => $encargo->id]) }}" class="btn btn-warning btn-sm flex-grow-1" title="Crear Nuevo Presupuesto">
+                    <i class="ri-file-copy-line me-1"></i> Crear PPT
                   </a>
                   @endif
                   @endif
 
                   @if($estadoKey == 'Presupuesto Enviado')
-                  <button type="button" class="btn btn-success btn-sm flex-grow-1" onclick="mostrarModalFechaTrabajo({{ $encargo->id }})">
-                    <i class="ri-check-line me-1"></i> Aceptar
+                  <button type="button" class="btn btn-success btn-sm flex-grow-1" onclick="mostrarModalFechaTrabajo({{ $encargo->id }})" title="Aceptar Presupuesto y Agendar">
+                    <i class="ri-check-line me-1"></i> Aceptar PPT
                   </button>
-                  <button type="button" class="btn btn-secondary btn-sm" onclick="moverEstado({{ $encargo->id }}, 'Cancelado')">
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="moverEstado({{ $encargo->id }}, 'Cancelado')" title="Rechazar y Mover al Historial">
                     <i class="ri-close-line me-1"></i> Rechazar
                   </button>
                   @endif
 
-                  <a href="{{ route('encargos.edit', $encargo->id) }}?origin=recepcion" class="btn btn-primary btn-sm flex-grow-1" aria-label="Editar encargo de {{ $encargo->vehiculo->marca }}">
-                    <i class="ri-edit-line me-1" aria-hidden="true"></i> Editar
+                  <a href="{{ route('encargos.edit', $encargo->id) }}?origin=recepcion" class="btn btn-primary btn-sm flex-grow-1" aria-label="Editar encargo de {{ $encargo->vehiculo->marca }}" title="Editar Ficha Técnica">
+                    <i class="ri-edit-line me-1" aria-hidden="true"></i> Ficha Técnico
                   </a>
-                  <button type="button" class="btn btn-danger btn-sm" onclick="eliminarEncargo({{ $encargo->id }})" aria-label="Eliminar exp.">
-                    <i class="ri-delete-bin-line" aria-hidden="true"></i>
+                  <button type="button" class="btn btn-danger btn-sm" onclick="eliminarEncargo({{ $encargo->id }})" aria-label="Eliminar exp." title="Eliminar Registro Completamente">
+                    <i class="ri-delete-bin-line me-1" aria-hidden="true"></i> Borrar
                   </button>
                 </div>
 

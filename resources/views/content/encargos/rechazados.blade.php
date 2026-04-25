@@ -74,14 +74,16 @@
                             {{ $encargo->updated_at->format('d/m/Y') }}
                         </td>
                         <td>
-                            <div class="dropdown">
-                                <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-label="Opciones">
-                                    <i class="ri-more-2-line"></i>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('encargos.edit', $encargo->id) }}" class="btn btn-sm btn-primary" title="Abrir y Revisar Expediente">
+                                    <i class="ri-folder-open-line"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-success" onclick="restaurarCaso({{ $encargo->id }})" title="Restaurar y Reabrir en Recepción">
+                                    <i class="ri-refresh-line"></i>
                                 </button>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="{{ route('encargos.show', $encargo->id) }}"><i class="ri-eye-line me-1"></i> Ver Detalles del Expediente</a>
-                                    <!-- Si en el futuro desean restaurarlo (mover a Presupuesto Enviado de nuevo), habría un botón aquí. Por ahora, solo visualización -->
-                                </div>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="eliminarDefinitivo({{ $encargo->id }})" title="Borrado Permanente">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -103,4 +105,70 @@
         {{ $encargos->links('pagination::bootstrap-5') }}
     </div>
 </div>
+@endsection
+
+@section('page-script')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function restaurarCaso(id) {
+        Swal.fire({
+            title: '¿Reabrir Expediente?',
+            text: 'El caso volverá al panel de Recepción en estado "En Revisión".',
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, restaurar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({ title: 'Restaurando...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+                fetch(`/encargos/${id}/status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify({ estado: 'En Revision' })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Restaurado', 'El expediente ha sido devuelto a Recepción.', 'success');
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                });
+            }
+        });
+    }
+
+    function eliminarDefinitivo(id) {
+        Swal.fire({
+            title: 'Borrado Definitivo',
+            text: 'Esta acción borrará el registro del caso permanentemente.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({ title: 'Eliminando...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+                fetch(`/encargos/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Eliminado', 'El registro se ha borrado correctamente.', 'success');
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                });
+            }
+        });
+    }
+</script>
 @endsection
