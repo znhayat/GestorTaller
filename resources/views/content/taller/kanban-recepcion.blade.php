@@ -106,33 +106,51 @@
 </div>
 
 <!-- Modal para programar fecha de inicio -->
-<div class="modal fade" id="modalFechaTrabajo" tabindex="-1" aria-labelledby="modalFechaTrabajoTitle" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold" id="modalFechaTrabajoTitle"><i class="ri-calendar-check-line me-2 text-success"></i> Agendar Cita de Reparación</h5>
+<div class="modal fade" id="modalFechaTrabajo" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded border-0" style="box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+      <div class="modal-header border-bottom-0 pb-3">
+        <div class="d-flex align-items-center">
+            <div class="avatar avatar-md me-3">
+                <span class="avatar-initial bg-label-success rounded-circle"><i class="ri-calendar-check-line fs-4"></i></span>
+            </div>
+            <div>
+                <h5 class="modal-title fw-bold mb-0">Confirmar Cita de Taller</h5>
+                <small class="text-muted">Aceptación Oficial de Presupuesto</small>
+            </div>
+        </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body pt-2">
         <input type="hidden" id="encargo_id_work">
-        <div class="mb-3">
-          <label class="form-label" for="fecha_inicio_trabajo">Fecha de inicio del trabajo</label>
-          <input type="date" id="fecha_inicio_trabajo" class="form-control" min="{{ date('Y-m-d') }}" required>
-          <div class="form-text">El cliente ha aceptado el presupuesto. Programe la fecha para realizar el trabajo.</div>
+        
+        <div class="row mt-2 g-4 mb-4">
+            <!-- Ingreso -->
+            <div class="col-md-6">
+                <div class="form-floating form-floating-outline">
+                    <input type="text" class="form-control" id="fecha_inicio_trabajo" placeholder="Elige fecha y hora">
+                    <label for="fecha_inicio_trabajo" class="text-primary fw-medium"><i class="ri-login-circle-line me-1"></i> Ingreso al Taller</label>
+                </div>
+            </div>
+            <!-- Salida -->
+            <div class="col-md-6">
+                <div class="form-floating form-floating-outline">
+                    <input type="text" class="form-control" id="fecha_recogida_estimada" placeholder="Día estimado">
+                    <label for="fecha_recogida_estimada" class="text-success fw-medium"><i class="ri-logout-circle-line me-1"></i> Estimación Entrega</label>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label" for="hora_inicio_trabajo">Hora de inicio</label>
-          <input type="time" id="hora_inicio_trabajo" class="form-control" value="08:00" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label text-success fw-bold" for="fecha_recogida_estimada"><i class="ri-calendar-check-line" aria-hidden="true"></i> Previsto Fin / Recogida</label>
-          <input type="date" id="fecha_recogida_estimada" class="form-control" min="{{ date('Y-m-d') }}" required>
-          <div class="form-text">Asigna el día aproximado que el coche estará terminado para entrega.</div>
+
+        <div class="alert alert-primary d-flex align-items-center mb-0" role="alert" style="border-left: 4px solid var(--bs-primary);">
+            <i class="ri-information-line me-3 fs-4"></i>
+            <div class="small">
+                Al certificar las fechas, el expediente será inyectado directamente en la cadena de <strong>Producción (Taller)</strong>.
+            </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary" onclick="aceptarYProgramar()">Aceptar y Programar</button>
+      <div class="modal-footer border-top-0 pt-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Posponer</button>
+        <button type="button" class="btn btn-success fw-bold px-4 shadow-sm" onclick="aceptarYProgramar()">Inyectar al Taller</button>
       </div>
     </div>
   </div>
@@ -142,10 +160,18 @@
 @section('vendor-script')
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Flatpickr CSS y JS por CDN para que la experiencia de calendario UI sea TOP -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+
 <script>
-  // Esperar a que el DOM esté completamente cargado
+  let fpInicio = null;
+  let fpFin = null;
+
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM cargado, inicializando Sortable...');
+    console.log('DOM cargado, inicializando...');
 
     // Obtener todas las columnas kanban
     var columns = document.querySelectorAll('.kanban-column');
@@ -209,20 +235,52 @@
 
   function mostrarModalFechaTrabajo(encargoId) {
     document.getElementById('encargo_id_work').value = encargoId;
+
+    // Inicializar Flatpickr si no lo hemos hecho o refrescarlo
+    if(!fpInicio) {
+        fpInicio = flatpickr("#fecha_inicio_trabajo", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            minDate: "today",
+            locale: "es",
+            time_24hr: true,
+            defaultHour: 9,
+            onChange: function(selectedDates, dateStr, instance) {
+                if(fpFin) fpFin.set("minDate", dateStr);
+            }
+        });
+    } else {
+        fpInicio.clear();
+    }
+
+    if(!fpFin) {
+        fpFin = flatpickr("#fecha_recogida_estimada", {
+            dateFormat: "Y-m-d",
+            minDate: "today",
+            locale: "es"
+        });
+    } else {
+        fpFin.clear();
+    }
+
     var modal = new bootstrap.Modal(document.getElementById('modalFechaTrabajo'));
     modal.show();
   }
 
   function aceptarYProgramar() {
     var encargoId = document.getElementById('encargo_id_work').value;
-    var fechaInicio = document.getElementById('fecha_inicio_trabajo').value;
-    var horaInicio = document.getElementById('hora_inicio_trabajo').value;
+    var inicioVal = document.getElementById('fecha_inicio_trabajo').value;
     var fechaRecogida = document.getElementById('fecha_recogida_estimada').value;
 
-    if (!fechaInicio || !fechaRecogida) {
-      Swal.fire('Error', 'Debe seleccionar una fecha de inicio y una fecha prevista de recogida.', 'error');
+    if (!inicioVal || !fechaRecogida) {
+      Swal.fire('Error', 'Debe establecer ambos valores en el calendario.', 'error');
       return;
     }
+
+    // Split de flatpickr "Y-m-d H:i"
+    var partes = inicioVal.split(" ");
+    var fechaInicio = partes[0];
+    var horaInicio = partes[1] ? partes[1] : '09:00';
 
     Swal.fire({
       title: 'Actualizando...',
