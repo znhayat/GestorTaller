@@ -6,9 +6,14 @@
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
     <h5 class="mb-0">Agenda de Citas</h5>
-    <a href="{{ route('citas.create') }}" class="btn btn-primary">
-      <i class="ri-add-line me-1"></i> Nueva Cita
-    </a>
+    <div>
+      <button class="btn btn-outline-success me-2 btn-export-csv" data-filename="citas">
+        <i class="ri-file-excel-line me-1"></i> Exportar
+      </button>
+      <a href="{{ route('citas.create') }}" class="btn btn-primary">
+        <i class="ri-add-line me-1"></i> Nueva Cita
+      </a>
+    </div>
   </div>
 
   {{-- Contenedor con scroll para que en móviles no se rompa el diseño --}}
@@ -16,6 +21,7 @@
     <table class="table table-hover">
       <thead>
         <tr>
+          <th># Codi</th>
           <th>Fecha y Hora</th>
           <th>Vehículo</th>
           <th>Cliente</th>
@@ -26,8 +32,9 @@
       <tbody>
         @foreach($citas as $cita)
         <tr>
+          <td><strong>{{ $cita->codigo }}</strong></td>
           <td>
-            <span class="badge bg-label-primary">{{ $cita->fecha }}</span>
+            <span class="badge bg-label-primary">{{ \Carbon\Carbon::parse($cita->fecha)->format('d/m/Y') }}</span>
             <span class="badge bg-label-secondary">{{ $cita->hora }}</span>
           </td>
 

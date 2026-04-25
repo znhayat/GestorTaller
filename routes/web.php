@@ -78,6 +78,7 @@ Route::middleware(['auth'])->group(function () {
   Route::resource('materiales', MaterialController::class)->only(['show']);
 
   Route::resource('vehiculos', VehiculoController::class)->only(['index', 'show']);
+  Route::get('/encargos/rechazados', [EncargoController::class, 'rechazados'])->name('encargos.rechazados');
   Route::resource('encargos', EncargoController::class)->only(['index', 'show']);
   
   Route::get('/calendario', [CitaController::class, 'showCalendar'])->name('citas.calendario');
@@ -87,6 +88,7 @@ Route::middleware(['auth'])->group(function () {
   
   Route::resource('usos_materiales', UsoMaterialController::class)->only(['index', 'show']);
   Route::resource('fotos', FotoController::class)->only(['index', 'show']);
+  Route::get('/facturas/{id}/imprimir', [FacturaController::class, 'imprimir'])->name('facturas.imprimir');
   Route::resource('facturas', FacturaController::class)->only(['index', 'show']);
   Route::resource('presupuestos', PresupuestoController::class)->only(['index', 'show']);
   
@@ -94,6 +96,7 @@ Route::middleware(['auth'])->group(function () {
   Route::resource('clientes', ClienteController::class)->only(['show']);
 
   // Kanbans y Flujos de Taller (Operarios deben poder mover tarjetas)
+
   Route::get('/taller/recepcion', [EncargoController::class, 'kanbanRecepcion'])->name('encargos.recepcion');
   Route::get('/taller/produccion', [EncargoController::class, 'kanbanProduccion'])->name('encargos.produccion');
   Route::post('/encargos/{id}/status', [EncargoController::class, 'cambiarEstado'])->name('encargos.updateStatus');

@@ -78,11 +78,11 @@
                   </button>
                   @endif
 
-                  <a href="{{ route('encargos.edit', $encargo->id) }}?origin=recepcion" class="btn btn-primary btn-sm" aria-label="Editar encargo de {{ $encargo->vehiculo->marca }}">
+                  <a href="{{ route('encargos.edit', $encargo->id) }}?origin=recepcion" class="btn btn-primary btn-sm flex-grow-1" aria-label="Editar encargo de {{ $encargo->vehiculo->marca }}">
                     <i class="ri-edit-line me-1" aria-hidden="true"></i> Editar
                   </a>
-                  <button type="button" class="btn btn-danger btn-sm" onclick="eliminarEncargo({{ $encargo->id }})" aria-label="Eliminar encargo de {{ $encargo->vehiculo->marca }}">
-                    <i class="ri-delete-bin-line me-1" aria-hidden="true"></i> Eliminar
+                  <button type="button" class="btn btn-danger btn-sm" onclick="eliminarEncargo({{ $encargo->id }})" aria-label="Eliminar exp.">
+                    <i class="ri-delete-bin-line" aria-hidden="true"></i>
                   </button>
                 </div>
 
@@ -110,7 +110,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="modalFechaTrabajoTitle">Programar Inicio del Trabajo</h5>
+        <h5 class="modal-title fw-bold" id="modalFechaTrabajoTitle"><i class="ri-calendar-check-line me-2 text-success"></i> Agendar Cita de Reparación</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
@@ -187,7 +187,7 @@
              Swal.fire({
                 icon: 'warning',
                 title: 'Movimiento Denegado',
-                text: 'El proceso requiere seguir un orden lineal. No se puede retroceder de departamento ni realizar saltos.',
+                text: 'El proceso requiere seguir un orden secuencial lógico o la tarjeta se encuentra en estado terminal.',
                 confirmButtonText: 'Entendido'
              });
              evt.from.appendChild(item); // Retorna inmediatamente la tarjeta visualmente a su origen

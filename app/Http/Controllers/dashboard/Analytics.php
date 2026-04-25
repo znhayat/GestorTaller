@@ -21,6 +21,7 @@ class Analytics extends Controller
     $totalVehiculos = Vehiculo::count() ?? 0;
     $presupuestosPendientes = Presupuesto::where('aceptado', 0)->orWhereNull('aceptado')->count();
     $encargosActivos = Encargo::whereNotIn('estado', ['Finalizado', 'Entregado', 'Cancelado'])->count();
+    $encargosCompletados = Encargo::whereIn('estado', ['Finalizado', 'Entregado'])->count();
     $totalMateriales = Material::count();
 
     // ========== ALERTAS DE CITAS ==========
@@ -64,12 +65,16 @@ class Analytics extends Controller
       })
       ->get();
 
+    // Últimos 5 encargos
+    $ultimosEncargos = Encargo::with('vehiculo.cliente')->latest()->take(5)->get();
+
     return view('content.dashboard.dashboards-analytics', [
       'totalFacturado' => $totalFacturado,
       'totalClientes' => $totalClientes,
       'totalVehiculos' => $totalVehiculos,
       'presupuestosPendientes' => $presupuestosPendientes,
       'encargosActivos' => $encargosActivos,
+      'encargosCompletados' => $encargosCompletados,
       'totalMateriales' => $totalMateriales,
       // Alertas
       'citasHoy' => $citasHoy,
@@ -78,6 +83,7 @@ class Analytics extends Controller
       'citasAtrasadas' => $citasAtrasadas,
       'totalCitasPendientes' => $totalCitasPendientes,
       'entregasUrgentes' => $entregasUrgentes,
+      'ultimosEncargos' => $ultimosEncargos,
     ]);
   }
 }

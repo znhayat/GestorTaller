@@ -2,7 +2,7 @@
   "menu": [
     {
       "url": "/dashboard",
-      "name": "Dashboard",
+      "name": "Panel Principal",
       "icon": "menu-icon icon-base ri ri-home-smile-line",
       "slug": "dashboard-analytics"
     },
@@ -46,6 +46,11 @@
           "url": "presupuestos",
           "name": "Presupuestos",
           "slug": "presupuestos"
+        },
+        {
+          "url": "encargos/rechazados",
+          "name": "P. Rechazados",
+          "slug": "encargos.rechazados"
         }
       ]
     },

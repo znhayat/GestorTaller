@@ -90,7 +90,7 @@ class PresupuestoController extends Controller
 
         if ($aceptadoNuevo && !$aceptadoAnterior) {
             // CAMBIO A ACEPTADO: Pasa a producción
-            $encargo->estado = 'Pendiente de Inicio';
+            $encargo->estado = 'Pendiente Inicio';
             $encargo->save();
 
             return redirect()->route('encargos.produccion')

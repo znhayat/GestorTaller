@@ -19,4 +19,5 @@
 
 <!-- app JS -->
 @vite(['resources/js/app.js'])
+<script src="{{ asset('assets/js/table-to-csv.js') }}"></script>
 <!-- END: app JS-->

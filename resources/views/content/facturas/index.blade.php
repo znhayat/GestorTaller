@@ -19,6 +19,9 @@
         @endif
       </form>
 
+      <button class="btn btn-outline-success btn-export-csv" data-filename="facturas"> <!-- Nou boton Export Excel -->
+        <i class="ri-file-excel-line me-1"></i> Exportar
+      </button>
       <a href="{{ route('facturas.create') }}" class="btn btn-primary"><i class="ri-add-line me-1"></i> Nueva Factura</a>
     </div>
   </div>
@@ -54,6 +57,7 @@
           <td>{{ $f->created_at->format('d/m/Y') }}</td>
           <td>
             <div class="d-flex gap-2">
+              <a href="{{ route('facturas.imprimir', $f->id) }}" class="btn btn-sm btn-info" aria-label="Imprimir factura #{{ $f->id }}" target="_blank"><i class="ri-printer-line"></i></a>
               <a href="{{ route('facturas.edit', $f->id) }}" class="btn btn-sm btn-primary" aria-label="Editar factura #{{ $f->id }}">Editar</a>
               <form action="{{ route('facturas.destroy', $f->id) }}" method="POST">
                 @csrf @method('DELETE')

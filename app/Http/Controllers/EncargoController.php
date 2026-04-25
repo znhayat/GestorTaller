@@ -43,6 +43,34 @@ class EncargoController extends Controller
     }
 
     /**
+     * Lista de presupuestos rechazados o encargos cancelados.
+     */
+    public function rechazados(Request $request)
+    {
+        $search = $request->get('search');
+
+        $encargos = Encargo::with('vehiculo.cliente', 'presupuesto')
+            ->where('estado', 'Cancelado')
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('descripcion', 'like', "%{$search}%")
+                        ->orWhereHas('vehiculo', function ($q) use ($search) {
+                            $q->where('marca', 'like', "%{$search}%")
+                                ->orWhere('modelo', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('vehiculo.cliente', function ($q) use ($search) {
+                            $q->where('nombre', 'like', "%{$search}%")
+                                ->orWhere('apellido', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->orderBy('updated_at', 'desc')
+            ->paginate(15);
+
+        return view('content.encargos.rechazados', compact('encargos', 'search'));
+    }
+
+    /**
      * Formulario para crear nuevo encargo
      */
     public function create()
@@ -59,6 +87,7 @@ class EncargoController extends Controller
         $request->validate([
             'vehiculo_id' => 'required|exists:vehiculos,id',
             'descripcion' => 'required|string',
+            'fotos.*'     => 'image|max:3072' // validar cadascuna de les fotos
         ]);
 
         $encargo = Encargo::create([
@@ -68,8 +97,21 @@ class EncargoController extends Controller
             'fecha_entrada' => now(),
         ]);
 
+        // Guardar fotos vinculades a l'encàrrec si n'hi ha
+        if ($request->hasFile('fotos')) {
+            foreach ($request->file('fotos') as $fotoFile) {
+                // S'empra explícitament el controller manualment o la lògica equivalent
+                $ruta = $fotoFile->store('trabajos', 'public');
+                \App\Models\Foto::create([
+                    'encargo_id' => $encargo->id,
+                    'ruta' => $ruta,
+                    'descripcion' => 'Imatge de Recepció'
+                ]);
+            }
+        }
+
         return redirect()->route('encargos.index')
-            ->with('success', 'Encargo creado correctamente');
+            ->with('success', 'Encargo creado y preparado en la cola.');
     }
 
     /**
@@ -307,6 +349,19 @@ class EncargoController extends Controller
             $encargo->fecha_salida = now();
         }
 
+        if ($nuevoEstado == 'Esperando Recogida' && $estadoAnterior == 'En Produccion') {
+            // "Alerta Interna": Automàticament registrem l'esdeveniment i programem Cita Lliurament fictícia inicial
+            // Per emular notificació. Funcionalitat Pro petita pero superútil.
+            Cita::create([
+                'encargo_id' => $encargo->id,
+                'tipo' => 'entrega',
+                'fecha' => now()->toDateString(),
+                'hora' => '17:00', // hora referencial
+                'notas' => '*AVISO AUTOMÁTICO*: Ya se puede avisar al cliente para la recogida.'
+            ]);
+            $encargo->notas_internas .= "\n[AVISO] Trabalho Finalizado: Contactar cliente.";
+        }
+
         if ($nuevoEstado == 'Entregado') {
             if ($encargo->presupuesto && $encargo->presupuesto->aceptado) {
                 Factura::firstOrCreate(
@@ -314,8 +369,8 @@ class EncargoController extends Controller
                     [
                         'importe_total' => $encargo->presupuesto->total,
                         'pagado' => true,
-                        'fecha_pago' => now(),
-                        'cliente_id' => $encargo->vehiculo->cliente_id
+                        'fecha_pago' => now()
+                        // FIX: 'cliente_id' -> 'Quitat pq la estructura DB no l'admet directament aquí (és una relació passiva)'.
                     ]
                 );
                 $encargo->fecha_salida = now();

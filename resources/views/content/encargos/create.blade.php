@@ -6,7 +6,7 @@
     <h5>Abrir Nueva Orden de Trabajo</h5>
   </div>
   <div class="card-body">
-    <form action="{{ route('encargos.store') }}" method="POST">
+    <form action="{{ route('encargos.store') }}" method="POST" enctype="multipart/form-data">
       @csrf {{-- Token de seguridad para proteger el formulario --}}
 
       <div class="mb-3">
@@ -41,6 +41,12 @@
             <option value="Esperando Piezas">Esperando Piezas</option>
           </select>
         </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">Subir Fotografías Iniciales (Opcional)</label>
+        <input class="form-control" type="file" name="fotos[]" multiple accept="image/*">
+        <div class="form-text">Puedes subir varias fotos del estado actual del vehículo para adjuntarlas al encargo.</div>
       </div>
 
       {{-- Acciones finales: Guardar la orden o volver al listado --}}

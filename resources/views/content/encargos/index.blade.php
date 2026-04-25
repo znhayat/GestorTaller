@@ -18,6 +18,11 @@
 
       <a href="{{ route('encargos.recepcion') }}" class="btn btn-outline-primary"><i class="ri-phone-line me-1"></i> Recepción</a>
       <a href="{{ route('encargos.produccion') }}" class="btn btn-outline-primary"><i class="ri-tools-line me-1"></i> Producción</a>
+      
+      <button class="btn btn-outline-success btn-export-csv" data-filename="encargos">
+        <i class="ri-file-excel-line me-1"></i> Exportar
+      </button>
+
       <a href="{{ route('encargos.create') }}" class="btn btn-primary"><i class="ri-add-line me-1"></i> Nuevo</a>
     </div>
   </div>

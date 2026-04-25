@@ -97,4 +97,14 @@ class FacturaController extends Controller
         Factura::findOrFail($id)->delete();
         return redirect()->back()->with('success', 'Factura eliminada.');
     }
+
+    /**
+     * Mètode especial afegit pel nou requeriment.
+     * Mostra la factura en format net, a punt per imprimir i guardar com a PDF.
+     */
+    public function imprimir($id)
+    {
+        $factura = Factura::with('encargo.vehiculo.cliente', 'encargo.usos_materiales.material', 'encargo.presupuesto')->findOrFail($id);
+        return view('content.facturas.pdf', compact('factura'));
+    }
 }
