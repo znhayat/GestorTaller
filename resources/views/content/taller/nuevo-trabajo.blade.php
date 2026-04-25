@@ -6,56 +6,48 @@
       display: flex; 
       justify-content: space-between; 
       margin-bottom: 2.5rem; 
-      position: relative;
-      padding: 0 10%;
-  }
-  .step-indicator::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 10%;
-      right: 10%;
-      height: 3px;
-      background: #e2e8f0;
-      z-index: 1;
-      transform: translateY(-50%);
-      border-radius: 5px;
+      padding: 0;
+      background: #f8f9fa;
+      border-radius: 0.5rem;
+      border: 1px solid #ebedf2;
+      overflow: hidden;
   }
   .step-item { 
-      z-index: 2; 
-      border-radius: 50%; 
-      width: 50px; 
-      height: 50px; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      background: #e2e8f0; 
-      color: #64748b; 
-      font-weight: bold; 
-      font-size: 1.3rem;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-      border: 4px solid #fff;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-  }
-  .step-item.active { 
-      background: #696cff; 
-      color: #fff; 
-      box-shadow: 0 0 0 0.35rem rgba(105, 108, 255, 0.25); 
-      transform: scale(1.1);
-  }
-  .step-item.completed { 
-      background: #71dd37; 
-      color: #fff; 
-      border-color: #fff;
-  }
-  .wizard-title {
+      flex: 1;
       text-align: center;
-      margin-top: 15px;
-      font-size: 0.9rem;
-      color: #566a7f;
-      font-weight: 700;
+      padding: 1rem;
+      position: relative;
+      color: #a1acb8;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: all 0.2s ease-in-out;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+  }
+  .step-item:not(:last-child)::after {
+      content: '\EA6E';
+      font-family: "remixicon";
+      position: absolute;
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      color: #d9dee3;
+      z-index: 1;
+  }
+  .step-item.active { 
+      color: #696cff; 
+      background-color: rgba(105, 108, 255, 0.08);
+      border-bottom: 3px solid #696cff;
+  }
+  .step-item.completed { 
+      color: #71dd37; 
+      background-color: rgba(113, 221, 55, 0.05);
+  }
+  .step-item .step-icon {
+      font-size: 1.15rem;
+      margin-right: 0.4rem;
+      vertical-align: middle;
   }
   .wizard-step {
       animation: fadeIn 0.4s ease-out forwards;
@@ -79,23 +71,19 @@
     <div class="card-body pt-5">
       
       <!-- Indicador de Pasos -->
-      <div class="step-indicator">
-        <div>
-           <div class="step-item active" id="indicator-1"><i class="ri-user-line"></i></div>
-           <div class="wizard-title">Cliente</div>
-        </div>
-        <div>
-           <div class="step-item" id="indicator-2"><i class="ri-car-line"></i></div>
-           <div class="wizard-title">Vehículo</div>
-        </div>
-        <div>
-           <div class="step-item" id="indicator-3"><i class="ri-tools-line"></i></div>
-           <div class="wizard-title">Trabajo</div>
-        </div>
-        <div>
-           <div class="step-item" id="indicator-4"><i class="ri-calendar-line"></i></div>
-           <div class="wizard-title">Cita & Info</div>
-        </div>
+      <div class="step-indicator mb-5 shadow-sm">
+         <div class="step-item active" id="indicator-1">
+            <i class="ri-user-line step-icon"></i> <span>1. Cliente</span>
+         </div>
+         <div class="step-item" id="indicator-2">
+            <i class="ri-car-line step-icon"></i> <span>2. Vehículo</span>
+         </div>
+         <div class="step-item" id="indicator-3">
+            <i class="ri-tools-line step-icon"></i> <span>3. Servicios</span>
+         </div>
+         <div class="step-item" id="indicator-4">
+            <i class="ri-calendar-check-line step-icon"></i> <span>4. Resumen</span>
+         </div>
       </div>
 
       <form method="POST" action="{{ route('trabajo.store') }}" id="wizard-form">
@@ -103,67 +91,127 @@
 
         <!-- PASO 1: DATOS DEL CLIENTE -->
         <div id="step-1" class="wizard-step">
-            <h5 class="mb-4 text-primary"><i class="ri-user-line me-2"></i> Paso 1: Datos del Cliente</h5>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                  <label class="form-label" for="trabajo-nombre">Nombre</label>
-                  <input type="text" id="trabajo-nombre" name="nombre" class="form-control" placeholder="P. ej. Juan" required>
+            <h5 class="mb-4 text-primary fw-bold"><i class="ri-user-line me-2"></i> Paso 1: Ficha del Cliente</h5>
+            <div class="row g-3">
+              <div class="col-md-6">
+                  <div class="form-floating form-floating-outline">
+                    <input type="text" id="trabajo-nombre" name="nombre" class="form-control" placeholder="Nombre" required>
+                    <label for="trabajo-nombre">Nombre</label>
+                  </div>
               </div>
-              <div class="col-md-6 mb-3">
-                  <label class="form-label" for="trabajo-apellido">Apellido</label>
-                  <input type="text" id="trabajo-apellido" name="apellido" class="form-control" placeholder="P. ej. Pérez" required>
+              <div class="col-md-6">
+                  <div class="form-floating form-floating-outline">
+                    <input type="text" id="trabajo-apellido" name="apellido" class="form-control" placeholder="Apellidos" required>
+                    <label for="trabajo-apellido">Apellidos</label>
+                  </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                  <label class="form-label" for="trabajo-telefono">Teléfono</label>
-                  <input type="text" id="trabajo-telefono" name="telefono" class="form-control" placeholder="P. ej. 600123456" required>
+              <div class="col-md-6">
+                  <div class="form-floating form-floating-outline">
+                    <input type="text" id="trabajo-telefono" name="telefono" class="form-control" placeholder="Teléfono" required>
+                    <label for="trabajo-telefono">Teléfono</label>
+                  </div>
               </div>
-              <div class="col-md-6 mb-3">
-                  <label class="form-label" for="trabajo-correo">Correo Electrónico</label>
-                  <input type="email" id="trabajo-correo" name="correo" class="form-control" placeholder="correo@ejemplo.com" required>
+              <div class="col-md-6">
+                  <div class="form-floating form-floating-outline">
+                    <input type="email" id="trabajo-correo" name="correo" class="form-control" placeholder="Correo electrónico" required>
+                    <label for="trabajo-correo">Correo electrónico</label>
+                  </div>
               </div>
             </div>
         </div>
 
         <!-- PASO 2: DATOS DEL VEHÍCULO -->
         <div id="step-2" class="wizard-step d-none">
-            <h5 class="mb-4 text-primary"><i class="ri-car-line me-2"></i> Paso 2: Datos del Vehículo</h5>
-            <div class="row">
-              <div class="col-md-6 mb-4">
-                  <label class="form-label" for="trabajo-marca">Marca</label>
-                  <input type="text" id="trabajo-marca" name="marca" class="form-control" placeholder="P. ej. Audi" required>
+            <h5 class="mb-4 text-primary fw-bold"><i class="ri-car-line me-2"></i> Paso 2: Ficha del Vehículo</h5>
+            <div class="row g-3">
+              <div class="col-md-6">
+                  <div class="form-floating form-floating-outline">
+                    <input type="text" id="trabajo-marca" name="marca" class="form-control" placeholder="Marca" required>
+                    <label for="trabajo-marca">Marca del vehículo</label>
+                  </div>
               </div>
-              <div class="col-md-6 mb-4">
-                  <label class="form-label" for="trabajo-modelo">Modelo</label>
-                  <input type="text" id="trabajo-modelo" name="modelo" class="form-control" placeholder="P. ej. A4" required>
+              <div class="col-md-6">
+                  <div class="form-floating form-floating-outline">
+                    <input type="text" id="trabajo-modelo" name="modelo" class="form-control" placeholder="Modelo" required>
+                    <label for="trabajo-modelo">Modelo del vehículo</label>
+                  </div>
               </div>
             </div>
         </div>
 
-        <!-- PASO 3: TIPO DE TRABAJO -->
+        <!-- PASO 3: CARRITO MULTI-SERVICIO -->
         <div id="step-3" class="wizard-step d-none">
-            <h5 class="mb-4 text-primary"><i class="ri-tools-line me-2"></i> Paso 3: Tipo de Trabajo a Realizar</h5>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label" for="categoria-trabajo">Categoría</label>
-                <select id="categoria-trabajo" class="form-select">
-                  <option value="">-- Selecciona una categoría --</option>
-                  <!-- Llenado por JS -->
-                </select>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label" for="opcion-trabajo">Trabajo Específico</label>
-                <select id="opcion-trabajo" class="form-select" disabled>
-                  <option value="">-- Selecciona primero la categoría --</option>
-                </select>
-              </div>
-            </div>
+            <h5 class="mb-2 text-primary fw-bold"><i class="ri-tools-line me-2"></i> Paso 3: Selección de Servicios</h5>
+            <p class="text-muted mb-4 small">Configure los elementos a intervenir. Puede agregar múltiples trabajos a este expediente.</p>
             
-            <div class="mb-3 mt-2">
-                <label class="form-label" for="trabajo-descripcion">Descripción para el Taller</label>
-                <textarea id="trabajo-descripcion" name="descripcion" class="form-control" rows="4" required placeholder="Aquí aparecerá tu selección y puedes añadir detalles extras..."></textarea>
-                <div class="form-text text-muted">Esta información aparecerá en la tarjeta del Kanban de Producción y Recepción.</div>
+            <div class="row">
+              <!-- Creador de Tareas -->
+              <div class="col-md-6 border-end pe-4">
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-dark"><i class="ri-car-fill text-primary"></i> 1. Componente a tapizar</label>
+                    <select id="categoria-trabajo" class="form-select form-select-lg bg-light border-0 shadow-sm">
+                      <option value="">-- Elija un grupo --</option>
+                    </select>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-dark"><i class="ri-file-list-3-line text-primary"></i> 2. Tipo de servicio principal</label>
+                    <select id="opcion-trabajo" class="form-select bg-light border-0 shadow-sm" disabled>
+                      <option value="">-- Seleccione tarea --</option>
+                    </select>
+                    <input type="text" id="opcion-trabajo-libre" class="form-control bg-light border-0 shadow-sm d-none mt-2" placeholder="Especifique el trabajo a realizar...">
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-dark"><i class="ri-palette-line text-primary"></i> 3. Especificación o Acabado <small class="text-muted fw-normal">(Opcional)</small></label>
+                    <select id="subopcion-trabajo" class="form-select bg-light border-0 shadow-sm" disabled>
+                      <option value="">-- Variantes de acabado --</option>
+                    </select>
+                    <input type="text" id="subopcion-trabajo-libre" class="form-control bg-light border-0 shadow-sm d-none mt-2" placeholder="Especifique el material o acabado...">
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label fw-bold text-dark"><i class="ri-edit-2-line text-primary"></i> Anotación Especial <small class="text-muted fw-normal">(Opcional)</small></label>
+                    <textarea id="anotacion-trabajo" class="form-control bg-light border-0 shadow-sm" rows="2" placeholder="Detalles extra, costuras a medida, indicaciones del cliente..."></textarea>
+                  </div>
+
+                  <div class="row mt-4">
+                    <div class="col-6">
+                       <label class="form-label fw-bold text-info"><i class="ri-money-dollar-circle-line"></i> Gastos Mat. (€)</label>
+                       <input type="number" id="mat-estimado" class="form-control fw-bold border-info text-info" value="0" min="0" step="0.01">
+                    </div>
+                    <div class="col-6">
+                       <label class="form-label fw-bold text-warning"><i class="ri-time-line"></i> Previsión Horas</label>
+                       <input type="number" id="hor-estimado" class="form-control fw-bold border-warning text-warning" value="0" min="0" step="0.5">
+                    </div>
+                  </div>
+
+                  <div class="mt-4">
+                     <button type="button" id="btn-add-trabajo" class="btn btn-primary w-100 fw-bold shadow-sm py-2" disabled>
+                        <i class="ri-add-circle-fill me-1"></i> Confirmar y Agregar Tarea
+                     </button>
+                  </div>
+              </div>
+
+              <!-- Cesta de Trabajos (Carrito) -->
+              <div class="col-md-6 ps-4">
+                 <h6 class="fw-bold d-flex justify-content-between align-items-center mb-3 text-secondary">
+                    <span>Trabajos Registrados (<span id="txt-total-horas">0</span>h | <span id="txt-total-mat">0.00</span>€)</span>
+                    <span class="badge bg-primary rounded-pill px-3 py-2 fs-6" id="badge-contador">0</span>
+                 </h6>
+                 
+                 <div id="carrito-vacio" class="text-center py-5 text-muted rounded bg-label-secondary" style="border: 2px dashed #b7c2cc;">
+                    <i class="ri-shopping-cart-2-line fs-1 d-block mb-2 opacity-50"></i>
+                    Aún no hay trabajos.<br><small>Vaya añadiéndolos desde el panel de la izquierda.</small>
+                 </div>
+                 
+                 <div id="carrito-lista" class="d-flex flex-column gap-2 pe-1" style="max-height: 420px; overflow-y: auto;">
+                    <!-- Se llena vía JS -->
+                 </div>
+                 
+                 <!-- Generador oculto hacia BD -->
+                 <textarea id="trabajo-descripcion" name="descripcion" class="d-none" required></textarea>
+              </div>
             </div>
         </div>
 
@@ -200,16 +248,22 @@
               </div>
             </div>
 
-            <h6 class="mb-3 fw-bold mt-4 text-primary">Presupuesto y Tiempo</h6>
+            <h6 class="mb-3 fw-bold mt-5 text-primary"><i class="ri-wallet-3-line me-2"></i> Presupuesto Estimado y Tiempo Base</h6>
+            <div class="alert alert-success d-flex align-items-center mb-4" role="alert" style="border-left: 4px solid var(--bs-success);">
+                <i class="ri-magic-line me-3 fs-4"></i>
+                <div class="small">
+                    Basado en la suma del carrito. <strong>Si desconoces algún importe, puedes dejarlo a 0 y concertarlo más adelante con el cliente</strong>, o puedes editar este total manualmente si deseas hacer una tarifa plana global.
+                </div>
+            </div>
+            
             <div class="row">
               <div class="col-md-6 mb-3">
-                  <label class="form-label" for="trabajo-materiales">Gasto Materiales Estimado (€)</label>
-                  <input type="number" id="trabajo-materiales" step="0.01" name="precio_materiales" class="form-control" value="0" required>
+                  <label class="form-label fw-bold text-info" for="trabajo-materiales"><i class="ri-money-dollar-circle-line"></i> Total Material Base (€)</label>
+                  <input type="number" id="trabajo-materiales" step="0.01" name="precio_materiales" class="form-control form-control-lg text-info fw-bold" value="0" style="background-color: #fff;">
               </div>
               <div class="col-md-6 mb-3">
-                  <label class="form-label" for="trabajo-horas">Tiempo estimado de trabajo (Horas)</label>
-                  <input type="number" id="trabajo-horas" step="0.5" name="precio_horas" class="form-control" value="0" required>
-                  <div class="form-text">Cantidad de horas previstas para esta reparación.</div>
+                  <label class="form-label fw-bold text-warning" for="trabajo-horas"><i class="ri-time-line"></i> Total Horas Previstas (H)</label>
+                  <input type="number" id="trabajo-horas" step="0.5" name="precio_horas" class="form-control form-control-lg text-warning fw-bold" value="0" style="background-color: #fff;">
               </div>
             </div>
         </div>
@@ -231,73 +285,240 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // ---- LÓGICA DE TRABAJOS DINÁMICOS ----
-    const trabajosCatalog = {
-      "TAPIZADO DE PUERTAS": [
-        "Tapizado completo de panel de puerta",
-        "Tapizado de inserto central (solo la parte de tela/cuero)",
-        "Tapizado de reposabrazos de puerta",
-        "Tapizado de bolsillo de puerta"
-      ],
-      "TAPIZADO DE TECHO": [
-        "Tapizado completo de cielo raso",
-        "Tapizado de pilares (A, B, C)",
-        "Tapizado de viseras solares",
-        "Tapizado de manijas de agarre"
-      ],
-      "TAPIZADO DE VOLANTE": [
-        "Tapizado completo del volante",
-        "Tapizado deportivo (con perforaciones)",
-        "Tapizado bitono (dos colores)",
-        "Tapizado con diseño ergonómico (resaltes para dedos)"
-      ],
-      "TAPIZADO DE PALANCA DE CAMBIOS": [
-        "Tapizado de pomo de palanca",
-        "Tapizado de fuelle (funda acordeón)",
-        "Tapizado de base de palanca"
-      ],
-      "TAPIZADO DE ASIENTOS": [
-        "Tapizado completo de asientos delanteros",
-        "Tapizado completo de asientos traseros",
-        "Tapizado solo de posacabezas",
-        "Tapizado solo de apoyabrazos central",
-        "Tapizado con diseño diamantado (cuadros)",
-        "Tapizado bitono (dos colores en el mismo asiento)"
-      ],
-      "OTROS TAPIZADOS": [
-        "Tapizado de consola central",
-        "Tapizado de alfombras",
-        "Tapizado de baúl (maletero)",
-        "Tapizado de tablero (dashboard)"
-      ]
+    // ---- LÓGICA DE DICCIONARIO TAPICERÍA AVANZADO ----
+    const taxonomias = {
+        "Asientos (Butacas)": {
+            trabajos: [
+                "Retapizado integral de asientos",
+                "Retapizado parcial (banqueta / respaldo / orejeras)",
+                "Sustitución de espumas (espumado)",
+                "Reparación de costuras y paneles"
+            ],
+            tipos: [
+                "Tapizado en piel",
+                "Tapizado en polipiel",
+                "Tejido técnico",
+                "Confección de fundas a medida"
+            ]
+        },
+        "Cielo (Guarnecido techo)": {
+            trabajos: [
+                "Sustitución de cielo completo",
+                "Reparación de cielo descolgado (re-encolado)",
+                "Restauración de soporte de techo"
+            ],
+            tipos: ["Cielo estándar", "Cielo personalizado (alcántara, microfibra, etc.)"]
+        },
+        "Paneles de puerta": {
+            trabajos: ["Retapizado de paneles", "Sustitución de insertos", "Reparación de bases y soportes"],
+            tipos: ["Guarnecido completo", "Inserciones tapizadas (centro de puerta)"]
+        },
+        "Volante": {
+            trabajos: ["Retapizado de volante", "Restauración de aro"],
+            tipos: ["Piel lisa / perforada", "Costura vista personalizada"]
+        },
+        "Pomo de cambio": {
+            trabajos: ["Retapizado o forrado", "Sustitución de recubrimiento"],
+            tipos: ["Acabado en piel", "Personalización de costuras"]
+        },
+        "Fuelle de cambio/freno": {
+            trabajos: ["Confección de fuelles", "Sustitución"],
+            tipos: ["Fuelle estándar", "Fuelle personalizado"]
+        },
+        "Reposabrazos / Consola central": {
+            trabajos: ["Retapizado", "Reacondicionado de acolchado"],
+            tipos: ["Piel / Tela Estándar"]
+        },
+        "Moqueta (Revestimiento suelo)": {
+            trabajos: ["Sustitución de moqueta completa", "Fabricación de alfombrillas a medida"],
+            tipos: ["Calidad origen", "Calidad Premium Perimetrada"]
+        },
+        "Maletero (Zona de Carga)": {
+            trabajos: ["Revestimiento interior", "Moquetado de maletero"],
+            tipos: ["Goma resistente", "Moqueta insonorizante"]
+        },
+        "Otros guarnecidos (Pilares, Bandeja)": {
+            trabajos: ["Retapizado de pilares (A, B, C)", "Bandeja trasera", "Sustitución de revestimientos"],
+            tipos: ["Igualado de origen", "Estética personalizada"]
+        },
+        "Otro Trabajo (Personalizado)": {
+            trabajos: ["Trabajo especial a medida", "Reparación genérica"],
+            tipos: ["A definir por el taller"]
+        }
     };
+
+    let carritoTrabajos = [];
 
     const catSelect = document.getElementById('categoria-trabajo');
     const optSelect = document.getElementById('opcion-trabajo');
+    const suboptSelect = document.getElementById('subopcion-trabajo');
+    const optSelectLibre = document.getElementById('opcion-trabajo-libre');
+    const suboptSelectLibre = document.getElementById('subopcion-trabajo-libre');
+    const anotacionInput = document.getElementById('anotacion-trabajo');
     const descTextarea = document.getElementById('trabajo-descripcion');
+    const btnAdd = document.getElementById('btn-add-trabajo');
+    
+    // UI Carrito e Inputs de Totales P4
+    const contCarritoVacio = document.getElementById('carrito-vacio');
+    const divCarritoLista = document.getElementById('carrito-lista');
+    const badgeContador = document.getElementById('badge-contador');
+    const inputTotalMat = document.getElementById('trabajo-materiales');
+    const inputTotalHoras = document.getElementById('trabajo-horas');
+    const txtSumMat = document.getElementById('txt-total-mat');
+    const txtSumHor = document.getElementById('txt-total-horas');
 
-    // Poblar Categorías
-    for (const cat in trabajosCatalog) {
+    // Estado local para evitar sobreescritura agresiva si cambian manualmente el input total final
+    let hasManuallyEditedP4 = false;
+    inputTotalMat.addEventListener('input', () => hasManuallyEditedP4 = true);
+    inputTotalHoras.addEventListener('input', () => hasManuallyEditedP4 = true);
+
+    // 1. Inyectar catálogo
+    for (const cat in taxonomias) {
         catSelect.add(new Option(cat, cat));
     }
 
+    // 2. Comportamientos DOM Selectores
     catSelect.addEventListener('change', function() {
-        optSelect.innerHTML = '<option value="">-- Selecciona un trabajo --</option>';
-        if (this.value) {
+        optSelect.innerHTML = '<option value="">-- Seleccione tarea --</option>';
+        suboptSelect.innerHTML = '<option value="">-- Variantes de acabado --</option>';
+        optSelect.disabled = true;
+        suboptSelect.disabled = true;
+        btnAdd.disabled = true;
+        
+        optSelectLibre.classList.add('d-none');
+        suboptSelectLibre.classList.add('d-none');
+        optSelectLibre.value = '';
+        suboptSelectLibre.value = '';
+
+        if (this.value === "Otro Trabajo (Personalizado)") {
+            optSelectLibre.classList.remove('d-none');
+            suboptSelectLibre.classList.remove('d-none');
+            // Hacerlos directamente obligatorios para desbloquear
+            btnAdd.disabled = false; // Se validara en el click
+        } else if (this.value && taxonomias[this.value]) {
             optSelect.disabled = false;
-            trabajosCatalog[this.value].forEach(op => {
-                optSelect.add(new Option(op, op));
-            });
-        } else {
-            optSelect.disabled = true;
+            taxonomias[this.value].trabajos.forEach(op => optSelect.add(new Option(op, op)));
+            suboptSelect.disabled = false;
+            taxonomias[this.value].tipos.forEach(sub => suboptSelect.add(new Option(sub, sub)));
         }
     });
 
-    optSelect.addEventListener('change', function() {
-        if(catSelect.value && optSelect.value) {
-            descTextarea.value = `Categoría: ${catSelect.value}\nTrabajo a realizar: ${optSelect.value}\n\nDetalles adicionales: `;
-        }
+    optSelect.addEventListener('change', () => {
+        btnAdd.disabled = optSelect.value === '';
     });
+    
+    optSelectLibre.addEventListener('input', () => {
+        btnAdd.disabled = optSelectLibre.value.trim() === '';
+    });
+
+    // 3. Añadir a Carrito
+    btnAdd.addEventListener('click', () => {
+        const h = parseFloat(document.getElementById('hor-estimado').value) || 0;
+        const m = parseFloat(document.getElementById('mat-estimado').value) || 0;
+        const nota = anotacionInput.value.trim();
+        
+        let mTrabajo = catSelect.value === "Otro Trabajo (Personalizado)" ? optSelectLibre.value.trim() : optSelect.value;
+        let mAcabado = catSelect.value === "Otro Trabajo (Personalizado)" ? suboptSelectLibre.value.trim() : suboptSelect.value;
+        
+        if (!mTrabajo) return; // Validación de seguridad
+
+        let nuevoGasto = {
+            id: Date.now(),
+            categoria: catSelect.value,
+            trabajo: mTrabajo,
+            subopcion: mAcabado,
+            anotacion: nota,
+            horas: h,
+            mat: m
+        };
+        carritoTrabajos.push(nuevoGasto);
+        
+        // Reset Mini-from
+        document.getElementById('hor-estimado').value = 0;
+        document.getElementById('mat-estimado').value = 0;
+        anotacionInput.value = '';
+        catSelect.value = '';
+        catSelect.dispatchEvent(new Event('change')); // Limpia el resto
+        hasManuallyEditedP4 = false; // Reseteamos la confianza porque acaban de añadir un elemento nuevo
+        
+        renderizarCarrito();
+    });
+
+    window.borrarDelCarrito = function(idAEliminar) {
+        carritoTrabajos = carritoTrabajos.filter(x => x.id !== idAEliminar);
+        renderizarCarrito();
+    };
+
+    function renderizarCarrito() {
+        if(carritoTrabajos.length === 0) {
+            contCarritoVacio.classList.remove('d-none');
+            divCarritoLista.innerHTML = '';
+            actualizarTextosyPresupuestos();
+            return;
+        }
+
+        contCarritoVacio.classList.add('d-none');
+        divCarritoLista.innerHTML = '';
+
+        carritoTrabajos.forEach(item => {
+            let subt = item.subopcion ? `• ${item.subopcion}` : '';
+            let notaHtml = item.anotacion ? `<div class="bg-lighter p-2 rounded mt-2 border-start border-3 border-secondary small text-muted"><i class="ri-edit-2-line me-1"></i> ${item.anotacion}</div>` : '';
+            
+            divCarritoLista.innerHTML += `
+               <div class="card shadow-none border bg-white mb-2 pb-0">
+                  <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                     <div class="w-100 pe-3">
+                        <h6 class="mb-1 text-primary fw-bold">${item.categoria}</h6>
+                        <p class="mb-1 text-dark fs-6">${item.trabajo}</p>
+                        <small class="text-muted d-block mb-2">${subt}</small>
+                        <div class="d-flex gap-2">
+                           <span class="badge bg-label-info"><i class="ri-money-dollar-circle-line"></i> ${item.mat.toFixed(2)}€ Mat.</span>
+                           <span class="badge bg-label-warning"><i class="ri-time-line"></i> ${item.horas}H</span>
+                        </div>
+                        ${notaHtml}
+                     </div>
+                     <button type="button" class="btn btn-sm btn-label-danger" onclick="borrarDelCarrito(${item.id})" title="Eliminar servicio">
+                        <i class="ri-delete-bin-line me-1"></i> Quitar
+                     </button>
+                  </div>
+               </div>
+            `;
+        });
+        
+        actualizarTextosyPresupuestos();
+    }
+
+    function actualizarTextosyPresupuestos() {
+        badgeContador.textContent = carritoTrabajos.length;
+        
+        let sumMat = 0;
+        let sumHoras = 0;
+        let textoMarkdown = "";
+        
+        carritoTrabajos.forEach((item, index) => {
+            sumMat += item.mat;
+            sumHoras += item.horas;
+            
+            textoMarkdown += `### Trab. #${index + 1}: ${item.categoria}\n`;
+            textoMarkdown += `- **Tarea principal:** ${item.trabajo}\n`;
+            if(item.subopcion) textoMarkdown += `- **Tipo/Acabado:** ${item.subopcion}\n`;
+            if(item.anotacion) textoMarkdown += `> **Especificación del Taller:** ${item.anotacion}\n`;
+            textoMarkdown += `- *[${item.horas} H previstas | ${item.mat} € en material previsto]*\n\n`;
+        });
+
+        // Aplicamos matemáticas a HTML
+        txtSumMat.textContent = sumMat.toFixed(2);
+        txtSumHor.textContent = sumHoras;
+        
+        // Solo sobreescribimos los campos de presupuesto P4 si el operario no los ha borrado/sobreescrito manualmente
+        if(!hasManuallyEditedP4) {
+            inputTotalMat.value = sumMat.toFixed(2);
+            inputTotalHoras.value = sumHoras;
+        }
+
+        // Metemos al textarea oculto para alimentar DB en formato puro textual
+        descTextarea.value = textoMarkdown.trim();
+    }
 
     // ---- LÓGICA DE WIZARD ----
     let currentStep = 1;
@@ -318,15 +539,14 @@ document.addEventListener('DOMContentLoaded', function() {
             el.classList.remove('active', 'completed');
             if (index + 1 < step) {
                 el.classList.add('completed');
-                el.innerHTML = '<i class="ri-check-line"></i>'; // Icono de completado
+                el.querySelector('i').className = 'ri-checkbox-circle-fill step-icon text-success';
             } else if (index + 1 === step) {
                 el.classList.add('active');
-                // Restaurar iconos base según el step
-                const icons = ['user-line', 'car-line', 'tools-line', 'calendar-line'];
-                el.innerHTML = `<i class="ri-${icons[index]}"></i>`;
+                const icons = ['user-line', 'car-line', 'tools-line', 'calendar-check-line'];
+                el.querySelector('i').className = `ri-${icons[index]} step-icon`;
             } else {
-                const icons = ['user-line', 'car-line', 'tools-line', 'calendar-line'];
-                el.innerHTML = `<i class="ri-${icons[index]}"></i>`;
+                const icons = ['user-line', 'car-line', 'tools-line', 'calendar-check-line'];
+                el.querySelector('i').className = `ri-${icons[index]} step-icon`;
             }
         });
 
@@ -358,13 +578,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Custom validación para el select (no son technically required por HTML, pero controlamos q no pasen si falta descripcion)
-        if (currentStep === 3 && descTextarea.value.trim() === '') {
-             descTextarea.setCustomValidity("Debes proporcionar una descripción o seleccionar un trabajo");
-             descTextarea.reportValidity();
+        // Custom validación para el select: Requerir al menos 1 array en el carrito
+        if (currentStep === 3 && carritoTrabajos.length === 0) {
+             Swal.fire('Atención', 'Debe añadir al menos un (1) trabajo al carrito para continuar.', 'warning');
              isValid = false;
-        } else {
-             descTextarea.setCustomValidity("");
         }
 
         return isValid;
