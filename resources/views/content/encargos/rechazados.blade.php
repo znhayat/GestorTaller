@@ -76,13 +76,13 @@
                         <td>
                             <div class="d-flex gap-2">
                                 <a href="{{ route('encargos.edit', $encargo->id) }}" class="btn btn-sm btn-primary" title="Abrir y Revisar Expediente">
-                                    <i class="ri-folder-open-line"></i>
+                                    <i class="ri-folder-open-line me-1"></i> Ficha
                                 </a>
                                 <button type="button" class="btn btn-sm btn-success" onclick="restaurarCaso({{ $encargo->id }})" title="Restaurar y Reabrir en Recepción">
-                                    <i class="ri-refresh-line"></i>
+                                    <i class="ri-refresh-line me-1"></i> Restaurar
                                 </button>
                                 <button type="button" class="btn btn-sm btn-danger" onclick="eliminarDefinitivo({{ $encargo->id }})" title="Borrado Permanente">
-                                    <i class="ri-delete-bin-line"></i>
+                                    <i class="ri-delete-bin-line me-1"></i> Borrar
                                 </button>
                             </div>
                         </td>
