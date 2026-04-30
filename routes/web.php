@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
   // --- RUTAS CRÍTICAS DE EDICIÓN Y CREACIÓN (Solamente Administradores) ---
   Route::middleware(['admin'])->group(function () {
       Route::get('/nuevo-trabajo', [AltaTrabajoController::class, 'create'])->name('trabajo.create');
+      Route::get('/api/clientes/buscar', [AltaTrabajoController::class, 'buscarCliente'])->name('api.clientes.buscar');
       Route::post('/nuevo-trabajo', [AltaTrabajoController::class, 'store'])->name('trabajo.store');
       
       // Cruds Críticos (Excepto Index/Show)

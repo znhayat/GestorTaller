@@ -1,6 +1,6 @@
 @extends('layouts/blankLayout')
 
-@section('title', 'Register Basic - Pages')
+@section('title', 'Registro de Personal')
 
 @section('page-style')
 @vite(['resources/assets/vendor/scss/pages/page-auth.scss'])
@@ -64,9 +64,9 @@
                         <button class="btn btn-primary d-grid w-100 mb-5" type="submit">Registrarse</button>
                     </form>
                     <p class="text-center mb-5">
-                        <span>Ya tienes una cuenta?</span>
-                        <a href="{{ route('login') }}">
-                            <span>Inicia sesión</span>
+                        <span>Ja tens un compte?</span>
+                        <a href="{{ url('/login') }}">
+                            <span>Inicia sessió</span>
                         </a>
                     </p>
                 </div>

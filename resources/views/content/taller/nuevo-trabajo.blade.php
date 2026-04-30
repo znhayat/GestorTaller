@@ -59,6 +59,32 @@
   .card-body.pt-5 {
       padding: 3rem 4rem !important;
   }
+  /* Estilos para el autocompletado */
+  .search-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: white;
+      border: 1px solid #d9dee3;
+      border-radius: 0 0 0.5rem 0.5rem;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+      max-height: 250px;
+      overflow-y: auto;
+  }
+  .search-item {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f2f4;
+      transition: background 0.2s;
+  }
+  .search-item:hover {
+      background-color: #f8f9fa;
+  }
+  .search-item:last-child {
+      border-bottom: none;
+  }
 </style>
 
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -91,29 +117,39 @@
 
         <!-- PASO 1: DATOS DEL CLIENTE -->
         <div id="step-1" class="wizard-step">
-            <h5 class="mb-4 text-primary fw-bold"><i class="ri-user-line me-2"></i> Paso 1: Ficha del Cliente</h5>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="text-primary fw-bold mb-0"><i class="ri-user-line me-2"></i> Paso 1: Ficha del Cliente</h5>
+                <div class="position-relative" style="width: 300px;">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-lighter"><i class="ri-search-line"></i></span>
+                        <input type="text" id="buscador-cliente" class="form-control" placeholder="Buscar cliente existente...">
+                    </div>
+                    <div id="resultados-busqueda-cliente" class="search-results d-none"></div>
+                </div>
+            </div>
+
             <div class="row g-3">
               <div class="col-md-6">
                   <div class="form-floating form-floating-outline">
-                    <input type="text" id="trabajo-nombre" name="nombre" class="form-control" placeholder="Nombre" required>
+                    <input type="text" id="trabajo-nombre" name="nombre" class="form-control" placeholder="Nombre" required autocomplete="off">
                     <label for="trabajo-nombre">Nombre</label>
                   </div>
               </div>
               <div class="col-md-6">
                   <div class="form-floating form-floating-outline">
-                    <input type="text" id="trabajo-apellido" name="apellido" class="form-control" placeholder="Apellidos" required>
+                    <input type="text" id="trabajo-apellido" name="apellido" class="form-control" placeholder="Apellidos" required autocomplete="off">
                     <label for="trabajo-apellido">Apellidos</label>
                   </div>
               </div>
               <div class="col-md-6">
                   <div class="form-floating form-floating-outline">
-                    <input type="text" id="trabajo-telefono" name="telefono" class="form-control" placeholder="Teléfono" required>
+                    <input type="text" id="trabajo-telefono" name="telefono" class="form-control" placeholder="Teléfono" required autocomplete="off">
                     <label for="trabajo-telefono">Teléfono</label>
                   </div>
               </div>
               <div class="col-md-6">
                   <div class="form-floating form-floating-outline">
-                    <input type="email" id="trabajo-correo" name="correo" class="form-control" placeholder="Correo electrónico" required>
+                    <input type="email" id="trabajo-correo" name="correo" class="form-control" placeholder="Correo electrónico" required autocomplete="off">
                     <label for="trabajo-correo">Correo electrónico</label>
                   </div>
               </div>
@@ -123,97 +159,112 @@
         <!-- PASO 2: DATOS DEL VEHÍCULO -->
         <div id="step-2" class="wizard-step d-none">
             <h5 class="mb-4 text-primary fw-bold"><i class="ri-car-line me-2"></i> Paso 2: Ficha del Vehículo</h5>
+            
+            <div id="vehiculos-cliente-container" class="mb-4 d-none">
+                <label class="form-label text-muted small fw-bold">VEHÍCULOS DEL CLIENTE</label>
+                <div id="lista-vehiculos-cliente" class="d-flex flex-wrap gap-2"></div>
+                <hr>
+            </div>
+
             <div class="row g-3">
               <div class="col-md-6">
                   <div class="form-floating form-floating-outline">
-                    <input type="text" id="trabajo-marca" name="marca" class="form-control" placeholder="Marca" required>
+                    <input type="text" id="trabajo-marca" name="marca" class="form-control" placeholder="Marca" required autocomplete="off">
                     <label for="trabajo-marca">Marca del vehículo</label>
                   </div>
               </div>
               <div class="col-md-6">
                   <div class="form-floating form-floating-outline">
-                    <input type="text" id="trabajo-modelo" name="modelo" class="form-control" placeholder="Modelo" required>
+                    <input type="text" id="trabajo-modelo" name="modelo" class="form-control" placeholder="Modelo" required autocomplete="off">
                     <label for="trabajo-modelo">Modelo del vehículo</label>
                   </div>
               </div>
             </div>
         </div>
 
-        <!-- PASO 3: CARRITO MULTI-SERVICIO -->
+        <!-- PASO 3: SELECCIÓN MÚLTIPLE DE SERVICIOS (ÁRBOL EXPANDIDO) -->
         <div id="step-3" class="wizard-step d-none">
             <h5 class="mb-2 text-primary fw-bold"><i class="ri-tools-line me-2"></i> Paso 3: Selección de Servicios</h5>
-            <p class="text-muted mb-4 small">Configure los elementos a intervenir. Puede agregar múltiples trabajos a este expediente.</p>
-            
-            <div class="row">
-              <!-- Creador de Tareas -->
-              <div class="col-md-6 border-end pe-4">
-                  <div class="mb-3">
-                    <label class="form-label fw-bold text-dark"><i class="ri-car-fill text-primary"></i> 1. Componente a tapizar</label>
-                    <select id="categoria-trabajo" class="form-select form-select-lg bg-light border-0 shadow-sm">
-                      <option value="">-- Elija un grupo --</option>
-                    </select>
-                  </div>
-                  
-                  <div class="mb-3">
-                    <label class="form-label fw-bold text-dark"><i class="ri-file-list-3-line text-primary"></i> 2. Tipo de servicio principal</label>
-                    <select id="opcion-trabajo" class="form-select bg-light border-0 shadow-sm" disabled>
-                      <option value="">-- Seleccione tarea --</option>
-                    </select>
-                    <input type="text" id="opcion-trabajo-libre" class="form-control bg-light border-0 shadow-sm d-none mt-2" placeholder="Especifique el trabajo a realizar...">
-                  </div>
+            <p class="text-muted mb-3 small">Marca <strong>todos los trabajos</strong> que necesita el vehículo — puedes seleccionar de distintos componentes a la vez.</p>
 
+            <div class="row g-4">
+              <!-- Panel izquierdo: árbol de todas las categorías -->
+              <div class="col-md-7">
+                  <!-- Barra de búsqueda rápida -->
                   <div class="mb-3">
-                    <label class="form-label fw-bold text-dark"><i class="ri-palette-line text-primary"></i> 3. Especificación o Acabado <small class="text-muted fw-normal">(Opcional)</small></label>
-                    <select id="subopcion-trabajo" class="form-select bg-light border-0 shadow-sm" disabled>
-                      <option value="">-- Variantes de acabado --</option>
-                    </select>
-                    <input type="text" id="subopcion-trabajo-libre" class="form-control bg-light border-0 shadow-sm d-none mt-2" placeholder="Especifique el material o acabado...">
-                  </div>
-
-                  <div class="mb-3">
-                    <label class="form-label fw-bold text-dark"><i class="ri-edit-2-line text-primary"></i> Anotación Especial <small class="text-muted fw-normal">(Opcional)</small></label>
-                    <textarea id="anotacion-trabajo" class="form-control bg-light border-0 shadow-sm" rows="2" placeholder="Detalles extra, costuras a medida, indicaciones del cliente..."></textarea>
-                  </div>
-
-                  <div class="row mt-4">
-                    <div class="col-6">
-                       <label class="form-label fw-bold text-info"><i class="ri-money-dollar-circle-line"></i> Gastos Mat. (€)</label>
-                       <input type="number" id="mat-estimado" class="form-control fw-bold border-info text-info" value="0" min="0" step="0.01">
-                    </div>
-                    <div class="col-6">
-                       <label class="form-label fw-bold text-warning"><i class="ri-time-line"></i> Previsión Horas</label>
-                       <input type="number" id="hor-estimado" class="form-control fw-bold border-warning text-warning" value="0" min="0" step="0.5">
+                    <div class="input-group">
+                      <span class="input-group-text bg-light border-0"><i class="ri-search-line text-muted"></i></span>
+                      <input type="text" id="buscador-servicios" class="form-control bg-light border-0 shadow-sm" placeholder="Buscar tarea... (ej: retapizado, volante...)">
                     </div>
                   </div>
 
-                  <div class="mt-4">
-                     <button type="button" id="btn-add-trabajo" class="btn btn-primary w-100 fw-bold shadow-sm py-2" disabled>
-                        <i class="ri-add-circle-fill me-1"></i> Confirmar y Agregar Tarea
-                     </button>
+                  <!-- Árbol de categorías con checkboxes (siempre expandido) -->
+                  <div id="arbol-servicios" class="bg-light rounded p-3 shadow-sm" style="max-height: 380px; overflow-y: auto;">
+                    <!-- Generado por JS al cargar -->
+                  </div>
+
+                  <!-- Resumen de selección + botón agregar -->
+                  <div class="mt-3 p-3 bg-white rounded shadow-sm border">
+                    <div class="row g-3 align-items-end">
+                      <div class="col-4">
+                        <label class="form-label small fw-bold text-info mb-1"><i class="ri-money-dollar-circle-line"></i> Mat. total (€)</label>
+                        <input type="number" id="mat-estimado" class="form-control border-info text-info fw-bold" value="0" min="0" step="0.01">
+                      </div>
+                      <div class="col-4">
+                        <label class="form-label small fw-bold text-warning mb-1"><i class="ri-time-line"></i> Horas total</label>
+                        <input type="number" id="hor-estimado" class="form-control border-warning text-warning fw-bold" value="0" min="0" step="0.5">
+                      </div>
+                      <div class="col-4">
+                        <label class="form-label small fw-bold text-muted mb-1"><i class="ri-palette-line"></i> Acabado global</label>
+                        <select id="acabado-global" class="form-select">
+                          <option value="">Sin especif.</option>
+                          <option>Tapizado en piel</option>
+                          <option>Tapizado en polipiel</option>
+                          <option>Tejido técnico</option>
+                          <option>Alcántara / microfibra</option>
+                          <option>Piel perforada</option>
+                          <option>A definir con cliente</option>
+                        </select>
+                      </div>
+                      <div class="col-12">
+                        <textarea id="anotacion-trabajo" class="form-control bg-light border-0" rows="2" placeholder="Anotación especial (opcional): costuras, colores, indicaciones del cliente..."></textarea>
+                      </div>
+                      <div class="col-12">
+                        <button type="button" id="btn-add-trabajo" class="btn btn-primary w-100 fw-bold py-2">
+                          <i class="ri-add-circle-fill me-1"></i>
+                          <span id="btn-add-texto">Selecciona al menos un servicio</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
               </div>
 
-              <!-- Cesta de Trabajos (Carrito) -->
-              <div class="col-md-6 ps-4">
+              <!-- Panel derecho: Carrito de servicios añadidos -->
+              <div class="col-md-5 border-start ps-4">
                  <h6 class="fw-bold d-flex justify-content-between align-items-center mb-3 text-secondary">
-                    <span>Trabajos Registrados (<span id="txt-total-horas">0</span>h | <span id="txt-total-mat">0.00</span>€)</span>
-                    <span class="badge bg-primary rounded-pill px-3 py-2 fs-6" id="badge-contador">0</span>
+                    <span>Añadidos al Expediente</span>
+                    <span class="badge bg-primary rounded-pill px-3 py-1" id="badge-contador">0</span>
                  </h6>
-                 
-                 <div id="carrito-vacio" class="text-center py-5 text-muted rounded bg-label-secondary" style="border: 2px dashed #b7c2cc;">
-                    <i class="ri-shopping-cart-2-line fs-1 d-block mb-2 opacity-50"></i>
-                    Aún no hay trabajos.<br><small>Vaya añadiéndolos desde el panel de la izquierda.</small>
+                 <div class="text-muted small mb-2">
+                    <i class="ri-time-line me-1 text-warning"></i><span id="txt-total-horas">0</span>h &nbsp;|&nbsp;
+                    <i class="ri-money-dollar-circle-line me-1 text-info"></i><span id="txt-total-mat">0.00</span>€
                  </div>
-                 
-                 <div id="carrito-lista" class="d-flex flex-column gap-2 pe-1" style="max-height: 420px; overflow-y: auto;">
+
+                 <div id="carrito-vacio" class="text-center py-5 text-muted rounded bg-label-secondary" style="border: 2px dashed #b7c2cc;">
+                    <i class="ri-checkbox-multiple-line fs-1 d-block mb-2 opacity-50"></i>
+                    Aún no hay servicios.<br><small>Marca los trabajos y pulsa Agregar.</small>
+                 </div>
+
+                 <div id="carrito-lista" class="d-flex flex-column gap-2" style="max-height: 380px; overflow-y: auto;">
                     <!-- Se llena vía JS -->
                  </div>
-                 
-                 <!-- Generador oculto hacia BD -->
+
+                 <!-- Textarea oculto para la BD -->
                  <textarea id="trabajo-descripcion" name="descripcion" class="d-none" required></textarea>
               </div>
             </div>
         </div>
+
 
         <!-- PASO 4: CITA Y PRESUPUESTO -->
         <div id="step-4" class="wizard-step d-none">
@@ -349,98 +400,142 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let carritoTrabajos = [];
 
-    const catSelect = document.getElementById('categoria-trabajo');
-    const optSelect = document.getElementById('opcion-trabajo');
-    const suboptSelect = document.getElementById('subopcion-trabajo');
-    const optSelectLibre = document.getElementById('opcion-trabajo-libre');
-    const suboptSelectLibre = document.getElementById('subopcion-trabajo-libre');
-    const anotacionInput = document.getElementById('anotacion-trabajo');
-    const descTextarea = document.getElementById('trabajo-descripcion');
-    const btnAdd = document.getElementById('btn-add-trabajo');
-    
+    const arbolServicios  = document.getElementById('arbol-servicios');
+    const buscador        = document.getElementById('buscador-servicios');
+    const descTextarea    = document.getElementById('trabajo-descripcion');
+    const btnAdd          = document.getElementById('btn-add-trabajo');
+    const btnAddTexto     = document.getElementById('btn-add-texto');
+
     // UI Carrito e Inputs de Totales P4
     const contCarritoVacio = document.getElementById('carrito-vacio');
-    const divCarritoLista = document.getElementById('carrito-lista');
-    const badgeContador = document.getElementById('badge-contador');
-    const inputTotalMat = document.getElementById('trabajo-materiales');
-    const inputTotalHoras = document.getElementById('trabajo-horas');
-    const txtSumMat = document.getElementById('txt-total-mat');
-    const txtSumHor = document.getElementById('txt-total-horas');
+    const divCarritoLista  = document.getElementById('carrito-lista');
+    const badgeContador    = document.getElementById('badge-contador');
+    const inputTotalMat    = document.getElementById('trabajo-materiales');
+    const inputTotalHoras  = document.getElementById('trabajo-horas');
+    const txtSumMat        = document.getElementById('txt-total-mat');
+    const txtSumHor        = document.getElementById('txt-total-horas');
 
-    // Estado local para evitar sobreescritura agresiva si cambian manualmente el input total final
     let hasManuallyEditedP4 = false;
     inputTotalMat.addEventListener('input', () => hasManuallyEditedP4 = true);
     inputTotalHoras.addEventListener('input', () => hasManuallyEditedP4 = true);
 
-    // 1. Inyectar catálogo
+    // ---- GENERAR ÁRBOL COMPLETO DE CATEGORÍAS ----
+    // Se renderiza UNA VEZ al cargar la página. Todas las categorías visibles simultáneamente.
+    let uidChk = 0;
     for (const cat in taxonomias) {
-        catSelect.add(new Option(cat, cat));
+        const colores = ['primary','success','info','warning','danger','secondary'];
+        const colorIdx = Object.keys(taxonomias).indexOf(cat) % colores.length;
+        const color = colores[colorIdx];
+
+        // Cabecera de categoría con icono de colapso
+        const catId = `cat-${uidChk}`;
+        let html = `
+            <div class="mb-3 categoria-bloque">
+              <div class="d-flex align-items-center mb-2" style="cursor:pointer" onclick="toggleCat('${catId}')">
+                <span class="badge bg-${color} me-2 py-1 px-2" style="font-size:0.7rem">${cat.split('(')[0].trim()}</span>
+                <small class="text-muted chk-cat-label" data-cat="${cat}"></small>
+                <i class="ri-arrow-down-s-line ms-auto text-muted cat-chevron" id="chev-${catId}"></i>
+              </div>
+              <div id="${catId}" class="ps-3 border-start border-${color} border-2">`;
+
+        taxonomias[cat].trabajos.forEach(tarea => {
+            const id = `chk-${uidChk++}`;
+            html += `<div class="form-check mb-1 tarea-item">
+                <input class="form-check-input chk-tarea" type="checkbox" value="${tarea}" data-cat="${cat}" id="${id}">
+                <label class="form-check-label small" for="${id}">${tarea}</label>
+              </div>`;
+        });
+
+        html += `</div></div>`;
+        arbolServicios.insertAdjacentHTML('beforeend', html);
     }
 
-    // 2. Comportamientos DOM Selectores
-    catSelect.addEventListener('change', function() {
-        optSelect.innerHTML = '<option value="">-- Seleccione tarea --</option>';
-        suboptSelect.innerHTML = '<option value="">-- Variantes de acabado --</option>';
-        optSelect.disabled = true;
-        suboptSelect.disabled = true;
-        btnAdd.disabled = true;
-        
-        optSelectLibre.classList.add('d-none');
-        suboptSelectLibre.classList.add('d-none');
-        optSelectLibre.value = '';
-        suboptSelectLibre.value = '';
+    // Escuchar cambios en todos los checkboxes
+    arbolServicios.querySelectorAll('.chk-tarea').forEach(c => c.addEventListener('change', actualizarBotonAgregar));
+    actualizarBotonAgregar();
 
-        if (this.value === "Otro Trabajo (Personalizado)") {
-            optSelectLibre.classList.remove('d-none');
-            suboptSelectLibre.classList.remove('d-none');
-            // Hacerlos directamente obligatorios para desbloquear
-            btnAdd.disabled = false; // Se validara en el click
-        } else if (this.value && taxonomias[this.value]) {
-            optSelect.disabled = false;
-            taxonomias[this.value].trabajos.forEach(op => optSelect.add(new Option(op, op)));
-            suboptSelect.disabled = false;
-            taxonomias[this.value].tipos.forEach(sub => suboptSelect.add(new Option(sub, sub)));
+    // Colapsar/expandir categoría
+    window.toggleCat = function(id) {
+        const el = document.getElementById(id);
+        const chev = document.getElementById('chev-' + id);
+        if (el.style.display === 'none') {
+            el.style.display = 'block';
+            chev.className = 'ri-arrow-down-s-line ms-auto text-muted cat-chevron';
+        } else {
+            el.style.display = 'none';
+            chev.className = 'ri-arrow-right-s-line ms-auto text-muted cat-chevron';
         }
+    };
+
+    // Buscador en tiempo real
+    buscador.addEventListener('input', function() {
+        const q = this.value.toLowerCase().trim();
+        arbolServicios.querySelectorAll('.tarea-item').forEach(item => {
+            const label = item.querySelector('label').textContent.toLowerCase();
+            item.style.display = (!q || label.includes(q)) ? 'block' : 'none';
+        });
+        // Mostrar/ocultar bloques de categoría enteros
+        arbolServicios.querySelectorAll('.categoria-bloque').forEach(bloque => {
+            const visible = Array.from(bloque.querySelectorAll('.tarea-item')).some(i => i.style.display !== 'none');
+            bloque.style.display = visible ? 'block' : 'none';
+        });
     });
 
-    optSelect.addEventListener('change', () => {
-        btnAdd.disabled = optSelect.value === '';
-    });
-    
-    optSelectLibre.addEventListener('input', () => {
-        btnAdd.disabled = optSelectLibre.value.trim() === '';
-    });
+    function actualizarBotonAgregar() {
+        const n = arbolServicios.querySelectorAll('.chk-tarea:checked').length;
+        // Actualizar etiquetas de conteo por categoría
+        document.querySelectorAll('.chk-cat-label').forEach(lbl => {
+            const cat = lbl.dataset.cat;
+            const nCat = arbolServicios.querySelectorAll(`.chk-tarea[data-cat="${cat}"]:checked`).length;
+            lbl.textContent = nCat > 0 ? `${nCat} seleccionada${nCat > 1 ? 's' : ''}` : '';
+        });
+        if (n === 0) {
+            btnAddTexto.textContent = 'Selecciona al menos un servicio';
+            btnAdd.classList.remove('btn-primary');
+            btnAdd.classList.add('btn-secondary');
+        } else {
+            btnAddTexto.textContent = `Agregar ${n} servicio${n > 1 ? 's' : ''} al Expediente`;
+            btnAdd.classList.remove('btn-secondary');
+            btnAdd.classList.add('btn-primary');
+        }
+    }
 
-    // 3. Añadir a Carrito
+    // ---- AÑADIR AL CARRITO (TODAS LAS MARCADAS) ----
     btnAdd.addEventListener('click', () => {
-        const h = parseFloat(document.getElementById('hor-estimado').value) || 0;
-        const m = parseFloat(document.getElementById('mat-estimado').value) || 0;
-        const nota = anotacionInput.value.trim();
-        
-        let mTrabajo = catSelect.value === "Otro Trabajo (Personalizado)" ? optSelectLibre.value.trim() : optSelect.value;
-        let mAcabado = catSelect.value === "Otro Trabajo (Personalizado)" ? suboptSelectLibre.value.trim() : suboptSelect.value;
-        
-        if (!mTrabajo) return; // Validación de seguridad
+        const seleccionadas = Array.from(arbolServicios.querySelectorAll('.chk-tarea:checked'));
+        if (seleccionadas.length === 0) {
+            Swal.fire('Atención', 'Marca al menos un servicio antes de agregar.', 'warning'); return;
+        }
+        const hTotal  = parseFloat(document.getElementById('hor-estimado').value) || 0;
+        const mTotal  = parseFloat(document.getElementById('mat-estimado').value) || 0;
+        const nota    = anotacionInput.value.trim();
+        const acabado = document.getElementById('acabado-global').value;
+        const n       = seleccionadas.length;
+        const hPorTarea = Math.round((hTotal / n) * 2) / 2;
+        const mPorTarea = parseFloat((mTotal / n).toFixed(2));
 
-        let nuevoGasto = {
-            id: Date.now(),
-            categoria: catSelect.value,
-            trabajo: mTrabajo,
-            subopcion: mAcabado,
-            anotacion: nota,
-            horas: h,
-            mat: m
-        };
-        carritoTrabajos.push(nuevoGasto);
-        
-        // Reset Mini-from
+        seleccionadas.forEach(chk => {
+            carritoTrabajos.push({
+                id: Date.now() + Math.random(),
+                categoria: chk.dataset.cat,
+                trabajo:   chk.value,
+                subopcion: acabado,
+                anotacion: nota,
+                horas:     hPorTarea,
+                mat:       mPorTarea
+            });
+            chk.checked = false; // Desmarcar tras agregar
+        });
+
+        // Reset campos
         document.getElementById('hor-estimado').value = 0;
         document.getElementById('mat-estimado').value = 0;
+        document.getElementById('acabado-global').value = '';
         anotacionInput.value = '';
-        catSelect.value = '';
-        catSelect.dispatchEvent(new Event('change')); // Limpia el resto
-        hasManuallyEditedP4 = false; // Reseteamos la confianza porque acaban de añadir un elemento nuevo
-        
+        buscador.value = '';
+        buscador.dispatchEvent(new Event('input')); // Limpiar filtro
+        hasManuallyEditedP4 = false;
+        actualizarBotonAgregar();
         renderizarCarrito();
     });
 
@@ -523,12 +618,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // ---- LÓGICA DE WIZARD ----
     let currentStep = 1;
     const totalSteps = 4;
-    
     const btnNext = document.getElementById('btn-next');
     const btnPrev = document.getElementById('btn-prev');
     const btnSubmit = document.getElementById('btn-submit');
     
-    function showStep(step) {
+    window.showStep = function(step) {
         // Ocultar todos
         document.querySelectorAll('.wizard-step').forEach(el => el.classList.add('d-none'));
         // Mostrar actual
@@ -564,6 +658,15 @@ document.addEventListener('DOMContentLoaded', function() {
             btnNext.classList.remove('d-none');
             btnSubmit.classList.add('d-none');
         }
+
+        // Foco automático
+        setTimeout(() => {
+            const stepEl = document.getElementById('step-' + step);
+            if (stepEl) {
+                const firstInput = stepEl.querySelector('input:not([type=hidden]):not([readonly]), select, textarea');
+                if (firstInput) firstInput.focus();
+            }
+        }, 300);
     }
 
     function validateCurrentStep() {
@@ -634,6 +737,129 @@ document.addEventListener('DOMContentLoaded', function() {
     fechaInput.addEventListener('change', checkAvailability);
     // Llamada inicial
     checkAvailability();
+
+    // ---- LÓGICA DE BÚSQUEDA DE CLIENTES ----
+    const buscadorCliente = document.getElementById('buscador-cliente');
+    const resultadosCliente = document.getElementById('resultados-busqueda-cliente');
+    let clientesEncontrados = [];
+
+    buscadorCliente.addEventListener('input', function() {
+        const q = this.value.trim();
+        if (q.length < 3) {
+            resultadosCliente.classList.add('d-none');
+            return;
+        }
+
+        fetch(`/api/clientes/buscar?q=${q}`)
+            .then(res => res.json())
+            .then(data => {
+                clientesEncontrados = data;
+                if (data.length === 0) {
+                    resultadosCliente.innerHTML = '<div class="search-item text-muted">No se encontraron clientes</div>';
+                } else {
+                    let html = '';
+                    data.forEach((c, index) => {
+                        html += `
+                            <div class="search-item" onclick="seleccionarClientePorIndice(${index})">
+                                <strong>${c.nombre} ${c.apellido}</strong><br>
+                                <small class="text-muted">${c.telefono} | ${c.correo}</small>
+                            </div>
+                        `;
+                    });
+                    resultadosCliente.innerHTML = html;
+                }
+                resultadosCliente.classList.remove('d-none');
+            });
+    });
+
+    window.seleccionarClientePorIndice = function(index) {
+        const cliente = clientesEncontrados[index];
+        if (!cliente) return;
+        
+        seleccionarCliente(cliente);
+    };
+
+    window.seleccionarCliente = function(cliente) {
+        document.getElementById('trabajo-nombre').value = cliente.nombre;
+        document.getElementById('trabajo-apellido').value = cliente.apellido;
+        document.getElementById('trabajo-telefono').value = cliente.telefono;
+        document.getElementById('trabajo-correo').value = cliente.correo;
+        
+        buscadorCliente.value = `${cliente.nombre} ${cliente.apellido}`;
+        resultadosCliente.classList.add('d-none');
+        
+        // Cargar sus vehículos para el Paso 2
+        const vehContainer = document.getElementById('vehiculos-cliente-container');
+        const vehLista = document.getElementById('lista-vehiculos-cliente');
+        
+        if (cliente.vehiculos && cliente.vehiculos.length > 0) {
+            let html = '';
+            cliente.vehiculos.forEach(v => {
+                html += `
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="seleccionarVehiculo('${v.marca}', '${v.modelo}')">
+                        <i class="ri-car-line me-1"></i> ${v.marca} ${v.modelo}
+                    </button>
+                `;
+            });
+            vehLista.innerHTML = html;
+            vehContainer.classList.remove('d-none');
+        } else {
+            vehContainer.classList.add('d-none');
+        }
+        
+        // Efecto visual de "rellenado"
+        const inputs = ['trabajo-nombre', 'trabajo-apellido', 'trabajo-telefono', 'trabajo-correo'];
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            el.classList.add('is-valid');
+            setTimeout(() => el.classList.remove('is-valid'), 2000);
+        });
+    };
+
+    window.seleccionarVehiculo = function(marca, modelo) {
+        document.getElementById('trabajo-marca').value = marca;
+        document.getElementById('trabajo-modelo').value = modelo;
+        
+        // Efecto visual
+        const inputs = ['trabajo-marca', 'trabajo-modelo'];
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            el.classList.add('is-valid');
+            setTimeout(() => el.classList.remove('is-valid'), 2000);
+        });
+
+        // Pasar automáticamente al siguiente paso tras un breve delay
+        setTimeout(() => {
+            btnNext.click();
+        }, 300);
+    };
+
+    // Cerrar resultados al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (!buscadorCliente.contains(e.target) && !resultadosCliente.contains(e.target)) {
+            resultadosCliente.classList.add('d-none');
+        }
+    });
+
+    // ---- ATAJOS DE TECLADO Y FOCO ----
+
+    // Navegación con Enter
+    document.getElementById('wizard-form').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            // Evitar que el Enter envíe el formulario si no estamos en el último paso
+            if (currentStep < totalSteps) {
+                // Si estamos en un textarea, dejamos que haga el salto de línea
+                if (e.target.tagName === 'TEXTAREA') return;
+                
+                e.preventDefault();
+                btnNext.click();
+            } else if (currentStep === totalSteps) {
+                // En el último paso, dejamos que el Enter (o Ctrl+Enter) envíe el formulario
+                // pero solo si no estamos en un textarea o si pulsamos Ctrl
+                if (e.target.tagName === 'TEXTAREA' && !e.ctrlKey) return;
+            }
+        }
+    });
 
 });
 </script>

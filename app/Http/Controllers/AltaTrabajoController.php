@@ -11,6 +11,24 @@ use Illuminate\Support\Facades\DB;
 
 class AltaTrabajoController extends Controller
 {
+    /**
+     * Búsqueda de clientes y sus vehículos para el autocompletado
+     */
+    public function buscarCliente(Request $request)
+    {
+        $term = $request->query('q');
+        if (!$term) return response()->json([]);
+
+        $clientes = Cliente::with('vehiculos')
+            ->where('nombre', 'like', "%{$term}%")
+            ->orWhere('apellido', 'like', "%{$term}%")
+            ->orWhere('telefono', 'like', "%{$term}%")
+            ->limit(5)
+            ->get();
+
+        return response()->json($clientes);
+    }
+
     public function create()
     {
         return view('content.taller.nuevo-trabajo');
@@ -36,20 +54,33 @@ class AltaTrabajoController extends Controller
         try {
             return DB::transaction(function () use ($request) {
 
-                // 1. Crear nuevo cliente (Siempre separado y limpio por cada trabajo, sin reescribir datos pasados o solaparse con teléfonos idénticos por error)
-                $cliente = Cliente::create([
-                    'telefono' => $request->telefono,
-                    'nombre'   => $request->nombre,
-                    'apellido' => $request->apellido,
-                    'correo'   => $request->correo,
-                ]);
+                // 1. Obtener o crear cliente (Evitamos duplicados por teléfono)
+                $cliente = Cliente::firstOrCreate(
+                    ['telefono' => $request->telefono],
+                    [
+                        'nombre'   => $request->nombre,
+                        'apellido' => $request->apellido,
+                        'correo'   => $request->correo,
+                    ]
+                );
 
-                // 2. Crear vehículo
-                $vehiculo = Vehiculo::create([
-                    'cliente_id' => $cliente->id,
-                    'marca'      => $request->marca,
-                    'modelo'     => $request->modelo,
-                ]);
+                // Si el cliente ya existía, actualizamos sus datos por si han cambiado
+                if (!$cliente->wasRecentlyCreated) {
+                    $cliente->update([
+                        'nombre'   => $request->nombre,
+                        'apellido' => $request->apellido,
+                        'correo'   => $request->correo,
+                    ]);
+                }
+
+                // 2. Obtener o crear vehículo para este cliente
+                $vehiculo = Vehiculo::firstOrCreate(
+                    [
+                        'cliente_id' => $cliente->id,
+                        'marca'      => $request->marca,
+                        'modelo'     => $request->modelo,
+                    ]
+                );
 
                 // 3. Crear encargo
                 $encargo = Encargo::create([
