@@ -36,13 +36,31 @@
     <div class="row">
       @if($fotos->count() > 0)
         @foreach($fotos as $foto)
-        <div class="col-md-4 mb-4">
-          <div class="card h-100 shadow-none border">
-            <img class="card-img-top" src="{{ asset('storage/' . $foto->ruta) }}" alt="{{ $foto->titulo_galeria }}" style="height: 200px; object-fit: cover;">
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card h-100 shadow-sm border-0 overflow-hidden">
+            @if($foto->tipo === 'antes' && $foto->despues)
+              <!-- Diseño Antes y Después -->
+              <div class="row g-0" style="height: 200px;">
+                <div class="col-6 position-relative border-end">
+                  <img src="{{ asset('storage/' . $foto->ruta) }}" class="w-100 h-100" style="object-fit: cover;" alt="Antes">
+                  <span class="badge bg-warning position-absolute bottom-0 start-0 m-2">Antes</span>
+                </div>
+                <div class="col-6 position-relative">
+                  <img src="{{ asset('storage/' . $foto->despues->ruta) }}" class="w-100 h-100" style="object-fit: cover;" alt="Después">
+                  <span class="badge bg-success position-absolute bottom-0 end-0 m-2">Después</span>
+                </div>
+              </div>
+            @else
+              <!-- Diseño Normal -->
+              <img class="card-img-top" src="{{ asset('storage/' . $foto->ruta) }}" alt="{{ $foto->titulo_galeria }}" style="height: 200px; object-fit: cover;">
+            @endif
+            
             <div class="card-body">
-              <h5 class="card-title">{{ $foto->titulo_galeria }}</h5>
-              <p class="card-text">{{ $foto->descripcion }}</p>
-              <span class="badge bg-label-{{ $foto->categoria_badge }}">{{ $foto->categoria_texto }}</span>
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="card-title mb-0">{{ $foto->titulo_galeria }}</h5>
+                <span class="badge bg-label-{{ $foto->categoria_badge }}">{{ $foto->categoria_texto }}</span>
+              </div>
+              <p class="card-text text-muted small">{{ $foto->descripcion }}</p>
             </div>
           </div>
         </div>

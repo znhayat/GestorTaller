@@ -24,7 +24,11 @@ use App\Http\Controllers\dashboard\Analytics;
 */
 
 Route::get('/', function () {
-    $fotos = \App\Models\Foto::where('es_publica', true)->latest()->get();
+    $fotos = \App\Models\Foto::where('es_publica', true)
+        ->where('tipo', '!=', 'despues')
+        ->with('despues')
+        ->latest()
+        ->get();
     return view('content.pages.landing', compact('fotos'));
 })->name('landing');
 

@@ -13,10 +13,30 @@
             <div class="card-body">
                 <form action="{{ route('galeria.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <div class="mb-3">
-                        <label for="foto" class="form-label">Imagen (Max 10MB)</label>
-                        <input class="form-control" type="file" id="foto" name="foto" accept="image/*" required>
+                    <!-- Switch Antes y Después -->
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="es_antes_despues" name="es_antes_despues" onchange="toggleAntesDespues(this)">
+                        <label class="form-check-label fw-bold" for="es_antes_despues">Modo Antes y Después</label>
                     </div>
+
+                    <div id="single-upload">
+                        <div class="mb-3">
+                            <label for="foto" class="form-label">Imagen Única (Max 10MB)</label>
+                            <input class="form-control" type="file" id="foto" name="foto" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div id="dual-upload" style="display: none;">
+                        <div class="mb-3">
+                            <label for="foto_antes" class="form-label text-warning">Foto ANTES</label>
+                            <input class="form-control border-warning" type="file" id="foto_antes" name="foto_antes" accept="image/*">
+                        </div>
+                        <div class="mb-3">
+                            <label for="foto_despues" class="form-label text-success">Foto DESPUÉS</label>
+                            <input class="form-control border-success" type="file" id="foto_despues" name="foto_despues" accept="image/*">
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label for="titulo_galeria" class="form-label">Título</label>
                         <input class="form-control" type="text" id="titulo_galeria" name="titulo_galeria" placeholder="Ej: Restauración de Volante" required>
@@ -27,7 +47,12 @@
                     </div>
                     <div class="mb-3">
                         <label for="categoria_texto" class="form-label">Nombre Categoría</label>
-                        <input class="form-control" type="text" id="categoria_texto" name="categoria_texto" placeholder="Ej: Volantes, Asientos..." required>
+                        <input class="form-control" type="text" id="categoria_texto" name="categoria_texto" placeholder="Ej: Volantes, Asientos..." list="categoriasList" required>
+                        <datalist id="categoriasList">
+                            @foreach($categoriasExistentes as $cat)
+                                <option value="{{ $cat }}">
+                            @endforeach
+                        </datalist>
                     </div>
                     <div class="mb-4">
                         <label for="categoria_badge" class="form-label">Color de Etiqueta</label>
@@ -42,6 +67,30 @@
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Subir y Publicar <i class="ri-upload-cloud-2-line ms-2"></i></button>
                 </form>
+
+                <script>
+                function toggleAntesDespues(checkbox) {
+                    const single = document.getElementById('single-upload');
+                    const dual = document.getElementById('dual-upload');
+                    const inputFoto = document.getElementById('foto');
+                    const inputAntes = document.getElementById('foto_antes');
+                    const inputDespues = document.getElementById('foto_despues');
+
+                    if (checkbox.checked) {
+                        single.style.display = 'none';
+                        dual.style.display = 'block';
+                        inputFoto.required = false;
+                        inputAntes.required = true;
+                        inputDespues.required = true;
+                    } else {
+                        single.style.display = 'block';
+                        dual.style.display = 'none';
+                        inputFoto.required = true;
+                        inputAntes.required = false;
+                        inputDespues.required = false;
+                    }
+                }
+                </script>
             </div>
         </div>
     </div>
@@ -56,9 +105,21 @@
                     @foreach($fotos as $foto)
                     <div class="col-md-6 mb-4">
                         <div class="card h-100 shadow-none border">
-                            <img class="card-img-top" src="{{ asset($foto->ruta) }}" alt="{{ $foto->titulo_galeria }}" style="height: 150px; object-fit: cover;">
+                            <div class="position-relative">
+                                <img class="card-img-top" src="{{ asset('storage/' . $foto->ruta) }}" alt="{{ $foto->titulo_galeria }}" style="height: 150px; object-fit: cover;">
+                                @if($foto->tipo === 'antes')
+                                    <span class="badge bg-warning position-absolute top-0 end-0 m-2">ANTES</span>
+                                @elseif($foto->tipo === 'despues')
+                                    <span class="badge bg-success position-absolute top-0 end-0 m-2">DESPUÉS</span>
+                                @endif
+                            </div>
                             <div class="card-body p-3">
-                                <span class="badge bg-label-{{ $foto->categoria_badge }} mb-2">{{ $foto->categoria_texto }}</span>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-label-{{ $foto->categoria_badge }}">{{ $foto->categoria_texto }}</span>
+                                    @if($foto->tipo !== 'normal')
+                                        <small class="text-muted"><i class="ri-links-line"></i> Vinculada</small>
+                                    @endif
+                                </div>
                                 <h6 class="card-title mb-1">{{ $foto->titulo_galeria }}</h6>
                                 <p class="card-text small text-truncate" title="{{ $foto->descripcion }}">{{ $foto->descripcion }}</p>
                                 
