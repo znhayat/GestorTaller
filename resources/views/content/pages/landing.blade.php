@@ -38,7 +38,7 @@
         @foreach($fotos as $foto)
         <div class="col-md-4 mb-4">
           <div class="card h-100 shadow-none border">
-            <img class="card-img-top" src="{{ asset($foto->ruta) }}" alt="{{ $foto->titulo_galeria }}" style="height: 200px; object-fit: cover;">
+            <img class="card-img-top" src="{{ asset('storage/' . $foto->ruta) }}" alt="{{ $foto->titulo_galeria }}" style="height: 200px; object-fit: cover;">
             <div class="card-body">
               <h5 class="card-title">{{ $foto->titulo_galeria }}</h5>
               <p class="card-text">{{ $foto->descripcion }}</p>

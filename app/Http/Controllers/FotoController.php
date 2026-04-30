@@ -30,7 +30,7 @@ class FotoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'foto' => 'required|image|max:2048',
+            'foto' => 'required|image|max:10240',
             'encargo_id' => 'required|exists:encargos,id'
         ]);
 
@@ -63,6 +63,7 @@ class FotoController extends Controller
         $foto = Foto::findOrFail($id);
 
         if ($request->hasFile('foto')) {
+            $request->validate(['foto' => 'image|max:10240']);
             Storage::disk('public')->delete($foto->ruta);
             $foto->ruta = $request->file('foto')->store('trabajos', 'public');
         }

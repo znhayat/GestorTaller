@@ -34,7 +34,7 @@ class GaleriaController extends Controller
             $path = $request->file('foto')->store('galeria', 'public');
 
             Foto::create([
-                'ruta' => 'storage/' . $path,
+                'ruta' => $path,
                 'es_publica' => true,
                 'titulo_galeria' => $request->titulo_galeria,
                 'descripcion' => $request->descripcion,
