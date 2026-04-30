@@ -198,6 +198,15 @@
                     </div>
                   </div>
 
+                  <!-- Buscador de Materiales del Almacén (NUEVO) -->
+                  <div class="mb-3 position-relative">
+                    <div class="input-group">
+                      <span class="input-group-text bg-info border-0 text-white"><i class="ri-archive-line"></i></span>
+                      <input type="text" id="buscador-materiales-wizard" class="form-control border-info shadow-sm" placeholder="Añadir material del almacén (ej: Piel, Espuma...)">
+                    </div>
+                    <div id="resultados-materiales-wizard" class="search-results d-none"></div>
+                  </div>
+
                   <!-- Árbol de categorías con checkboxes (siempre expandido) -->
                   <div id="arbol-servicios" class="bg-light rounded p-3 shadow-sm" style="max-height: 380px; overflow-y: auto;">
                     <!-- Generado por JS al cargar -->
@@ -834,10 +843,90 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
     };
 
+    // ---- LÓGICA DE BÚSQUEDA DE MATERIALES ----
+    const buscadorMateriales = document.getElementById('buscador-materiales-wizard');
+    const resultadosMateriales = document.getElementById('resultados-materiales-wizard');
+
+    buscadorMateriales.addEventListener('input', function() {
+        const q = this.value.trim();
+        if (q.length < 2) {
+            resultadosMateriales.classList.add('d-none');
+            return;
+        }
+
+        fetch(`/api/materiales/buscar?q=${q}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length === 0) {
+                    resultadosMateriales.innerHTML = '<div class="search-item text-muted">No se encontraron materiales</div>';
+                } else {
+                    let html = '';
+                    data.forEach(m => {
+                        html += `
+                            <div class="search-item d-flex justify-content-between align-items-center" onclick='seleccionarMaterialWizard(${JSON.stringify(m)})'>
+                                <div>
+                                    <strong>${m.nombre}</strong><br>
+                                    <small class="text-muted">${m.tipo} | ${m.precio_unitario}€ / ${m.unidad}</small>
+                                </div>
+                                <span class="badge bg-label-info">${parseFloat(m.stock)} disp.</span>
+                            </div>
+                        `;
+                    });
+                    resultadosMateriales.innerHTML = html;
+                }
+                resultadosMateriales.classList.remove('d-none');
+            });
+    });
+
+    window.seleccionarMaterialWizard = function(material) {
+        resultadosMateriales.classList.add('d-none');
+        buscadorMateriales.value = '';
+
+        Swal.fire({
+            title: `Añadir ${material.nombre}`,
+            text: `¿Qué cantidad de ${material.unidad} vas a usar? (Precio: ${material.precio_unitario}€/${material.unidad})`,
+            input: 'number',
+            inputAttributes: {
+                min: 0.1,
+                step: 0.1
+            },
+            inputValue: 1,
+            showCancelButton: true,
+            confirmButtonText: 'Añadir al presupuesto',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed && result.value > 0) {
+                const qty = parseFloat(result.value);
+                const totalMat = parseFloat((qty * material.precio_unitario).toFixed(2));
+
+                carritoTrabajos.push({
+                    id: Date.now() + Math.random(),
+                    isMaterial: true,
+                    categoria: 'MATERIAL: ' + material.tipo,
+                    trabajo:   material.nombre,
+                    subopcion: `Cantidad: ${qty} ${material.unidad}`,
+                    anotacion: `Precio unitario: ${material.precio_unitario}€`,
+                    horas:     0,
+                    mat:       totalMat
+                });
+
+                renderizarCarrito();
+                
+                // Animación de éxito
+                const badge = document.getElementById('badge-contador');
+                badge.classList.add('animate__animated', 'animate__bounce');
+                setTimeout(() => badge.classList.remove('animate__animated', 'animate__bounce'), 1000);
+            }
+        });
+    };
+
     // Cerrar resultados al hacer clic fuera
     document.addEventListener('click', function(e) {
         if (!buscadorCliente.contains(e.target) && !resultadosCliente.contains(e.target)) {
             resultadosCliente.classList.add('d-none');
+        }
+        if (!buscadorMateriales.contains(e.target) && !resultadosMateriales.contains(e.target)) {
+            resultadosMateriales.classList.add('d-none');
         }
     });
 

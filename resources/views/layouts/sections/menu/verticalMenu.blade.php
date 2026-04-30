@@ -1,7 +1,7 @@
 @php
 use Illuminate\Support\Facades\Route;
 @endphp
-<aside id="layout-menu" class="layout-menu menu-vertical menu">
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
 
     <!-- ! Hide app brand if navbar-full -->
     <div class="app-brand demo">

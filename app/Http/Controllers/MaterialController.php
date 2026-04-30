@@ -14,7 +14,7 @@ class MaterialController extends Controller
 
         $materiales = Material::when($search, function ($query, $search) {
             return $query->where('nombre', 'like', "%{$search}%")
-                ->orWhere('categoria', 'like', "%{$search}%")
+                ->orWhere('tipo', 'like', "%{$search}%")
                 ->orWhere('unidad', 'like', "%{$search}%");
         })
             ->orderBy('nombre')
@@ -53,5 +53,21 @@ class MaterialController extends Controller
     {
         Material::findOrFail($id)->delete();
         return redirect()->route('materiales.index');
+    }
+
+    /**
+     * Buscador de materiales para el autocompletado (API interna)
+     */
+    public function buscar(Request $request)
+    {
+        $term = $request->query('q');
+        if (!$term) return response()->json([]);
+
+        $materiales = Material::where('nombre', 'like', "%{$term}%")
+            ->orWhere('tipo', 'like', "%{$term}%")
+            ->limit(10)
+            ->get();
+
+        return response()->json($materiales);
     }
 }

@@ -35,17 +35,51 @@
         <tbody>
           @forelse($materiales as $m)
           <tr>
-            <td><strong>{{ $m->nombre }}</strong></td>
-            <td><span class="badge bg-info">{{ $m->categoria ?? 'General' }}</span></td>
+            <td>
+              <div class="d-flex flex-column">
+                <strong class="text-dark">{{ $m->nombre }}</strong>
+                @if($m->descripcion)
+                <small class="text-muted text-truncate" style="max-width: 200px;" title="{{ $m->descripcion }}">
+                  {{ $m->descripcion }}
+                </small>
+                @endif
+              </div>
+            </td>
+            <td><span class="badge bg-label-primary">{{ $m->tipo ?? 'General' }}</span></td>
             <td>{{ $m->unidad }}</td>
-            <td>{{ number_format($m->precio_unitario, 2) }}€</td>
-            <td>{{ $m->stock ?? 'N/A' }}</td>
+            <td class="fw-bold">{{ number_format($m->precio_unitario, 2) }}€</td>
+            <td>
+              @php
+                $statusClass = 'bg-label-success';
+                $statusText = 'OK';
+                if($m->stock <= 0) {
+                  $statusClass = 'bg-label-danger';
+                  $statusText = 'Agotado';
+                } elseif($m->stock <= $m->stock_minimo) {
+                  $statusClass = 'bg-label-warning';
+                  $statusText = 'Bajo';
+                }
+              @endphp
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge {{ $statusClass }} p-2">
+                  <i class="ri-archive-line me-1"></i> {{ (float)$m->stock }} {{ $m->unidad }}
+                </span>
+                @if($statusText !== 'OK')
+                  <small class="fw-bold text-uppercase" style="font-size: 0.65rem;">{{ $statusText }}</small>
+                @endif
+              </div>
+              <small class="text-muted" style="font-size: 0.75rem;">Mínimo: {{ (float)$m->stock_minimo }}</small>
+            </td>
             <td>
               <div class="d-flex gap-2">
-                <a href="{{ route('materiales.edit', $m->id) }}" class="btn btn-sm btn-primary">Editar</a>
-                <form action="{{ route('materiales.destroy', $m->id) }}" method="POST" onsubmit="return confirm('¿Seguro?')">
+                <a href="{{ route('materiales.edit', $m->id) }}" class="btn btn-sm btn-icon btn-outline-primary" title="Editar">
+                  <i class="ri-edit-line"></i>
+                </a>
+                <form action="{{ route('materiales.destroy', $m->id) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este material?')">
                   @csrf @method('DELETE')
-                  <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                  <button type="submit" class="btn btn-sm btn-icon btn-outline-danger" title="Eliminar">
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
                 </form>
               </div>
             </td>

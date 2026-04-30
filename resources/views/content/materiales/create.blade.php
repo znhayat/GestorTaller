@@ -28,18 +28,34 @@
             placeholder="Escribe el nombre de la nueva categoría" style="display:none;">
         </div>
 
-        <div class="mb-3 col-md-6">
+        <div class="mb-3 col-md-4">
           <label class="form-label">Unidad de Medida</label>
           <select name="unidad" class="form-select" required>
             <option value="Metros">Metros</option>
             <option value="Unidades">Unidades</option>
             <option value="Litros">Litros</option>
             <option value="Rollos">Rollos</option>
+            <option value="Botes">Botes</option>
           </select>
         </div>
-        <div class="mb-3 col-md-6">
+        <div class="mb-3 col-md-4">
           <label class="form-label">Precio Unitario (€)</label>
-          <input type="number" step="0.01" name="precio_unitario" class="form-control" placeholder="0.00" required>
+          <div class="input-group">
+            <input type="number" step="0.01" name="precio_unitario" class="form-control" placeholder="0.00" required>
+            <span class="input-group-text">€</span>
+          </div>
+        </div>
+        <div class="mb-3 col-md-4">
+            <label class="form-label">Stock Inicial</label>
+            <input type="number" step="0.01" name="stock" class="form-control" placeholder="0.00" value="0">
+        </div>
+        <div class="mb-3 col-md-4">
+            <label class="form-label text-warning fw-bold">Stock Mínimo (Alerta)</label>
+            <input type="number" step="0.01" name="stock_minimo" class="form-control" placeholder="0.00" value="0">
+        </div>
+        <div class="mb-3 col-md-12">
+            <label class="form-label">Descripción / Notas</label>
+            <textarea name="descripcion" class="form-control" rows="2" placeholder="Notas sobre el proveedor, referencia de color, etc."></textarea>
         </div>
       </div>
 
