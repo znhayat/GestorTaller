@@ -99,6 +99,7 @@ class AltaTrabajoController extends Controller
 
                 Presupuesto::create([
                     'encargo_id' => $encargo->id,
+                    'estimacion_inicial' => $total, // Guardamos la oferta telefónica original
                     'precio_materiales' => $request->precio_materiales,
                     'precio_horas' => $request->precio_horas,
                     'total' => $total,

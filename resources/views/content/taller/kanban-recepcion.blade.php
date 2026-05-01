@@ -50,18 +50,27 @@
                   <small class="text-secondary">{{ Str::limit($encargo->descripcion, 80) }}</small>
                 </div>
 
-                @if($encargo->presupuesto && $estadoKey == 'En Revision')
-                <div class="alert alert-info py-2 px-2 mb-3 small">
-                  <strong>Presupuesto:</strong> {{ number_format($encargo->presupuesto->total, 2) }} €
+                @if($encargo->presupuesto)
+                <div class="bg-label-info p-2 rounded mb-3 small border border-info border-opacity-25">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="text-muted"><i class="ri-phone-fill me-1"></i> Est. Telefónica:</span>
+                    <span class="fw-bold text-dark">{{ number_format($encargo->presupuesto->estimacion_inicial ?? $encargo->presupuesto->total, 2) }} €</span>
+                  </div>
+                  @if($encargo->presupuesto->total != ($encargo->presupuesto->estimacion_inicial ?? $encargo->presupuesto->total))
+                  <div class="d-flex justify-content-between align-items-center border-top pt-1">
+                    <span class="text-primary"><i class="ri-checkbox-circle-fill me-1"></i> Pres. Revisado:</span>
+                    <span class="fw-bold text-primary">{{ number_format($encargo->presupuesto->total, 2) }} €</span>
+                  </div>
+                  @endif
                 </div>
                 @endif
 
                 <div class="d-flex gap-2 flex-wrap">
                   @if($estadoKey == 'En Revision')
                   @if($encargo->presupuesto)
-                  <a href="{{ route('presupuestos.edit', $encargo->presupuesto->id) }}" class="btn btn-warning btn-sm flex-grow-1" title="Modificar Presupuesto">
-                    <i class="ri-edit-line me-1"></i> Modif. PPT
-                  </a>
+                  <button type="button" class="btn btn-warning btn-sm flex-grow-1" onclick="abrirModalUpdatePresupuesto({{ $encargo->presupuesto->id }}, {{ $encargo->presupuesto->total }})" title="Actualizar Presupuesto tras Revisión">
+                    <i class="ri-refresh-line me-1"></i> Actualizar PPT
+                  </button>
                   @else
                   <a href="{{ route('presupuestos.create', ['encargo_id' => $encargo->id]) }}" class="btn btn-warning btn-sm flex-grow-1" title="Crear Nuevo Presupuesto">
                     <i class="ri-file-copy-line me-1"></i> Crear PPT
@@ -456,6 +465,60 @@
           text: 'Hubo un problema al actualizar'
         });
       });
+  }
+
+  function abrirModalUpdatePresupuesto(id, totalActual) {
+    Swal.fire({
+      title: 'Actualizar Presupuesto',
+      text: 'Introduce el nuevo precio tras la revisión física del vehículo',
+      input: 'number',
+      inputLabel: 'Nuevo Total (€)',
+      inputValue: totalActual,
+      showCancelButton: true,
+      confirmButtonText: 'Actualizar Presupuesto',
+      cancelButtonText: 'Cancelar',
+      inputValidator: (value) => {
+        if (!value || value <= 0) {
+          return '¡Debes introducir un precio válido!'
+        }
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Opcional: preguntar por una nota rápida
+        Swal.fire({
+            title: '¿Alguna nota aclaratoria?',
+            input: 'text',
+            inputPlaceholder: 'Ej: Se añade reparación de espuma lateral no vista antes',
+            showCancelButton: true,
+            confirmButtonText: 'Guardar todo',
+            cancelButtonText: 'Omitir nota'
+        }).then((resNota) => {
+            let nota = resNota.isConfirmed ? resNota.value : '';
+            
+            Swal.fire({ title: 'Procesando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            fetch(`/presupuestos/${id}/quick-update`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    total: result.value,
+                    nota_adicional: nota
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success) {
+                    Swal.fire('¡Actualizado!', data.message, 'success').then(() => location.reload());
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            });
+        });
+      }
+    });
   }
 
   function eliminarEncargo(id) {

@@ -16,6 +16,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\dashboard\Analytics;
+use App\Http\Controllers\VehiculoDataController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,8 @@ Route::middleware(['auth'])->group(function () {
       Route::get('/nuevo-trabajo', [AltaTrabajoController::class, 'create'])->name('trabajo.create');
       Route::get('/api/clientes/buscar', [AltaTrabajoController::class, 'buscarCliente'])->name('api.clientes.buscar');
       Route::get('/api/materiales/buscar', [MaterialController::class, 'buscar'])->name('api.materiales.buscar');
+      Route::get('/api/vehiculos/marcas', [VehiculoDataController::class, 'buscarMarcas'])->name('api.vehiculos.marcas');
+      Route::get('/api/vehiculos/modelos', [VehiculoDataController::class, 'buscarModelos'])->name('api.vehiculos.modelos');
       Route::post('/nuevo-trabajo', [AltaTrabajoController::class, 'store'])->name('trabajo.store');
       
       // Cruds Críticos (Excepto Index/Show)
@@ -60,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
       Route::resource('usos_materiales', UsoMaterialController::class)->except(['index', 'show']);
       Route::resource('fotos', FotoController::class)->except(['index', 'show']);
       Route::resource('facturas', FacturaController::class)->except(['index', 'show']);
+      Route::post('/presupuestos/{id}/quick-update', [PresupuestoController::class, 'quickUpdate'])->name('presupuestos.quickUpdate');
       Route::resource('presupuestos', PresupuestoController::class)->except(['index', 'show']);
       Route::resource('clientes', ClienteController::class)->except(['index', 'show']);
 

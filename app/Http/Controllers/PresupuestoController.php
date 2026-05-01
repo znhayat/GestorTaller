@@ -112,4 +112,28 @@ class PresupuestoController extends Controller
         Presupuesto::findOrFail($id)->delete();
         return redirect()->back()->with('success', 'Presupuesto eliminado.');
     }
+
+    public function quickUpdate(Request $request, $id)
+    {
+        $presupuesto = Presupuesto::findOrFail($id);
+        $totalNuevo = $request->total;
+        
+        $nota = "Actualizado tras revisión presencial. ";
+        if ($presupuesto->estimacion_inicial) {
+            $nota .= "Original telefónica: {$presupuesto->estimacion_inicial}€. ";
+        }
+        if ($request->has('nota_adicional')) {
+            $nota .= $request->nota_adicional;
+        }
+        
+        // Para simplificar el "a ojo", volcamos el total en materiales y 0 en horas si es actualización rápida
+        $presupuesto->update([
+            'precio_materiales' => $totalNuevo,
+            'precio_horas' => 0,
+            'total' => $totalNuevo,
+            'notas' => $nota
+        ]);
+        
+        return response()->json(['success' => true, 'message' => 'Presupuesto actualizado correctamente tras revisión.']);
+    }
 }

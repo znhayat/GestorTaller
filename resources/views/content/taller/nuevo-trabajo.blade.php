@@ -59,6 +59,29 @@
   .card-body.pt-5 {
       padding: 3rem 4rem !important;
   }
+  
+  /* RESPONSIVE STEPS */
+  @media (max-width: 768px) {
+      .card-body.pt-5 {
+          padding: 1.5rem 1rem !important;
+      }
+      .step-item span {
+          display: none; /* Ocultar texto en móvil */
+      }
+      .step-item .step-icon {
+          margin-right: 0;
+          font-size: 1.5rem;
+      }
+      .step-indicator {
+          margin-bottom: 1.5rem;
+      }
+      .step-item {
+          padding: 0.75rem 0.5rem;
+      }
+      .step-item:not(:last-child)::after {
+          display: none; /* Quitar flechas separadoras en móvil */
+      }
+  }
   /* Estilos para el autocompletado */
   .search-results {
       position: absolute;
@@ -168,15 +191,17 @@
 
             <div class="row g-3">
               <div class="col-md-6">
-                  <div class="form-floating form-floating-outline">
+                  <div class="form-floating form-floating-outline position-relative">
                     <input type="text" id="trabajo-marca" name="marca" class="form-control" placeholder="Marca" required autocomplete="off">
                     <label for="trabajo-marca">Marca del vehículo</label>
+                    <div id="resultados-busqueda-marca" class="search-results d-none"></div>
                   </div>
               </div>
               <div class="col-md-6">
-                  <div class="form-floating form-floating-outline">
+                  <div class="form-floating form-floating-outline position-relative">
                     <input type="text" id="trabajo-modelo" name="modelo" class="form-control" placeholder="Modelo" required autocomplete="off">
                     <label for="trabajo-modelo">Modelo del vehículo</label>
+                    <div id="resultados-busqueda-modelo" class="search-results d-none"></div>
                   </div>
               </div>
             </div>
@@ -213,17 +238,14 @@
                   </div>
 
                   <!-- Resumen de selección + botón agregar -->
-                  <div class="mt-3 p-3 bg-white rounded shadow-sm border">
+                   <div class="mt-3 p-3 bg-white rounded shadow-sm border">
                     <div class="row g-3 align-items-end">
-                      <div class="col-4">
-                        <label class="form-label small fw-bold text-info mb-1"><i class="ri-money-dollar-circle-line"></i> Mat. total (€)</label>
-                        <input type="number" id="mat-estimado" class="form-control border-info text-info fw-bold" value="0" min="0" step="0.01">
+                      <div class="col-md-8">
+                        <label class="form-label small fw-bold text-primary mb-1"><i class="ri-money-dollar-circle-line"></i> Presupuesto Inicial Sugerido (€)</label>
+                        <input type="number" id="mat-estimado" class="form-control border-primary text-primary fw-bold" value="0" min="0" step="0.01">
+                        <input type="hidden" id="hor-estimado" value="0">
                       </div>
-                      <div class="col-4">
-                        <label class="form-label small fw-bold text-warning mb-1"><i class="ri-time-line"></i> Horas total</label>
-                        <input type="number" id="hor-estimado" class="form-control border-warning text-warning fw-bold" value="0" min="0" step="0.5">
-                      </div>
-                      <div class="col-4">
+                      <div class="col-md-4">
                         <label class="form-label small fw-bold text-muted mb-1"><i class="ri-palette-line"></i> Acabado global</label>
                         <select id="acabado-global" class="form-select">
                           <option value="">Sin especif.</option>
@@ -239,7 +261,7 @@
                         <textarea id="anotacion-trabajo" class="form-control bg-light border-0" rows="2" placeholder="Anotación especial (opcional): costuras, colores, indicaciones del cliente..."></textarea>
                       </div>
                       <div class="col-12">
-                        <button type="button" id="btn-add-trabajo" class="btn btn-primary w-100 fw-bold py-2">
+                        <button type="button" id="btn-add-trabajo" class="btn btn-primary w-100 fw-bold py-2 mb-2">
                           <i class="ri-add-circle-fill me-1"></i>
                           <span id="btn-add-texto">Selecciona al menos un servicio</span>
                         </button>
@@ -317,13 +339,10 @@
             </div>
             
             <div class="row">
-              <div class="col-md-6 mb-3">
-                  <label class="form-label fw-bold text-info" for="trabajo-materiales"><i class="ri-money-dollar-circle-line"></i> Total Material Base (€)</label>
-                  <input type="number" id="trabajo-materiales" step="0.01" name="precio_materiales" class="form-control form-control-lg text-info fw-bold" value="0" style="background-color: #fff;">
-              </div>
-              <div class="col-md-6 mb-3">
-                  <label class="form-label fw-bold text-warning" for="trabajo-horas"><i class="ri-time-line"></i> Total Horas Previstas (H)</label>
-                  <input type="number" id="trabajo-horas" step="0.5" name="precio_horas" class="form-control form-control-lg text-warning fw-bold" value="0" style="background-color: #fff;">
+              <div class="col-md-12 mb-3">
+                  <label class="form-label fw-bold text-success fs-5" for="trabajo-materiales"><i class="ri-money-dollar-circle-line me-1"></i> Presupuesto Total del Trabajo (€)</label>
+                  <input type="number" id="trabajo-materiales" step="0.01" name="precio_materiales" class="form-control form-control-lg text-success fw-bold border-success" value="0" style="background-color: #fff; font-size: 1.5rem;">
+                  <input type="hidden" id="trabajo-horas" name="precio_horas" value="0">
               </div>
             </div>
         </div>
@@ -414,6 +433,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const descTextarea    = document.getElementById('trabajo-descripcion');
     const btnAdd          = document.getElementById('btn-add-trabajo');
     const btnAddTexto     = document.getElementById('btn-add-texto');
+    const anotacionInput  = document.getElementById('anotacion-trabajo');
 
     // UI Carrito e Inputs de Totales P4
     const contCarritoVacio = document.getElementById('carrito-vacio');
@@ -576,8 +596,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="mb-1 text-dark fs-6">${item.trabajo}</p>
                         <small class="text-muted d-block mb-2">${subt}</small>
                         <div class="d-flex gap-2">
-                           <span class="badge bg-label-info"><i class="ri-money-dollar-circle-line"></i> ${item.mat.toFixed(2)}€ Mat.</span>
-                           <span class="badge bg-label-warning"><i class="ri-time-line"></i> ${item.horas}H</span>
+                           <span class="badge bg-label-success"><i class="ri-money-dollar-circle-line"></i> ${item.mat.toFixed(2)}€</span>
                         </div>
                         ${notaHtml}
                      </div>
@@ -595,34 +614,33 @@ document.addEventListener('DOMContentLoaded', function() {
     function actualizarTextosyPresupuestos() {
         badgeContador.textContent = carritoTrabajos.length;
         
-        let sumMat = 0;
-        let sumHoras = 0;
-        let textoMarkdown = "";
+        let sumTotal = 0;
+        let textoMarkdown = "## RESUMEN DE SERVICIOS SELECCIONADOS\n---\n";
         
         carritoTrabajos.forEach((item, index) => {
-            sumMat += item.mat;
-            sumHoras += item.horas;
+            sumTotal += item.mat;
             
             textoMarkdown += `### Trab. #${index + 1}: ${item.categoria}\n`;
             textoMarkdown += `- **Tarea principal:** ${item.trabajo}\n`;
             if(item.subopcion) textoMarkdown += `- **Tipo/Acabado:** ${item.subopcion}\n`;
             if(item.anotacion) textoMarkdown += `> **Especificación del Taller:** ${item.anotacion}\n`;
-            textoMarkdown += `- *[${item.horas} H previstas | ${item.mat} € en material previsto]*\n\n`;
+            textoMarkdown += `\n`; // Quitamos el desglose de horas y materiales individuales
         });
 
         // Aplicamos matemáticas a HTML
-        txtSumMat.textContent = sumMat.toFixed(2);
-        txtSumHor.textContent = sumHoras;
+        txtSumMat.textContent = sumTotal.toFixed(2);
+        txtSumHor.parentElement.classList.add('d-none'); // Ocultamos la etiqueta de horas
         
         // Solo sobreescribimos los campos de presupuesto P4 si el operario no los ha borrado/sobreescrito manualmente
         if(!hasManuallyEditedP4) {
-            inputTotalMat.value = sumMat.toFixed(2);
-            inputTotalHoras.value = sumHoras;
+            inputTotalMat.value = sumTotal.toFixed(2);
+            inputTotalHoras.value = 0; // Siempre 0 horas por defecto ahora
         }
 
         // Metemos al textarea oculto para alimentar DB en formato puro textual
         descTextarea.value = textoMarkdown.trim();
     }
+
 
     // ---- LÓGICA DE WIZARD ----
     let currentStep = 1;
@@ -920,6 +938,80 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
+    // ---- LÓGICA DE BÚSQUEDA DE MARCAS Y MODELOS ----
+    const inputMarca = document.getElementById('trabajo-marca');
+    const inputModelo = document.getElementById('trabajo-modelo');
+    const resultadosMarca = document.getElementById('resultados-busqueda-marca');
+    const resultadosModelo = document.getElementById('resultados-busqueda-modelo');
+    let marcaSeleccionadaId = null;
+
+    inputMarca.addEventListener('input', function() {
+        const q = this.value.trim();
+        if (q.length < 1) {
+            resultadosMarca.classList.add('d-none');
+            return;
+        }
+
+        fetch(`/api/vehiculos/marcas?q=${q}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length === 0) {
+                    resultadosMarca.innerHTML = '<div class="search-item text-muted">No encontrada (escríbela libremente)</div>';
+                } else {
+                    let html = '';
+                    data.forEach(m => {
+                        html += `<div class="search-item" onclick="seleccionarMarca(${m.id}, '${m.nombre}')">${m.nombre}</div>`;
+                    });
+                    resultadosMarca.innerHTML = html;
+                }
+                resultadosMarca.classList.remove('d-none');
+            });
+    });
+
+    window.seleccionarMarca = function(id, nombre) {
+        inputMarca.value = nombre;
+        marcaSeleccionadaId = id;
+        resultadosMarca.classList.add('d-none');
+        inputModelo.focus();
+        // Limpiamos modelo al cambiar marca
+        inputModelo.value = '';
+    };
+
+    inputModelo.addEventListener('focus', function() {
+        if (this.value.trim() === '') {
+            buscarModelos('');
+        }
+    });
+
+    inputModelo.addEventListener('input', function() {
+        buscarModelos(this.value.trim());
+    });
+
+    function buscarModelos(q) {
+        let url = `/api/vehiculos/modelos?q=${q}`;
+        if (marcaSeleccionadaId) url += `&marca_id=${marcaSeleccionadaId}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length === 0) {
+                    resultadosModelo.innerHTML = '<div class="search-item text-muted">No encontrado</div>';
+                } else {
+                    let html = '';
+                    data.forEach(m => {
+                        html += `<div class="search-item" onclick="seleccionarModelo('${m.nombre}')">${m.nombre}</div>`;
+                    });
+                    resultadosModelo.innerHTML = html;
+                }
+                resultadosModelo.classList.remove('d-none');
+            });
+    }
+
+    window.seleccionarModelo = function(nombre) {
+        inputModelo.value = nombre;
+        resultadosModelo.classList.add('d-none');
+    };
+
     // Cerrar resultados al hacer clic fuera
     document.addEventListener('click', function(e) {
         if (!buscadorCliente.contains(e.target) && !resultadosCliente.contains(e.target)) {
@@ -927,6 +1019,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (!buscadorMateriales.contains(e.target) && !resultadosMateriales.contains(e.target)) {
             resultadosMateriales.classList.add('d-none');
+        }
+        if (!inputMarca.contains(e.target) && !resultadosMarca.contains(e.target)) {
+            resultadosMarca.classList.add('d-none');
+        }
+        if (!inputModelo.contains(e.target) && !resultadosModelo.contains(e.target)) {
+            resultadosModelo.classList.add('d-none');
         }
     });
 
@@ -949,6 +1047,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // ---- MEJORA DE UX: AUTO-SELECCIONAR NÚMEROS AL HACER FOCO ----
+    // Esto evita tener que borrar el "0" manualmente
+    document.getElementById('wizard-form').addEventListener('focus', function(e) {
+        if (e.target.tagName === 'INPUT' && e.target.type === 'number') {
+            e.target.select();
+        }
+    }, true);
 
 });
 </script>
