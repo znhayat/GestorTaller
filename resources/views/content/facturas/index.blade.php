@@ -36,7 +36,7 @@
     <table class="table table-hover" aria-label="Historial de facturas">
       <thead>
         <tr>
-          <th># ID</th>
+          <th>Código</th>
           <th>Cliente / Vehículo</th>
           <th>Importe Total</th>
           <th>Estado</th>

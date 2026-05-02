@@ -13,7 +13,7 @@
     <table class="table" aria-label="Listado de clientes registrados">
       <thead>
         <tr>
-          <th># ID</th>
+          <th>Código</th>
           <th>Nombre</th>
           <th>Apellido</th>
           <th>Teléfono</th>

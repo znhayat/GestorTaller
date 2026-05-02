@@ -21,7 +21,7 @@
     <table class="table table-hover">
       <thead>
         <tr>
-          <th># ID</th>
+          <th>Código</th>
           <th>Fecha y Hora</th>
           <th>Vehículo</th>
           <th>Cliente</th>

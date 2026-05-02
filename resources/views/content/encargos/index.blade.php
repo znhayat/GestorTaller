@@ -48,7 +48,7 @@
     <table class="table">
       <thead>
         <tr>
-          <th># ID</th>
+          <th>Código</th>
           <th>Vehículo (Dueño)</th>
           <th>Descripción</th>
           <th>Estado</th>

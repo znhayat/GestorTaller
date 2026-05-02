@@ -11,7 +11,7 @@
     <table class="table table-hover">
       <thead>
         <tr>
-          <th># ID</th>
+          <th>Código</th>
           <th>Fecha</th>
           <th>Material</th>
           <th>Cantidad</th>

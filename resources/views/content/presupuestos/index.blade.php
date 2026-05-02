@@ -34,7 +34,7 @@
     <table class="table table-hover" id="presupuestos-table" aria-label="Listado de presupuestos">
       <thead>
         <tr>
-          <th># ID</th>
+          <th>Código</th>
           <th>Encargo</th>
           <th>Materiales</th>
           <th>Mano de Obra</th>
