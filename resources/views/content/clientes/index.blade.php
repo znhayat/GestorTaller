@@ -13,6 +13,7 @@
     <table class="table" aria-label="Listado de clientes registrados">
       <thead>
         <tr>
+          <th># ID</th>
           <th>Nombre</th>
           <th>Apellido</th>
           <th>Teléfono</th>
@@ -24,6 +25,7 @@
         {{-- Itero sobre la colección de clientes que nos envía el controlador --}}
         @foreach($clientes as $cliente)
         <tr>
+          <td><strong class="text-primary">#{{ $cliente->id }}</strong></td>
           <td><strong>{{ $cliente->nombre }}</strong></td>
           <td>{{ $cliente->apellido }}</td>
           <td>{{ $cliente->telefono }}</td>

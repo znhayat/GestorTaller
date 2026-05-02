@@ -1,16 +1,25 @@
 @extends('layouts/contentNavbarLayout')
 
 @section('content')
+<style>
+    .search-container { min-width: 250px; }
+    .search-icon { top: 50%; transform: translateY(-50%); left: 15px; color: #a1acb8; }
+    .clear-search { top: 50%; transform: translateY(-50%); right: 10px; color: #a1acb8; cursor: pointer; }
+    .desc-truncate { max-width: 200px; }
+    .status-badge-small { font-size: 0.65rem; }
+    .stock-min-text { font-size: 0.75rem; }
+</style>
+
 <div class="container-xxl">
   <div class="d-flex justify-content-between align-items-center py-3 flex-wrap gap-3">
     <h4 class="fw-bold">Inventario de Materiales</h4>
     <div class="d-flex flex-wrap align-items-center gap-2 ms-auto">
       <!-- Buscador -->
-      <form method="GET" action="{{ route('materiales.index') }}" class="d-flex position-relative me-2" style="min-width: 250px;">
+      <form method="GET" action="{{ route('materiales.index') }}" class="d-flex position-relative me-2 search-container">
         <input type="text" name="search" class="form-control ps-5 pe-4 w-100" placeholder="Buscar material..." value="{{ request('search') }}">
-        <i class="ri-search-line position-absolute" style="top: 50%; transform: translateY(-50%); left: 15px; color: #a1acb8;"></i>
+        <i class="ri-search-line position-absolute search-icon"></i>
         @if(request('search'))
-        <a href="{{ route('materiales.index') }}" class="position-absolute" style="top: 50%; transform: translateY(-50%); right: 10px; color: #a1acb8; cursor: pointer;" title="Limpiar búsqueda">
+        <a href="{{ route('materiales.index') }}" class="position-absolute clear-search" title="Limpiar búsqueda">
           <i class="ri-close-circle-line"></i>
         </a>
         @endif
@@ -24,6 +33,7 @@
       <table class="table table-hover">
         <thead>
           <tr>
+            <th># ID</th>
             <th>Nombre</th>
             <th>Categoría</th>
             <th>Unidad</th>
@@ -35,11 +45,12 @@
         <tbody>
           @forelse($materiales as $m)
           <tr>
+            <td><strong class="text-primary">#{{ $m->id }}</strong></td>
             <td>
               <div class="d-flex flex-column">
                 <strong class="text-dark">{{ $m->nombre }}</strong>
                 @if($m->descripcion)
-                <small class="text-muted text-truncate" style="max-width: 200px;" title="{{ $m->descripcion }}">
+                <small class="text-muted text-truncate desc-truncate" title="{{ $m->descripcion }}">
                   {{ $m->descripcion }}
                 </small>
                 @endif
@@ -65,10 +76,10 @@
                   <i class="ri-archive-line me-1"></i> {{ (float)$m->stock }} {{ $m->unidad }}
                 </span>
                 @if($statusText !== 'OK')
-                  <small class="fw-bold text-uppercase" style="font-size: 0.65rem;">{{ $statusText }}</small>
+                  <small class="fw-bold text-uppercase status-badge-small">{{ $statusText }}</small>
                 @endif
               </div>
-              <small class="text-muted" style="font-size: 0.75rem;">Mínimo: {{ (float)$m->stock_minimo }}</small>
+              <small class="text-muted stock-min-text">Mínimo: {{ (float)$m->stock_minimo }}</small>
             </td>
             <td>
               <div class="d-flex gap-2">

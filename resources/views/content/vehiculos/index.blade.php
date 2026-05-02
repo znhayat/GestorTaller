@@ -11,6 +11,7 @@
     <table class="table">
       <thead>
         <tr>
+          <th># ID</th>
           <th>Dueño</th>
           <th>Marca</th>
           <th>Modelo</th>
@@ -20,6 +21,7 @@
       <tbody>
         @foreach($vehiculos as $v)
         <tr>
+          <td><strong class="text-primary">#{{ $v->id }}</strong></td>
           {{-- Relación Eloquent: Accedemos al nombre del cliente a través del objeto vehículo --}}
           <td><strong>{{ $v->cliente->nombre }}</strong></td>
           <td>{{ $v->marca }}</td>

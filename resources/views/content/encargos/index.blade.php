@@ -1,16 +1,22 @@
 @extends('layouts/contentNavbarLayout')
 
 @section('content')
+<style>
+    .search-container { min-width: 250px; }
+    .search-icon { top: 50%; transform: translateY(-50%); left: 15px; color: #a1acb8; }
+    .clear-search { top: 50%; transform: translateY(-50%); right: 10px; color: #a1acb8; cursor: pointer; }
+</style>
+
 <div class="card">
   <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-3">
     <h5 class="mb-0">Órdenes de Trabajo (Encargos)</h5>
     <div class="d-flex flex-wrap align-items-center gap-2 ms-auto">
       <!-- Buscador -->
-      <form method="GET" action="{{ route('encargos.index') }}" class="d-flex position-relative me-2" style="min-width: 250px;">
+      <form method="GET" action="{{ route('encargos.index') }}" class="d-flex position-relative me-2 search-container">
         <input type="text" name="search" class="form-control ps-5 pe-4 w-100" placeholder="Buscar por cliente, vehículo..." value="{{ request('search') }}">
-        <i class="ri-search-line position-absolute" style="top: 50%; transform: translateY(-50%); left: 15px; color: #a1acb8;"></i>
+        <i class="ri-search-line position-absolute search-icon"></i>
         @if(request('search'))
-        <a href="{{ route('encargos.index') }}" class="position-absolute" style="top: 50%; transform: translateY(-50%); right: 10px; color: #a1acb8; cursor: pointer;" title="Limpiar búsqueda">
+        <a href="{{ route('encargos.index') }}" class="position-absolute clear-search" title="Limpiar búsqueda">
           <i class="ri-close-circle-line"></i>
         </a>
         @endif
@@ -42,6 +48,7 @@
     <table class="table">
       <thead>
         <tr>
+          <th># ID</th>
           <th>Vehículo (Dueño)</th>
           <th>Descripción</th>
           <th>Estado</th>
@@ -52,6 +59,7 @@
       <tbody>
         @foreach($encargos as $e)
         <tr>
+          <td><strong class="text-primary">#{{ $e->id }}</strong></td>
           <td>
             {{-- Mostramos marca y modelo resaltados, y justo debajo el nombre del dueño en pequeño --}}
             <strong>{{ $e->vehiculo->marca }} {{ $e->vehiculo->modelo }}</strong><br>

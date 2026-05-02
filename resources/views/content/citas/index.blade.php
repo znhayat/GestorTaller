@@ -21,7 +21,7 @@
     <table class="table table-hover">
       <thead>
         <tr>
-          <th>Código</th>
+          <th># ID</th>
           <th>Fecha y Hora</th>
           <th>Vehículo</th>
           <th>Cliente</th>
@@ -32,7 +32,7 @@
       <tbody>
         @foreach($citas as $cita)
         <tr>
-          <td><strong>{{ $cita->codigo }}</strong></td>
+          <td><strong class="text-primary">#{{ $cita->id }}</strong></td>
           <td>
             <span class="badge bg-label-primary">{{ \Carbon\Carbon::parse($cita->fecha)->format('d/m/Y') }}</span>
             <span class="badge bg-label-secondary">{{ $cita->hora }}</span>

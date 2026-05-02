@@ -11,6 +11,7 @@
     <table class="table table-hover">
       <thead>
         <tr>
+          <th># ID</th>
           <th>Fecha</th>
           <th>Material</th>
           <th>Cantidad</th>
@@ -21,6 +22,7 @@
       <tbody>
         @foreach($usos as $uso)
         <tr>
+          <td><strong class="text-primary">#{{ $uso->id }}</strong></td>
           {{-- Fecha del registro para trazabilidad --}}
           <td>{{ $uso->created_at->format('d/m/Y') }}</td>
           <td><strong>{{ $uso->material->nombre }}</strong></td>
