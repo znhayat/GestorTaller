@@ -41,7 +41,7 @@
       <tbody>
         @forelse($facturas as $f)
         <tr>
-          <td><strong>#{{ $f->id }}</strong></td>
+          <td><strong>{{ $f->id }}</strong></td>
           <td>
             <span class="fw-medium">{{ $f->encargo->vehiculo->cliente->nombre }}</span><br>
             <small class="text-muted">{{ $f->encargo->vehiculo->marca }} {{ $f->encargo->vehiculo->modelo }}</small>

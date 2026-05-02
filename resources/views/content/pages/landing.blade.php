@@ -40,13 +40,13 @@
           <div class="card h-100 shadow-sm border-0 overflow-hidden">
             @if($foto->tipo === 'antes' && $foto->despues)
               <!-- Diseño Antes y Después -->
-              <div class="row g-0" style="height: 200px;">
-                <div class="col-6 position-relative border-end">
-                  <img src="{{ asset('storage/' . $foto->ruta) }}" class="w-100 h-100" style="object-fit: cover;" alt="Antes">
+              <div class="row g-0" style="min-height: 200px;">
+                <div class="col-sm-6 position-relative border-end border-bottom border-sm-bottom-0">
+                  <img src="{{ asset('storage/' . $foto->ruta) }}" class="w-100 h-100" style="object-fit: cover; min-height: 200px;" alt="Antes">
                   <span class="badge bg-warning position-absolute bottom-0 start-0 m-2">Antes</span>
                 </div>
-                <div class="col-6 position-relative">
-                  <img src="{{ asset('storage/' . $foto->despues->ruta) }}" class="w-100 h-100" style="object-fit: cover;" alt="Después">
+                <div class="col-sm-6 position-relative">
+                  <img src="{{ asset('storage/' . $foto->despues->ruta) }}" class="w-100 h-100" style="object-fit: cover; min-height: 200px;" alt="Después">
                   <span class="badge bg-success position-absolute bottom-0 end-0 m-2">Después</span>
                 </div>
               </div>

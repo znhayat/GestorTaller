@@ -48,13 +48,6 @@ Route::middleware(['auth'])->group(function () {
 
   // --- RUTAS CRÍTICAS DE EDICIÓN Y CREACIÓN (Solamente Administradores) ---
   Route::middleware(['admin'])->group(function () {
-      Route::get('/nuevo-trabajo', [AltaTrabajoController::class, 'create'])->name('trabajo.create');
-      Route::get('/api/clientes/buscar', [AltaTrabajoController::class, 'buscarCliente'])->name('api.clientes.buscar');
-      Route::get('/api/materiales/buscar', [MaterialController::class, 'buscar'])->name('api.materiales.buscar');
-      Route::get('/api/vehiculos/marcas', [VehiculoDataController::class, 'buscarMarcas'])->name('api.vehiculos.marcas');
-      Route::get('/api/vehiculos/modelos', [VehiculoDataController::class, 'buscarModelos'])->name('api.vehiculos.modelos');
-      Route::post('/nuevo-trabajo', [AltaTrabajoController::class, 'store'])->name('trabajo.store');
-      
       // Cruds Críticos (Excepto Index/Show)
       Route::resource('materiales', MaterialController::class)->except(['index', 'show']);
       Route::resource('vehiculos', VehiculoController::class)->except(['index', 'show']);
@@ -75,6 +68,14 @@ Route::middleware(['auth'])->group(function () {
       // CMS GALERÍA PÚBLICA
       Route::resource('galeria', \App\Http\Controllers\GaleriaController::class)->only(['index', 'store', 'destroy']);
   });
+
+  // --- RUTAS DE TRABAJO DIARIO (Accesibles para todo el personal) ---
+  Route::get('/nuevo-trabajo', [AltaTrabajoController::class, 'create'])->name('trabajo.create');
+  Route::post('/nuevo-trabajo', [AltaTrabajoController::class, 'store'])->name('trabajo.store');
+  Route::get('/api/clientes/buscar', [AltaTrabajoController::class, 'buscarCliente'])->name('api.clientes.buscar');
+  Route::get('/api/materiales/buscar', [MaterialController::class, 'buscar'])->name('api.materiales.buscar');
+  Route::get('/api/vehiculos/marcas', [VehiculoDataController::class, 'buscarMarcas'])->name('api.vehiculos.marcas');
+  Route::get('/api/vehiculos/modelos', [VehiculoDataController::class, 'buscarModelos'])->name('api.vehiculos.modelos');
 
   // --- RUTAS DE VISUALIZACIÓN Y TRABAJO (Admins y Operarios) ---
 

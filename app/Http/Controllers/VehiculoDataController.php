@@ -11,25 +11,29 @@ class VehiculoDataController extends Controller
 {
     public function buscarMarcas(Request $request)
     {
-        $q = $request->query('q');
-        $marcas = Marca::where('nombre', 'like', "%$q%")->limit(10)->get();
+        $q = $request->query('q', '');
+        $marcas = Marca::where('nombre', 'like', "%{$q}%")
+            ->orderBy('nombre')
+            ->limit(15)
+            ->get();
         return response()->json($marcas);
     }
 
     public function buscarModelos(Request $request)
     {
         $marcaId = $request->query('marca_id');
-        $q = $request->query('q');
+        $q = $request->query('q', '');
         
         $query = Modelo::query();
         if ($marcaId) {
             $query->where('marca_id', $marcaId);
         }
-        if ($q) {
-            $query->where('nombre', 'like', "%$q%");
-        }
         
-        $modelos = $query->limit(20)->get();
+        $modelos = $query->where('nombre', 'like', "%{$q}%")
+            ->orderBy('nombre')
+            ->limit(20)
+            ->get();
+            
         return response()->json($modelos);
     }
 }

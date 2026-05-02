@@ -22,5 +22,12 @@
 @yield('page-style')
 
 <!-- app CSS -->
+<style>
+  @media (max-width: 768px) {
+      input, select, textarea, .form-control { font-size: 16px !important; }
+      .table-responsive { border: 0 !important; -webkit-overflow-scrolling: touch; }
+      .table th, .table td { padding: 0.75rem 0.5rem !important; font-size: 0.85rem; }
+  }
+</style>
 @vite(['resources/css/app.css'])
 <!-- END: app CSS-->

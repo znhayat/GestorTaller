@@ -44,13 +44,20 @@ class UserController extends Controller
 
         $request->validate([
             'role' => 'required|in:admin,user',
-            'is_approved' => 'required|boolean'
+            'is_approved' => 'required|boolean',
+            'password' => 'nullable|string|min:6'
         ]);
 
-        $usuario->update([
+        $data = [
             'role' => $request->role,
             'is_approved' => $request->is_approved,
-        ]);
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = \Illuminate\Support\Facades\Hash::make($request->password);
+        }
+
+        $usuario->update($data);
 
         return back()->with('success', 'Usuario actualizado correctamente.');
     }

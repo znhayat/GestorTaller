@@ -63,23 +63,37 @@
   /* RESPONSIVE STEPS */
   @media (max-width: 768px) {
       .card-body.pt-5 {
-          padding: 1.5rem 1rem !important;
+          padding: 1.25rem 0.75rem !important;
       }
       .step-item span {
-          display: none; /* Ocultar texto en móvil */
+          display: none;
       }
       .step-item .step-icon {
           margin-right: 0;
-          font-size: 1.5rem;
+          font-size: 1.4rem;
       }
       .step-indicator {
-          margin-bottom: 1.5rem;
+          margin-bottom: 1.25rem;
+          border-radius: 0.3rem;
       }
       .step-item {
-          padding: 0.75rem 0.5rem;
+          padding: 0.6rem 0.3rem;
       }
       .step-item:not(:last-child)::after {
-          display: none; /* Quitar flechas separadoras en móvil */
+          display: none;
+      }
+      /* Ajuste de títulos en móvil */
+      h5.text-primary {
+          font-size: 1.1rem;
+      }
+      /* Buscador en móvil */
+      .position-relative[style*="width: 300px"] {
+          width: 100% !important;
+          margin-top: 10px;
+      }
+      .d-flex.justify-content-between.align-items-center.mb-4 {
+          flex-direction: column;
+          align-items: flex-start !important;
       }
   }
   /* Estilos para el autocompletado */
@@ -108,6 +122,14 @@
   .search-item:last-child {
       border-bottom: none;
   }
+
+  /* CLASES DE LIMPIEZA */
+  .search-worker-width { width: 300px; }
+  .carrito-scroll { min-height: 250px; max-height: 400px; overflow-y: auto; }
+  .precio-total-input { background-color: #fff !important; font-size: 1.5rem !important; }
+  .cursor-pointer { cursor: pointer; }
+  .hover-shadow:hover { box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1) !important; }
+  .transition-all { transition: all 0.3s ease; }
 </style>
 
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -142,7 +164,7 @@
         <div id="step-1" class="wizard-step">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h5 class="text-primary fw-bold mb-0"><i class="ri-user-line me-2"></i> Paso 1: Ficha del Cliente</h5>
-                <div class="position-relative" style="width: 300px;">
+                <div class="position-relative search-worker-width">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text bg-lighter"><i class="ri-search-line"></i></span>
                         <input type="text" id="buscador-cliente" class="form-control" placeholder="Buscar cliente existente...">
@@ -193,105 +215,87 @@
               <div class="col-md-6">
                   <div class="form-floating form-floating-outline position-relative">
                     <input type="text" id="trabajo-marca" name="marca" class="form-control" placeholder="Marca" required autocomplete="off">
-                    <label for="trabajo-marca">Marca del vehículo</label>
+                    <label for="trabajo-marca">Marca del Vehículo</label>
                     <div id="resultados-busqueda-marca" class="search-results d-none"></div>
                   </div>
               </div>
               <div class="col-md-6">
                   <div class="form-floating form-floating-outline position-relative">
                     <input type="text" id="trabajo-modelo" name="modelo" class="form-control" placeholder="Modelo" required autocomplete="off">
-                    <label for="trabajo-modelo">Modelo del vehículo</label>
+                    <label for="trabajo-modelo">Modelo del Vehículo</label>
                     <div id="resultados-busqueda-modelo" class="search-results d-none"></div>
                   </div>
               </div>
             </div>
         </div>
 
-        <!-- PASO 3: SELECCIÓN MÚLTIPLE DE SERVICIOS (ÁRBOL EXPANDIDO) -->
+        <!-- PASO 3: SELECCIÓN DE SERVICIOS (CONFIGURADOR VISUAL) -->
         <div id="step-3" class="wizard-step d-none">
-            <h5 class="mb-2 text-primary fw-bold"><i class="ri-tools-line me-2"></i> Paso 3: Selección de Servicios</h5>
-            <p class="text-muted mb-3 small">Marca <strong>todos los trabajos</strong> que necesita el vehículo — puedes seleccionar de distintos componentes a la vez.</p>
+            <h5 class="mb-2 text-primary fw-bold"><i class="ri-layout-grid-fill me-2"></i> Paso 3: ¿Qué vamos a hacer?</h5>
+            <p class="text-muted mb-4 small">Selecciona una categoría para ver las opciones disponibles.</p>
 
             <div class="row g-4">
-              <!-- Panel izquierdo: árbol de todas las categorías -->
+              <!-- Panel izquierdo: Selector Visual -->
               <div class="col-md-7">
-                  <!-- Barra de búsqueda rápida -->
-                  <div class="mb-3">
-                    <div class="input-group">
-                      <span class="input-group-text bg-light border-0"><i class="ri-search-line text-muted"></i></span>
-                      <input type="text" id="buscador-servicios" class="form-control bg-light border-0 shadow-sm" placeholder="Buscar tarea... (ej: retapizado, volante...)">
-                    </div>
+                  <!-- Pantalla 1: Grid de Categorías -->
+                  <div id="panel-categorias" class="row g-3">
+                      <!-- Se genera por JS -->
                   </div>
 
-                  <!-- Buscador de Materiales del Almacén (NUEVO) -->
-                  <div class="mb-3 position-relative">
-                    <div class="input-group">
-                      <span class="input-group-text bg-info border-0 text-white"><i class="ri-archive-line"></i></span>
-                      <input type="text" id="buscador-materiales-wizard" class="form-control border-info shadow-sm" placeholder="Añadir material del almacén (ej: Piel, Espuma...)">
-                    </div>
-                    <div id="resultados-materiales-wizard" class="search-results d-none"></div>
-                  </div>
+                  <!-- Pantalla 2: Opciones de la Categoría (Oculto por defecto) -->
+                  <div id="panel-opciones" class="d-none animate__animated animate__fadeIn">
+                      <button type="button" class="btn btn-sm btn-outline-secondary mb-3" onclick="volverACategorias()">
+                        <i class="ri-arrow-left-line me-1"></i> Volver a categorías
+                      </button>
+                      <h6 id="titulo-categoria-seleccionada" class="fw-bold text-dark mb-3"></h6>
+                      <div id="lista-opciones" class="list-group mb-3 shadow-sm">
+                          <!-- Se genera por JS -->
+                      </div>
+                      
+                      <!-- Campo de Notas Rápidas -->
+                      <div class="card bg-lighter border shadow-none mb-3">
+                        <div class="card-body p-3">
+                            <label class="form-label fw-bold small text-muted"><i class="ri-edit-2-line me-1"></i> Notas para este servicio</label>
+                            <input type="text" id="anotacion-servicio" class="form-control form-control-sm" placeholder="Ej: Hilo rojo, cuero perforado, etc.">
+                        </div>
+                      </div>
 
-                  <!-- Árbol de categorías con checkboxes (siempre expandido) -->
-                  <div id="arbol-servicios" class="bg-light rounded p-3 shadow-sm" style="max-height: 380px; overflow-y: auto;">
-                    <!-- Generado por JS al cargar -->
-                  </div>
-
-                  <!-- Resumen de selección + botón agregar -->
-                   <div class="mt-3 p-3 bg-white rounded shadow-sm border">
-                    <div class="row g-3 align-items-end">
-                      <div class="col-md-8">
-                        <label class="form-label small fw-bold text-primary mb-1"><i class="ri-money-dollar-circle-line"></i> Presupuesto Inicial Sugerido (€)</label>
-                        <input type="number" id="mat-estimado" class="form-control border-primary text-primary fw-bold" value="0" min="0" step="0.01">
-                        <input type="hidden" id="hor-estimado" value="0">
-                      </div>
-                      <div class="col-md-4">
-                        <label class="form-label small fw-bold text-muted mb-1"><i class="ri-palette-line"></i> Acabado global</label>
-                        <select id="acabado-global" class="form-select">
-                          <option value="">Sin especif.</option>
-                          <option>Tapizado en piel</option>
-                          <option>Tapizado en polipiel</option>
-                          <option>Tejido técnico</option>
-                          <option>Alcántara / microfibra</option>
-                          <option>Piel perforada</option>
-                          <option>A definir con cliente</option>
-                        </select>
-                      </div>
-                      <div class="col-12">
-                        <textarea id="anotacion-trabajo" class="form-control bg-light border-0" rows="2" placeholder="Anotación especial (opcional): costuras, colores, indicaciones del cliente..."></textarea>
-                      </div>
-                      <div class="col-12">
-                        <button type="button" id="btn-add-trabajo" class="btn btn-primary w-100 fw-bold py-2 mb-2">
-                          <i class="ri-add-circle-fill me-1"></i>
-                          <span id="btn-add-texto">Selecciona al menos un servicio</span>
-                        </button>
-                      </div>
-                    </div>
+                      <button type="button" class="btn btn-primary w-100 py-2" id="btn-confirmar-seleccion">
+                        <i class="ri-add-line me-1"></i> Añadir al Presupuesto
+                      </button>
                   </div>
               </div>
 
-              <!-- Panel derecho: Carrito de servicios añadidos -->
-              <div class="col-md-5 border-start ps-4">
-                 <h6 class="fw-bold d-flex justify-content-between align-items-center mb-3 text-secondary">
-                    <span>Añadidos al Expediente</span>
-                    <span class="badge bg-primary rounded-pill px-3 py-1" id="badge-contador">0</span>
-                 </h6>
-                 <div class="text-muted small mb-2">
-                    <i class="ri-time-line me-1 text-warning"></i><span id="txt-total-horas">0</span>h &nbsp;|&nbsp;
-                    <i class="ri-money-dollar-circle-line me-1 text-info"></i><span id="txt-total-mat">0.00</span>€
-                 </div>
+              <!-- Panel derecho: Resumen del Trabajo -->
+              <div class="col-md-5">
+                  <div class="card h-100 shadow-none border">
+                    <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-dark small"><i class="ri-shopping-cart-2-line me-1"></i> SERVICIOS AÑADIDOS</span>
+                        <span id="badge-contador" class="badge rounded-pill bg-primary">0</span>
+                    </div>
+                    <div class="card-body p-0 carrito-scroll" id="carrito-contenedor">
+                        <div id="carrito-vacio" class="text-center py-5 text-muted">
+                            <i class="ri-inbox-line fs-1 d-block mb-2 opacity-50"></i>
+                            <small>No hay servicios todavía</small>
+                        </div>
+                        <div id="carrito-lista" class="p-2"></div>
+                    </div>
+                    <div class="card-footer bg-light p-3 border-top">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="small text-muted">Precio Estimado:</span>
+                            <span class="fw-bold text-primary" id="txt-total-global">0.00 €</span>
+                        </div>
+                        <div class="form-floating form-floating-outline mb-0">
+                          <input type="number" id="precio-global-step3" class="form-control fw-bold text-primary" placeholder="0.00" value="0">
+                          <label for="precio-global-step3">Precio Total Global (€)</label>
+                        </div>
+                    </div>
+                  </div>
 
-                 <div id="carrito-vacio" class="text-center py-5 text-muted rounded bg-label-secondary" style="border: 2px dashed #b7c2cc;">
-                    <i class="ri-checkbox-multiple-line fs-1 d-block mb-2 opacity-50"></i>
-                    Aún no hay servicios.<br><small>Marca los trabajos y pulsa Agregar.</small>
-                 </div>
-
-                 <div id="carrito-lista" class="d-flex flex-column gap-2" style="max-height: 380px; overflow-y: auto;">
-                    <!-- Se llena vía JS -->
-                 </div>
-
-                 <!-- Textarea oculto para la BD -->
-                 <textarea id="trabajo-descripcion" name="descripcion" class="d-none" required></textarea>
+                  <!-- Textarea oculto para la BD -->
+                  <textarea id="trabajo-descripcion" name="descripcion" class="d-none"></textarea>
+                  <input type="hidden" id="trabajo-materiales" name="precio_materiales" value="0">
+                  <input type="hidden" id="trabajo-horas" name="precio_horas" value="0">
               </div>
             </div>
         </div>
@@ -327,21 +331,21 @@
                  <div id="agenda-preview-container" class="small text-muted">
                     Cargando disponibilidad...
                  </div>
+                 <h6 class="mb-3 fw-bold mt-5 text-primary"><i class="ri-wallet-3-line me-2"></i> Presupuesto Estimado y Tiempo Base</h6>
+                 <div class="alert alert-success d-flex align-items-center mb-4" role="alert">
+                    <i class="ri-magic-line me-3 fs-4"></i>
+                    <div class="small">
+                        Basado en la suma del carrito. <strong>Si desconoces algún importe, puedes dejarlo a 0 y concertarlo más adelante con el cliente</strong>, o puedes editar este total manualmente si deseas hacer una tarifa plana global.
+                    </div>
+                 </div>
               </div>
-            </div>
-
-            <h6 class="mb-3 fw-bold mt-5 text-primary"><i class="ri-wallet-3-line me-2"></i> Presupuesto Estimado y Tiempo Base</h6>
-            <div class="alert alert-success d-flex align-items-center mb-4" role="alert" style="border-left: 4px solid var(--bs-success);">
-                <i class="ri-magic-line me-3 fs-4"></i>
-                <div class="small">
-                    Basado en la suma del carrito. <strong>Si desconoces algún importe, puedes dejarlo a 0 y concertarlo más adelante con el cliente</strong>, o puedes editar este total manualmente si deseas hacer una tarifa plana global.
-                </div>
             </div>
             
             <div class="row">
               <div class="col-md-12 mb-3">
-                  <label class="form-label fw-bold text-success fs-5" for="trabajo-materiales"><i class="ri-money-dollar-circle-line me-1"></i> Presupuesto Total del Trabajo (€)</label>
-                  <input type="number" id="trabajo-materiales" step="0.01" name="precio_materiales" class="form-control form-control-lg text-success fw-bold border-success" value="0" style="background-color: #fff; font-size: 1.5rem;">
+                  <label class="form-label fw-bold text-success fs-5" for="trabajo-materiales-display"><i class="ri-money-dollar-circle-line me-1"></i> Presupuesto Total del Trabajo (€)</label>
+                  <input type="number" id="trabajo-materiales-display" step="0.01" class="form-control form-control-lg text-success fw-bold border-success precio-total-input" value="0" readonly>
+                  <input type="hidden" id="trabajo-materiales" name="precio_materiales" value="0">
                   <input type="hidden" id="trabajo-horas" name="precio_horas" value="0">
               </div>
             </div>
@@ -357,327 +361,200 @@
             </div>
         </div>
 
-      </form>
-    </div>
-  </div>
-</div>
-
-<script>
+      <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // ---- LÓGICA DE DICCIONARIO TAPICERÍA AVANZADO ----
-    const taxonomias = {
-        "Asientos (Butacas)": {
-            trabajos: [
-                "Retapizado integral de asientos",
-                "Retapizado parcial (banqueta / respaldo / orejeras)",
-                "Sustitución de espumas (espumado)",
-                "Reparación de costuras y paneles"
-            ],
-            tipos: [
-                "Tapizado en piel",
-                "Tapizado en polipiel",
-                "Tejido técnico",
-                "Confección de fundas a medida"
-            ]
-        },
-        "Cielo (Guarnecido techo)": {
-            trabajos: [
-                "Sustitución de cielo completo",
-                "Reparación de cielo descolgado (re-encolado)",
-                "Restauración de soporte de techo"
-            ],
-            tipos: ["Cielo estándar", "Cielo personalizado (alcántara, microfibra, etc.)"]
-        },
-        "Paneles de puerta": {
-            trabajos: ["Retapizado de paneles", "Sustitución de insertos", "Reparación de bases y soportes"],
-            tipos: ["Guarnecido completo", "Inserciones tapizadas (centro de puerta)"]
-        },
-        "Volante": {
-            trabajos: ["Retapizado de volante", "Restauración de aro"],
-            tipos: ["Piel lisa / perforada", "Costura vista personalizada"]
-        },
-        "Pomo de cambio": {
-            trabajos: ["Retapizado o forrado", "Sustitución de recubrimiento"],
-            tipos: ["Acabado en piel", "Personalización de costuras"]
-        },
-        "Fuelle de cambio/freno": {
-            trabajos: ["Confección de fuelles", "Sustitución"],
-            tipos: ["Fuelle estándar", "Fuelle personalizado"]
-        },
-        "Reposabrazos / Consola central": {
-            trabajos: ["Retapizado", "Reacondicionado de acolchado"],
-            tipos: ["Piel / Tela Estándar"]
-        },
-        "Moqueta (Revestimiento suelo)": {
-            trabajos: ["Sustitución de moqueta completa", "Fabricación de alfombrillas a medida"],
-            tipos: ["Calidad origen", "Calidad Premium Perimetrada"]
-        },
-        "Maletero (Zona de Carga)": {
-            trabajos: ["Revestimiento interior", "Moquetado de maletero"],
-            tipos: ["Goma resistente", "Moqueta insonorizante"]
-        },
-        "Otros guarnecidos (Pilares, Bandeja)": {
-            trabajos: ["Retapizado de pilares (A, B, C)", "Bandeja trasera", "Sustitución de revestimientos"],
-            tipos: ["Igualado de origen", "Estética personalizada"]
-        },
-        "Otro Trabajo (Personalizado)": {
-            trabajos: ["Trabajo especial a medida", "Reparación genérica"],
-            tipos: ["A definir por el taller"]
-        }
-    };
+    // ---- 1. CONFIGURACIÓN Y DATOS ----
+    const baseUrl = "{{ url('/') }}";
+    const taxonomias = [
+        { id: 'asientos', nombre: 'Asientos', icono: 'ri-sofa-line', color: 'primary', opciones: ['Retapizado integral', 'Reparar orejeras', 'Espumado / Mullido', 'Reparar quemadura'] },
+        { id: 'techo', nombre: 'Techo / Cielo', icono: 'ri-arrow-up-circle-line', color: 'danger', opciones: ['Retapizado de techo', 'Techo solar / Cortinilla', 'Pilares (A, B, C)', 'Parasoles'] },
+        { id: 'puertas', nombre: 'Puertas', icono: 'ri-door-line', color: 'success', opciones: ['Paneles completos', 'Apoyabrazos puerta', 'Inserciones tela/piel'] },
+        { id: 'volante', nombre: 'Volante / Cambio', icono: 'ri-steering-fill', color: 'info', opciones: ['Retapizar volante', 'Pomo de cambio', 'Fuelle de cambio', 'Freno de mano'] },
+        { id: 'suelo', nombre: 'Suelo / Alfombras', icono: 'ri-grid-line', color: 'warning', opciones: ['Moqueta completa', 'Alfombrillas a medida', 'Insonorización suelo'] },
+        { id: 'otros', nombre: 'Otros / Especiales', icono: 'ri-more-line', color: 'secondary', opciones: ['Bandeja trasera', 'Salpicadero', 'Maletero', 'Capota (Cabrio)', 'Bordado personalizado'] }
+    ];
 
     let carritoTrabajos = [];
+    let categoriaActual = null;
+    let opcionSeleccionada = null;
+    let currentStep = 1;
+    const totalSteps = 4;
 
-    const arbolServicios  = document.getElementById('arbol-servicios');
-    const buscador        = document.getElementById('buscador-servicios');
-    const descTextarea    = document.getElementById('trabajo-descripcion');
-    const btnAdd          = document.getElementById('btn-add-trabajo');
-    const btnAddTexto     = document.getElementById('btn-add-texto');
-    const anotacionInput  = document.getElementById('anotacion-trabajo');
+    // Elementos UI
+    const panelCategorias = document.getElementById('panel-categorias');
+    const panelOpciones = document.getElementById('panel-opciones');
+    const listaOpciones = document.getElementById('lista-opciones');
+    const tituloCat = document.getElementById('titulo-categoria-seleccionada');
+    const inputAnotacion = document.getElementById('anotacion-servicio');
+    const carritoLista = document.getElementById('carrito-lista');
+    const carritoVacio = document.getElementById('carrito-vacio');
+    const badgeContador = document.getElementById('badge-contador');
+    const txtTotalGlobal = document.getElementById('txt-total-global');
+    const inputPrecioGlobal = document.getElementById('precio-global-step3');
+    const textareaDescripcion = document.getElementById('trabajo-descripcion');
+    
+    // Botones Wizard
+    const btnNext = document.getElementById('btn-next');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnSubmit = document.getElementById('btn-submit');
 
-    // UI Carrito e Inputs de Totales P4
-    const contCarritoVacio = document.getElementById('carrito-vacio');
-    const divCarritoLista  = document.getElementById('carrito-lista');
-    const badgeContador    = document.getElementById('badge-contador');
-    const inputTotalMat    = document.getElementById('trabajo-materiales');
-    const inputTotalHoras  = document.getElementById('trabajo-horas');
-    const txtSumMat        = document.getElementById('txt-total-mat');
-    const txtSumHor        = document.getElementById('txt-total-horas');
-
-    let hasManuallyEditedP4 = false;
-    inputTotalMat.addEventListener('input', () => hasManuallyEditedP4 = true);
-    inputTotalHoras.addEventListener('input', () => hasManuallyEditedP4 = true);
-
-    // ---- GENERAR ÁRBOL COMPLETO DE CATEGORÍAS ----
-    // Se renderiza UNA VEZ al cargar la página. Todas las categorías visibles simultáneamente.
-    let uidChk = 0;
-    for (const cat in taxonomias) {
-        const colores = ['primary','success','info','warning','danger','secondary'];
-        const colorIdx = Object.keys(taxonomias).indexOf(cat) % colores.length;
-        const color = colores[colorIdx];
-
-        // Cabecera de categoría con icono de colapso
-        const catId = `cat-${uidChk}`;
-        let html = `
-            <div class="mb-3 categoria-bloque">
-              <div class="d-flex align-items-center mb-2" style="cursor:pointer" onclick="toggleCat('${catId}')">
-                <span class="badge bg-${color} me-2 py-1 px-2" style="font-size:0.7rem">${cat.split('(')[0].trim()}</span>
-                <small class="text-muted chk-cat-label" data-cat="${cat}"></small>
-                <i class="ri-arrow-down-s-line ms-auto text-muted cat-chevron" id="chev-${catId}"></i>
-              </div>
-              <div id="${catId}" class="ps-3 border-start border-${color} border-2">`;
-
-        taxonomias[cat].trabajos.forEach(tarea => {
-            const id = `chk-${uidChk++}`;
-            html += `<div class="form-check mb-1 tarea-item">
-                <input class="form-check-input chk-tarea" type="checkbox" value="${tarea}" data-cat="${cat}" id="${id}">
-                <label class="form-check-label small" for="${id}">${tarea}</label>
-              </div>`;
+    // ---- 2. LÓGICA DEL CONFIGURADOR VISUAL (PASO 3) ----
+    function renderCategorias() {
+        if (!panelCategorias) return;
+        panelCategorias.innerHTML = '';
+        taxonomias.forEach(cat => {
+            panelCategorias.insertAdjacentHTML('beforeend', `
+                <div class="col-6 col-sm-4">
+                    <div class="card h-100 cursor-pointer border shadow-none hover-shadow transition-all" onclick="seleccionarCategoria('${cat.id}')">
+                        <div class="card-body text-center py-4 bg-label-${cat.color}">
+                            <i class="${cat.icono} display-5 mb-2 text-${cat.color}"></i>
+                            <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.85rem;">${cat.nombre}</h6>
+                        </div>
+                    </div>
+                </div>
+            `);
         });
-
-        html += `</div></div>`;
-        arbolServicios.insertAdjacentHTML('beforeend', html);
+        panelCategorias.insertAdjacentHTML('beforeend', `
+            <div class="col-6 col-sm-4">
+                <div class="card h-100 cursor-pointer border border-dashed shadow-none" onclick="servicioPersonalizado()">
+                    <div class="card-body text-center py-4 bg-label-secondary">
+                        <i class="ri-add-line display-5 mb-2 text-secondary"></i>
+                        <h6 class="mb-0 fw-bold text-muted" style="font-size: 0.85rem;">Personalizado</h6>
+                    </div>
+                </div>
+            </div>
+        `);
     }
 
-    // Escuchar cambios en todos los checkboxes
-    arbolServicios.querySelectorAll('.chk-tarea').forEach(c => c.addEventListener('change', actualizarBotonAgregar));
-    actualizarBotonAgregar();
+    window.seleccionarCategoria = function(id) {
+        categoriaActual = taxonomias.find(c => c.id === id);
+        tituloCat.innerHTML = `<i class="${categoriaActual.icono} me-2 text-${categoriaActual.color}"></i> ${categoriaActual.nombre}`;
+        listaOpciones.innerHTML = '';
+        categoriaActual.opciones.forEach(opc => {
+            listaOpciones.insertAdjacentHTML('beforeend', `
+                <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3" onclick="seleccionarOpcion(this, '${opc}')">
+                    <span>${opc}</span>
+                    <i class="ri-arrow-right-s-line text-muted"></i>
+                </button>
+            `);
+        });
+        panelCategorias.classList.add('d-none');
+        panelOpciones.classList.remove('d-none');
+        inputAnotacion.value = '';
+        opcionSeleccionada = null;
+    };
 
-    // Colapsar/expandir categoría
-    window.toggleCat = function(id) {
-        const el = document.getElementById(id);
-        const chev = document.getElementById('chev-' + id);
-        if (el.style.display === 'none') {
-            el.style.display = 'block';
-            chev.className = 'ri-arrow-down-s-line ms-auto text-muted cat-chevron';
-        } else {
-            el.style.display = 'none';
-            chev.className = 'ri-arrow-right-s-line ms-auto text-muted cat-chevron';
+    window.volverACategorias = function() {
+        panelOpciones.classList.add('d-none');
+        panelCategorias.classList.remove('d-none');
+    };
+
+    window.seleccionarOpcion = function(btn, opc) {
+        listaOpciones.querySelectorAll('.list-group-item').forEach(i => i.classList.remove('active', 'bg-primary', 'text-white'));
+        btn.classList.add('active', 'bg-primary', 'text-white');
+        opcionSeleccionada = opc;
+    };
+
+    window.servicioPersonalizado = async function() {
+        const { value: text } = await Swal.fire({
+            title: 'Servicio Personalizado',
+            input: 'text',
+            inputLabel: '¿Qué vamos a hacer?',
+            placeholder: 'Escribe el trabajo aquí...',
+            showCancelButton: true
+        });
+        if (text) {
+            categoriaActual = { nombre: 'Especial', icono: 'ri-star-line', color: 'secondary' };
+            opcionSeleccionada = text;
+            añadirAlCarrito();
         }
     };
 
-    // Buscador en tiempo real
-    buscador.addEventListener('input', function() {
-        const q = this.value.toLowerCase().trim();
-        arbolServicios.querySelectorAll('.tarea-item').forEach(item => {
-            const label = item.querySelector('label').textContent.toLowerCase();
-            item.style.display = (!q || label.includes(q)) ? 'block' : 'none';
-        });
-        // Mostrar/ocultar bloques de categoría enteros
-        arbolServicios.querySelectorAll('.categoria-bloque').forEach(bloque => {
-            const visible = Array.from(bloque.querySelectorAll('.tarea-item')).some(i => i.style.display !== 'none');
-            bloque.style.display = visible ? 'block' : 'none';
-        });
+    document.getElementById('btn-confirmar-seleccion')?.addEventListener('click', () => {
+        if (!opcionSeleccionada) {
+            Swal.fire('Atención', 'Selecciona una opción antes de continuar.', 'warning');
+            return;
+        }
+        añadirAlCarrito();
     });
 
-    function actualizarBotonAgregar() {
-        const n = arbolServicios.querySelectorAll('.chk-tarea:checked').length;
-        // Actualizar etiquetas de conteo por categoría
-        document.querySelectorAll('.chk-cat-label').forEach(lbl => {
-            const cat = lbl.dataset.cat;
-            const nCat = arbolServicios.querySelectorAll(`.chk-tarea[data-cat="${cat}"]:checked`).length;
-            lbl.textContent = nCat > 0 ? `${nCat} seleccionada${nCat > 1 ? 's' : ''}` : '';
+    function añadirAlCarrito() {
+        const nota = inputAnotacion.value.trim();
+        carritoTrabajos.push({
+            id: Date.now(),
+            categoria: categoriaActual.nombre,
+            icono: categoriaActual.icono,
+            color: categoriaActual.color,
+            trabajo: opcionSeleccionada,
+            anotacion: nota
         });
-        if (n === 0) {
-            btnAddTexto.textContent = 'Selecciona al menos un servicio';
-            btnAdd.classList.remove('btn-primary');
-            btnAdd.classList.add('btn-secondary');
-        } else {
-            btnAddTexto.textContent = `Agregar ${n} servicio${n > 1 ? 's' : ''} al Expediente`;
-            btnAdd.classList.remove('btn-secondary');
-            btnAdd.classList.add('btn-primary');
-        }
+        renderizarCarrito();
+        volverACategorias();
     }
 
-    // ---- AÑADIR AL CARRITO (TODAS LAS MARCADAS) ----
-    btnAdd.addEventListener('click', () => {
-        const seleccionadas = Array.from(arbolServicios.querySelectorAll('.chk-tarea:checked'));
-        if (seleccionadas.length === 0) {
-            Swal.fire('Atención', 'Marca al menos un servicio antes de agregar.', 'warning'); return;
-        }
-        const hTotal  = parseFloat(document.getElementById('hor-estimado').value) || 0;
-        const mTotal  = parseFloat(document.getElementById('mat-estimado').value) || 0;
-        const nota    = anotacionInput.value.trim();
-        const acabado = document.getElementById('acabado-global').value;
-        const n       = seleccionadas.length;
-        const hPorTarea = Math.round((hTotal / n) * 2) / 2;
-        const mPorTarea = parseFloat((mTotal / n).toFixed(2));
-
-        seleccionadas.forEach(chk => {
-            carritoTrabajos.push({
-                id: Date.now() + Math.random(),
-                categoria: chk.dataset.cat,
-                trabajo:   chk.value,
-                subopcion: acabado,
-                anotacion: nota,
-                horas:     hPorTarea,
-                mat:       mPorTarea
-            });
-            chk.checked = false; // Desmarcar tras agregar
-        });
-
-        // Reset campos
-        document.getElementById('hor-estimado').value = 0;
-        document.getElementById('mat-estimado').value = 0;
-        document.getElementById('acabado-global').value = '';
-        anotacionInput.value = '';
-        buscador.value = '';
-        buscador.dispatchEvent(new Event('input')); // Limpiar filtro
-        hasManuallyEditedP4 = false;
-        actualizarBotonAgregar();
-        renderizarCarrito();
-    });
-
-    window.borrarDelCarrito = function(idAEliminar) {
-        carritoTrabajos = carritoTrabajos.filter(x => x.id !== idAEliminar);
+    window.borrarDelCarrito = function(id) {
+        carritoTrabajos = carritoTrabajos.filter(i => i.id !== id);
         renderizarCarrito();
     };
 
     function renderizarCarrito() {
-        if(carritoTrabajos.length === 0) {
-            contCarritoVacio.classList.remove('d-none');
-            divCarritoLista.innerHTML = '';
-            actualizarTextosyPresupuestos();
-            return;
-        }
-
-        contCarritoVacio.classList.add('d-none');
-        divCarritoLista.innerHTML = '';
-
-        carritoTrabajos.forEach(item => {
-            let subt = item.subopcion ? `• ${item.subopcion}` : '';
-            let notaHtml = item.anotacion ? `<div class="bg-lighter p-2 rounded mt-2 border-start border-3 border-secondary small text-muted"><i class="ri-edit-2-line me-1"></i> ${item.anotacion}</div>` : '';
-            
-            divCarritoLista.innerHTML += `
-               <div class="card shadow-none border bg-white mb-2 pb-0">
-                  <div class="card-body p-3 d-flex justify-content-between align-items-center">
-                     <div class="w-100 pe-3">
-                        <h6 class="mb-1 text-primary fw-bold">${item.categoria}</h6>
-                        <p class="mb-1 text-dark fs-6">${item.trabajo}</p>
-                        <small class="text-muted d-block mb-2">${subt}</small>
-                        <div class="d-flex gap-2">
-                           <span class="badge bg-label-success"><i class="ri-money-dollar-circle-line"></i> ${item.mat.toFixed(2)}€</span>
+        if (!carritoLista) return;
+        if (carritoTrabajos.length === 0) {
+            carritoVacio.classList.remove('d-none');
+            carritoLista.innerHTML = '';
+            badgeContador.textContent = '0';
+        } else {
+            carritoVacio.classList.add('d-none');
+            carritoLista.innerHTML = '';
+            carritoTrabajos.forEach(i => {
+                carritoLista.insertAdjacentHTML('beforeend', `
+                    <div class="card border mb-2 shadow-none animate__animated animate__fadeInRight">
+                        <div class="card-body p-2 d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="p-2 rounded me-3 bg-label-${i.color}">
+                                    <i class="${i.icono} text-${i.color}"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 small fw-bold text-dark">${i.trabajo}</h6>
+                                    <small class="text-muted">${i.categoria}${i.anotacion ? ' • ' + i.anotacion : ''}</small>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm text-danger" onclick="borrarDelCarrito(${i.id})"><i class="ri-delete-bin-line"></i></button>
                         </div>
-                        ${notaHtml}
-                     </div>
-                     <button type="button" class="btn btn-sm btn-label-danger" onclick="borrarDelCarrito(${item.id})" title="Eliminar servicio">
-                        <i class="ri-delete-bin-line me-1"></i> Quitar
-                     </button>
-                  </div>
-               </div>
-            `;
-        });
-        
-        actualizarTextosyPresupuestos();
-    }
-
-    function actualizarTextosyPresupuestos() {
-        badgeContador.textContent = carritoTrabajos.length;
-        
-        let sumTotal = 0;
-        let textoMarkdown = "## RESUMEN DE SERVICIOS SELECCIONADOS\n---\n";
-        
-        carritoTrabajos.forEach((item, index) => {
-            sumTotal += item.mat;
-            
-            textoMarkdown += `### Trab. #${index + 1}: ${item.categoria}\n`;
-            textoMarkdown += `- **Tarea principal:** ${item.trabajo}\n`;
-            if(item.subopcion) textoMarkdown += `- **Tipo/Acabado:** ${item.subopcion}\n`;
-            if(item.anotacion) textoMarkdown += `> **Especificación del Taller:** ${item.anotacion}\n`;
-            textoMarkdown += `\n`; // Quitamos el desglose de horas y materiales individuales
-        });
-
-        // Aplicamos matemáticas a HTML
-        txtSumMat.textContent = sumTotal.toFixed(2);
-        txtSumHor.parentElement.classList.add('d-none'); // Ocultamos la etiqueta de horas
-        
-        // Solo sobreescribimos los campos de presupuesto P4 si el operario no los ha borrado/sobreescrito manualmente
-        if(!hasManuallyEditedP4) {
-            inputTotalMat.value = sumTotal.toFixed(2);
-            inputTotalHoras.value = 0; // Siempre 0 horas por defecto ahora
+                    </div>
+                `);
+            });
+            badgeContador.textContent = carritoTrabajos.length;
         }
-
-        // Metemos al textarea oculto para alimentar DB en formato puro textual
-        descTextarea.value = textoMarkdown.trim();
+        actualizarTotal();
     }
 
+    function actualizarTotal() {
+        const total = parseFloat(inputPrecioGlobal.value) || 0;
+        if (txtTotalGlobal) txtTotalGlobal.textContent = total.toFixed(2) + ' €';
+        document.getElementById('trabajo-materiales').value = total;
+        
+        let desc = "";
+        carritoTrabajos.forEach(i => {
+            desc += `[${i.categoria}] ${i.trabajo} ${i.anotacion ? '('+i.anotacion+')' : ''}\n`;
+        });
+        if (textareaDescripcion) textareaDescripcion.value = desc;
+    }
 
-    // ---- LÓGICA DE WIZARD ----
-    let currentStep = 1;
-    const totalSteps = 4;
-    const btnNext = document.getElementById('btn-next');
-    const btnPrev = document.getElementById('btn-prev');
-    const btnSubmit = document.getElementById('btn-submit');
-    
+    inputPrecioGlobal?.addEventListener('input', actualizarTotal);
+
+    // ---- 3. LÓGICA DEL WIZARD (NAVEGACIÓN) ----
     window.showStep = function(step) {
-        // Ocultar todos
         document.querySelectorAll('.wizard-step').forEach(el => el.classList.add('d-none'));
-        // Mostrar actual
         document.getElementById('step-' + step).classList.remove('d-none');
         
-        // Actualizar Indicadores
         document.querySelectorAll('.step-item').forEach((el, index) => {
             el.classList.remove('active', 'completed');
-            if (index + 1 < step) {
-                el.classList.add('completed');
-                el.querySelector('i').className = 'ri-checkbox-circle-fill step-icon text-success';
-            } else if (index + 1 === step) {
-                el.classList.add('active');
-                const icons = ['user-line', 'car-line', 'tools-line', 'calendar-check-line'];
-                el.querySelector('i').className = `ri-${icons[index]} step-icon`;
-            } else {
-                const icons = ['user-line', 'car-line', 'tools-line', 'calendar-check-line'];
-                el.querySelector('i').className = `ri-${icons[index]} step-icon`;
-            }
+            if (index + 1 < step) el.classList.add('completed');
+            else if (index + 1 === step) el.classList.add('active');
         });
 
-        // Control Botones
-        if (step === 1) {
-            btnPrev.classList.add('d-none');
-        } else {
-            btnPrev.classList.remove('d-none');
-        }
-
+        btnPrev.classList.toggle('d-none', step === 1);
         if (step === totalSteps) {
             btnNext.classList.add('d-none');
             btnSubmit.classList.remove('d-none');
@@ -685,16 +562,13 @@ document.addEventListener('DOMContentLoaded', function() {
             btnNext.classList.remove('d-none');
             btnSubmit.classList.add('d-none');
         }
-
+        
         // Foco automático
         setTimeout(() => {
-            const stepEl = document.getElementById('step-' + step);
-            if (stepEl) {
-                const firstInput = stepEl.querySelector('input:not([type=hidden]):not([readonly]), select, textarea');
-                if (firstInput) firstInput.focus();
-            }
+            const firstInput = document.getElementById('step-' + step).querySelector('input:not([type=hidden]):not([readonly]), select, textarea');
+            if (firstInput) firstInput.focus();
         }, 300);
-    }
+    };
 
     function validateCurrentStep() {
         const currentDiv = document.getElementById('step-' + currentStep);
@@ -707,13 +581,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 isValid = false;
             }
         });
-        
-        // Custom validación para el select: Requerir al menos 1 array en el carrito
+
         if (currentStep === 3 && carritoTrabajos.length === 0) {
-             Swal.fire('Atención', 'Debe añadir al menos un (1) trabajo al carrito para continuar.', 'warning');
+             Swal.fire('Atención', 'Añade al menos un trabajo para continuar.', 'warning');
              isValid = false;
         }
-
         return isValid;
     }
 
@@ -731,41 +603,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // ---- LÓGICA DE DISPONIBILIDAD DE AGENDA ----
-    const fechaInput = document.getElementById('trabajo-fecha');
-    const agendaPreview = document.getElementById('agenda-preview-container');
-
-    function checkAvailability() {
-        const date = fechaInput.value;
-        if (!date) return;
-        
-        agendaPreview.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Comprobando disponibilidad...';
-        
-        fetch(`/api/disponibilidad?date=${date}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.length === 0) {
-                    agendaPreview.innerHTML = '<span class="text-success fw-bold"><i class="ri-checkbox-circle-line me-1"></i> Todo el día está libre.</span> Puedes elegir cualquier hora.';
-                } else {
-                    let html = '<span class="text-warning fw-bold mb-2 d-block"><i class="ri-error-warning-line me-1"></i> Horarios ocupados:</span>';
-                    html += '<ul class="mb-1 ps-3">';
-                    data.forEach(item => {
-                        html += `<li><strong>${item.hora}h</strong> - ${item.titulo}</li>`;
-                    });
-                    html += '</ul><span class="text-success"><i class="ri-information-line me-1"></i> El resto del horario está libre.</span>';
-                    agendaPreview.innerHTML = html;
-                }
-            })
-            .catch(err => {
-                agendaPreview.innerHTML = '<span class="text-danger">Error al consultar la agenda. Inténtalo de nuevo.</span>';
-            });
-    }
-
-    fechaInput.addEventListener('change', checkAvailability);
-    // Llamada inicial
-    checkAvailability();
-
-    // ---- LÓGICA DE BÚSQUEDA DE CLIENTES ----
+    // ---- 4. BÚSQUEDAS API (CLIENTES, VEHÍCULOS, MATERIALES) ----
     const buscadorCliente = document.getElementById('buscador-cliente');
     const resultadosCliente = document.getElementById('resultados-busqueda-cliente');
     let clientesEncontrados = [];
@@ -776,8 +614,7 @@ document.addEventListener('DOMContentLoaded', function() {
             resultadosCliente.classList.add('d-none');
             return;
         }
-
-        fetch(`/api/clientes/buscar?q=${q}`)
+        fetch(`${baseUrl}/api/clientes/buscar?q=${q}`)
             .then(res => res.json())
             .then(data => {
                 clientesEncontrados = data;
@@ -786,12 +623,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     let html = '';
                     data.forEach((c, index) => {
-                        html += `
-                            <div class="search-item" onclick="seleccionarClientePorIndice(${index})">
-                                <strong>${c.nombre} ${c.apellido}</strong><br>
-                                <small class="text-muted">${c.telefono} | ${c.correo}</small>
-                            </div>
-                        `;
+                        html += `<div class="search-item" onclick="seleccionarClientePorIndice(${index})"><strong>${c.nombre} ${c.apellido}</strong><br><small>${c.telefono}</small></div>`;
                     });
                     resultadosCliente.innerHTML = html;
                 }
@@ -800,262 +632,107 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     window.seleccionarClientePorIndice = function(index) {
-        const cliente = clientesEncontrados[index];
-        if (!cliente) return;
-        
-        seleccionarCliente(cliente);
-    };
-
-    window.seleccionarCliente = function(cliente) {
-        document.getElementById('trabajo-nombre').value = cliente.nombre;
-        document.getElementById('trabajo-apellido').value = cliente.apellido;
-        document.getElementById('trabajo-telefono').value = cliente.telefono;
-        document.getElementById('trabajo-correo').value = cliente.correo;
-        
-        buscadorCliente.value = `${cliente.nombre} ${cliente.apellido}`;
+        const c = clientesEncontrados[index];
+        if (!c) return;
+        document.getElementById('trabajo-nombre').value = c.nombre;
+        document.getElementById('trabajo-apellido').value = c.apellido;
+        document.getElementById('trabajo-telefono').value = c.telefono;
+        document.getElementById('trabajo-correo').value = c.correo;
+        buscadorCliente.value = `${c.nombre} ${c.apellido}`;
         resultadosCliente.classList.add('d-none');
         
-        // Cargar sus vehículos para el Paso 2
         const vehContainer = document.getElementById('vehiculos-cliente-container');
         const vehLista = document.getElementById('lista-vehiculos-cliente');
-        
-        if (cliente.vehiculos && cliente.vehiculos.length > 0) {
-            let html = '';
-            cliente.vehiculos.forEach(v => {
-                html += `
-                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="seleccionarVehiculo('${v.marca}', '${v.modelo}')">
-                        <i class="ri-car-line me-1"></i> ${v.marca} ${v.modelo}
-                    </button>
-                `;
-            });
-            vehLista.innerHTML = html;
+        if (c.vehiculos?.length > 0) {
+            vehLista.innerHTML = c.vehiculos.map(v => `
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="seleccionarVehiculo('${v.marca}', '${v.modelo}')">
+                    <i class="ri-car-line me-1"></i> ${v.marca} ${v.modelo}
+                </button>
+            `).join('');
             vehContainer.classList.remove('d-none');
         } else {
             vehContainer.classList.add('d-none');
         }
-        
-        // Efecto visual de "rellenado"
-        const inputs = ['trabajo-nombre', 'trabajo-apellido', 'trabajo-telefono', 'trabajo-correo'];
-        inputs.forEach(id => {
-            const el = document.getElementById(id);
-            el.classList.add('is-valid');
-            setTimeout(() => el.classList.remove('is-valid'), 2000);
-        });
     };
 
     window.seleccionarVehiculo = function(marca, modelo) {
         document.getElementById('trabajo-marca').value = marca;
         document.getElementById('trabajo-modelo').value = modelo;
-        
-        // Efecto visual
-        const inputs = ['trabajo-marca', 'trabajo-modelo'];
-        inputs.forEach(id => {
-            const el = document.getElementById(id);
-            el.classList.add('is-valid');
-            setTimeout(() => el.classList.remove('is-valid'), 2000);
-        });
-
-        // Pasar automáticamente al siguiente paso tras un breve delay
-        setTimeout(() => {
-            btnNext.click();
-        }, 300);
+        setTimeout(() => btnNext.click(), 300);
     };
 
-    // ---- LÓGICA DE BÚSQUEDA DE MATERIALES ----
-    const buscadorMateriales = document.getElementById('buscador-materiales-wizard');
-    const resultadosMateriales = document.getElementById('resultados-materiales-wizard');
-
-    buscadorMateriales.addEventListener('input', function() {
-        const q = this.value.trim();
-        if (q.length < 2) {
-            resultadosMateriales.classList.add('d-none');
-            return;
-        }
-
-        fetch(`/api/materiales/buscar?q=${q}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.length === 0) {
-                    resultadosMateriales.innerHTML = '<div class="search-item text-muted">No se encontraron materiales</div>';
-                } else {
-                    let html = '';
-                    data.forEach(m => {
-                        html += `
-                            <div class="search-item d-flex justify-content-between align-items-center" onclick='seleccionarMaterialWizard(${JSON.stringify(m)})'>
-                                <div>
-                                    <strong>${m.nombre}</strong><br>
-                                    <small class="text-muted">${m.tipo} | ${m.precio_unitario}€ / ${m.unidad}</small>
-                                </div>
-                                <span class="badge bg-label-info">${parseFloat(m.stock)} disp.</span>
-                            </div>
-                        `;
-                    });
-                    resultadosMateriales.innerHTML = html;
-                }
-                resultadosMateriales.classList.remove('d-none');
-            });
-    });
-
-    window.seleccionarMaterialWizard = function(material) {
-        resultadosMateriales.classList.add('d-none');
-        buscadorMateriales.value = '';
-
-        Swal.fire({
-            title: `Añadir ${material.nombre}`,
-            text: `¿Qué cantidad de ${material.unidad} vas a usar? (Precio: ${material.precio_unitario}€/${material.unidad})`,
-            input: 'number',
-            inputAttributes: {
-                min: 0.1,
-                step: 0.1
-            },
-            inputValue: 1,
-            showCancelButton: true,
-            confirmButtonText: 'Añadir al presupuesto',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed && result.value > 0) {
-                const qty = parseFloat(result.value);
-                const totalMat = parseFloat((qty * material.precio_unitario).toFixed(2));
-
-                carritoTrabajos.push({
-                    id: Date.now() + Math.random(),
-                    isMaterial: true,
-                    categoria: 'MATERIAL: ' + material.tipo,
-                    trabajo:   material.nombre,
-                    subopcion: `Cantidad: ${qty} ${material.unidad}`,
-                    anotacion: `Precio unitario: ${material.precio_unitario}€`,
-                    horas:     0,
-                    mat:       totalMat
-                });
-
-                renderizarCarrito();
-                
-                // Animación de éxito
-                const badge = document.getElementById('badge-contador');
-                badge.classList.add('animate__animated', 'animate__bounce');
-                setTimeout(() => badge.classList.remove('animate__animated', 'animate__bounce'), 1000);
-            }
-        });
-    };
-
-    // ---- LÓGICA DE BÚSQUEDA DE MARCAS Y MODELOS ----
+    // Búsqueda de Marcas y Modelos
     const inputMarca = document.getElementById('trabajo-marca');
     const inputModelo = document.getElementById('trabajo-modelo');
-    const resultadosMarca = document.getElementById('resultados-busqueda-marca');
-    const resultadosModelo = document.getElementById('resultados-busqueda-modelo');
-    let marcaSeleccionadaId = null;
+    const resMarca = document.getElementById('resultados-busqueda-marca');
+    const resModelo = document.getElementById('resultados-busqueda-modelo');
+    let marcaId = null;
 
     inputMarca.addEventListener('input', function() {
         const q = this.value.trim();
-        if (q.length < 1) {
-            resultadosMarca.classList.add('d-none');
-            return;
-        }
-
-        fetch(`/api/vehiculos/marcas?q=${q}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.length === 0) {
-                    resultadosMarca.innerHTML = '<div class="search-item text-muted">No encontrada (escríbela libremente)</div>';
-                } else {
-                    let html = '';
-                    data.forEach(m => {
-                        html += `<div class="search-item" onclick="seleccionarMarca(${m.id}, '${m.nombre}')">${m.nombre}</div>`;
-                    });
-                    resultadosMarca.innerHTML = html;
-                }
-                resultadosMarca.classList.remove('d-none');
-            });
+        if (q.length < 1) { resMarca.classList.add('d-none'); return; }
+        fetch(`${baseUrl}/api/vehiculos/marcas?q=${q}`).then(res => res.json()).then(data => {
+            resMarca.innerHTML = data.map(m => `<div class="search-item" onclick="seleccionarMarca(${m.id}, '${m.nombre}')">${m.nombre}</div>`).join('');
+            resMarca.classList.toggle('d-none', data.length === 0);
+        });
     });
 
     window.seleccionarMarca = function(id, nombre) {
         inputMarca.value = nombre;
-        marcaSeleccionadaId = id;
-        resultadosMarca.classList.add('d-none');
+        marcaId = id;
+        resMarca.classList.add('d-none');
         inputModelo.focus();
-        // Limpiamos modelo al cambiar marca
-        inputModelo.value = '';
     };
-
-    inputModelo.addEventListener('focus', function() {
-        if (this.value.trim() === '') {
-            buscarModelos('');
-        }
-    });
 
     inputModelo.addEventListener('input', function() {
-        buscarModelos(this.value.trim());
+        const q = this.value.trim();
+        let url = `${baseUrl}/api/vehiculos/modelos?q=${q}`;
+        if (marcaId) url += `&marca_id=${marcaId}`;
+        fetch(url).then(res => res.json()).then(data => {
+            resModelo.innerHTML = data.map(m => `<div class="search-item" onclick="seleccionarModelo('${m.nombre}')">${m.nombre}</div>`).join('');
+            resModelo.classList.toggle('d-none', data.length === 0);
+        });
     });
 
-    function buscarModelos(q) {
-        let url = `/api/vehiculos/modelos?q=${q}`;
-        if (marcaSeleccionadaId) url += `&marca_id=${marcaSeleccionadaId}`;
+    window.seleccionarModelo = function(n) { inputModelo.value = n; resModelo.classList.add('d-none'); };
 
-        fetch(url)
-            .then(res => res.json())
-            .then(data => {
-                if (data.length === 0) {
-                    resultadosModelo.innerHTML = '<div class="search-item text-muted">No encontrado</div>';
-                } else {
-                    let html = '';
-                    data.forEach(m => {
-                        html += `<div class="search-item" onclick="seleccionarModelo('${m.nombre}')">${m.nombre}</div>`;
-                    });
-                    resultadosModelo.innerHTML = html;
-                }
-                resultadosModelo.classList.remove('d-none');
-            });
+    // Disponibilidad de Agenda
+    const fechaInput = document.getElementById('trabajo-fecha');
+    const agendaPreview = document.getElementById('agenda-preview-container');
+    function checkAvailability() {
+        if (!fechaInput.value) return;
+        fetch(`/api/disponibilidad?date=${fechaInput.value}`).then(res => res.json()).then(data => {
+            if (data.length === 0) agendaPreview.innerHTML = '<span class="text-success fw-bold">Día libre</span>';
+            else agendaPreview.innerHTML = `Ocupado: ${data.map(i => i.hora+'h').join(', ')}`;
+        });
     }
+    fechaInput.addEventListener('change', checkAvailability);
 
-    window.seleccionarModelo = function(nombre) {
-        inputModelo.value = nombre;
-        resultadosModelo.classList.add('d-none');
-    };
+    // Inicialización
+    renderCategorias();
+    checkAvailability();
+    
+    // Cerrar resultados clics fuera
+    document.addEventListener('click', (e) => {
+        if (!buscadorCliente.contains(e.target)) resultadosCliente.classList.add('d-none');
+        if (!inputMarca.contains(e.target)) resMarca.classList.add('d-none');
+        if (!inputModelo.contains(e.target)) resModelo.classList.add('d-none');
+    });
 
-    // Cerrar resultados al hacer clic fuera
-    document.addEventListener('click', function(e) {
-        if (!buscadorCliente.contains(e.target) && !resultadosCliente.contains(e.target)) {
-            resultadosCliente.classList.add('d-none');
-        }
-        if (!buscadorMateriales.contains(e.target) && !resultadosMateriales.contains(e.target)) {
-            resultadosMateriales.classList.add('d-none');
-        }
-        if (!inputMarca.contains(e.target) && !resultadosMarca.contains(e.target)) {
-            resultadosMarca.classList.add('d-none');
-        }
-        if (!inputModelo.contains(e.target) && !resultadosModelo.contains(e.target)) {
-            resultadosModelo.classList.add('d-none');
+    // Navegación Enter
+    document.getElementById('wizard-form').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            if (currentStep < totalSteps) btnNext.click();
         }
     });
 
-    // ---- ATAJOS DE TECLADO Y FOCO ----
-
-    // Navegación con Enter
-    document.getElementById('wizard-form').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            // Evitar que el Enter envíe el formulario si no estamos en el último paso
-            if (currentStep < totalSteps) {
-                // Si estamos en un textarea, dejamos que haga el salto de línea
-                if (e.target.tagName === 'TEXTAREA') return;
-                
-                e.preventDefault();
-                btnNext.click();
-            } else if (currentStep === totalSteps) {
-                // En el último paso, dejamos que el Enter (o Ctrl+Enter) envíe el formulario
-                // pero solo si no estamos en un textarea o si pulsamos Ctrl
-                if (e.target.tagName === 'TEXTAREA' && !e.ctrlKey) return;
-            }
-        }
-    });
-
-    // ---- MEJORA DE UX: AUTO-SELECCIONAR NÚMEROS AL HACER FOCO ----
-    // Esto evita tener que borrar el "0" manualmente
+    // UX: Auto-seleccionar números
     document.getElementById('wizard-form').addEventListener('focus', function(e) {
         if (e.target.tagName === 'INPUT' && e.target.type === 'number') {
             e.target.select();
         }
     }, true);
-
 });
 </script>
 @endsection

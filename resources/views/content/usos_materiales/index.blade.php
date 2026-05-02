@@ -31,7 +31,7 @@
           <td>
             {{-- Enlace directo a la orden para ver los detalles del vehículo rápidamente --}}
             <a href="{{ route('encargos.edit', $uso->encargo_id) }}">
-              #{{ $uso->encargo_id }} - {{ $uso->encargo->vehiculo->marca }}
+              {{ $uso->encargo_id }} - {{ $uso->encargo->vehiculo->marca }}
             </a>
           </td>
         </tr>
