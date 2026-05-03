@@ -10,7 +10,6 @@ $navbarDetached = ($navbarDetached ?? 'navbar-detached');
   @if(isset($navbarFull))
   <div class="navbar-brand app-brand demo d-none d-xl-flex py-0 me-4">
     <a href="{{url('/')}}" class="app-brand-link gap-2">
-      <span class="app-brand-text demo menu-text fw-semibold">{{config('variables.templateName')}}</span>
     </a>
   </div>
   @endif

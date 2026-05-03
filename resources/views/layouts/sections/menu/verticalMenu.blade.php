@@ -6,8 +6,7 @@ use Illuminate\Support\Facades\Route;
     <!-- ! Hide app brand if navbar-full -->
     <div class="app-brand demo">
         <a href="{{ route('dashboard-analytics') }}" class="app-brand-link">
-            <span class="app-brand-logo demo me-1">@include('_partials.macros')</span>
-            <span class="app-brand-text demo menu-text fw-semibold ms-2">{{config('variables.templateName')}}</span>
+            <span class="app-brand-logo demo me-1">@include('_partials.macros', ['width' => '110', 'height' => '110'])</span>
         </a>
 
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">

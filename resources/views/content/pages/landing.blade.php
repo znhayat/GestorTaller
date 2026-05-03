@@ -155,8 +155,7 @@
 <header class="top-header sticky-top">
     <div class="container d-flex justify-content-between align-items-center">
         <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="{{ asset('assets/img/zana-logo.jpg') }}?v={{ time() }}" alt="Zana Tapicería" height="50" class="me-2">
-            <span class="fw-bold text-dark fs-3"><span class="text-primary">TAPICERÍA</span></span>
+            <img src="{{ asset('assets/img/zana-logo.jpg') }}?v={{ time() }}" alt="Zana Tapicería" height="110">
         </a>
         <div class="d-none d-lg-flex gap-4 align-items-center">
             <a href="tel:631498980" class="contact-link"><i class="ri-phone-fill me-1"></i> 631 498 980</a>
