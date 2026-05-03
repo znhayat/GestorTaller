@@ -47,12 +47,18 @@
                     </div>
                     <div class="mb-3">
                         <label for="categoria_texto" class="form-label">Nombre Categoría</label>
-                        <input class="form-control" type="text" id="categoria_texto" name="categoria_texto" placeholder="Ej: Volantes, Asientos..." list="categoriasList" required>
-                        <datalist id="categoriasList">
-                            @foreach($categoriasExistentes as $cat)
-                                <option value="{{ $cat }}">
-                            @endforeach
-                        </datalist>
+                        <select class="form-select" id="categoria_texto" name="categoria_texto" onchange="toggleNuevaCategoriaMarketing(this)" required>
+                            <option value="" disabled selected>Selecciona una categoría...</option>
+                            <option value="Asientos">Asientos</option>
+                            <option value="Techo / Cielo">Techo / Cielo</option>
+                            <option value="Puertas">Puertas</option>
+                            <option value="Volante / Cambio">Volante / Cambio</option>
+                            <option value="Suelo / Alfombras">Suelo / Alfombras</option>
+                            <option value="Capotas (Cabrio)">Capotas (Cabrio)</option>
+                            <option value="OTRO" class="text-primary fw-bold">+ Añadir nueva categoría...</option>
+                        </select>
+                        <input type="text" name="nueva_categoria" id="nuevaCategoriaMarketing" class="form-control mt-2" 
+                               placeholder="Escribe el nombre de la nueva categoría" style="display:none;">
                     </div>
                     <div class="mb-4">
                         <label for="categoria_badge" class="form-label">Color de Etiqueta</label>
@@ -88,6 +94,21 @@
                         inputFoto.required = true;
                         inputAntes.required = false;
                         inputDespues.required = false;
+                    }
+                }
+
+                function toggleNuevaCategoriaMarketing(select) {
+                    const input = document.getElementById('nuevaCategoriaMarketing');
+                    if (select.value === 'OTRO') {
+                        input.style.display = 'block';
+                        input.required = true;
+                        select.name = ""; 
+                        input.name = "categoria_texto";
+                    } else {
+                        input.style.display = 'none';
+                        input.required = false;
+                        select.name = "categoria_texto"; 
+                        input.name = "nueva_categoria";
                     }
                 }
                 </script>

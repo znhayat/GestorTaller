@@ -22,7 +22,12 @@ class FotoController extends Controller
     public function create()
     {
         $encargos = Encargo::with('vehiculo.cliente')->get();
-        return view('content.fotos.create', compact('encargos'));
+        // Obtenemos las categorías que ya se han usado antes
+        $categorias = Foto::whereNotNull('categoria_texto')
+            ->distinct()
+            ->pluck('categoria_texto');
+            
+        return view('content.fotos.create', compact('encargos', 'categorias'));
     }
 
     // Aquí guardamos la foto. Primero chequeamos que sea una imagen y que no pese
@@ -38,11 +43,15 @@ class FotoController extends Controller
             // Guardamos el archivo físico en el storage público
             $ruta = $request->file('foto')->store('trabajos', 'public');
 
-            // Metemos la ruta y el encargo en la base de datos
+            // Metemos los datos en la base de datos
             Foto::create([
                 'encargo_id' => $request->encargo_id,
                 'ruta' => $ruta,
-                'descripcion' => $request->descripcion
+                'descripcion' => $request->descripcion,
+                'titulo_galeria' => $request->titulo_galeria,
+                'categoria_texto' => $request->categoria_texto,
+                'categoria_badge' => $request->categoria_badge, // Guardamos el color elegido
+                'es_publica' => true
             ]);
         }
 
@@ -70,6 +79,8 @@ class FotoController extends Controller
 
         $foto->encargo_id = $request->encargo_id;
         $foto->descripcion = $request->descripcion;
+        $foto->titulo_galeria = $request->titulo_galeria;
+        $foto->categoria_texto = $request->categoria_texto;
         $foto->save();
 
         return redirect()->route('fotos.index')->with('success', 'Registro actualizado.');
