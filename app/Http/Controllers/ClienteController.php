@@ -11,10 +11,20 @@ class ClienteController extends Controller
      * Lista la base de datos completa de clientes.
      * Recupera todos los registros para mostrar en la tabla principal de administración.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $clientes = Cliente::all();
-        return view('content.clientes.index', compact('clientes'));
+        $search = $request->get('search');
+
+        $clientes = Cliente::when($search, function ($query, $search) {
+            return $query->where('nombre', 'like', "%{$search}%")
+                ->orWhere('apellido', 'like', "%{$search}%")
+                ->orWhere('telefono', 'like', "%{$search}%")
+                ->orWhere('correo', 'like', "%{$search}%");
+        })
+        ->orderBy('created_at', 'desc')
+        ->paginate(15);
+
+        return view('content.clientes.index', compact('clientes', 'search'));
     }
 
     /**

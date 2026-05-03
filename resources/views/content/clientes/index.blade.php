@@ -1,16 +1,36 @@
 @extends('layouts/contentNavbarLayout')
 
-@section('title', 'Lista de Clientes')
-
 @section('content')
+<style>
+    .search-container { min-width: 250px; }
+    .search-icon { top: 50%; transform: translateY(-50%); left: 15px; color: #a1acb8; }
+    .clear-search { top: 50%; transform: translateY(-50%); right: 10px; color: #a1acb8; cursor: pointer; }
+</style>
+
 <div class="card">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">Clientes Registrados</h5>
-    <a href="{{ route('clientes.create') }}" class="btn btn-primary">Añadir Cliente</a>
+  <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <h5 class="mb-0">Gestión de Clientes</h5>
+    <div class="d-flex flex-wrap align-items-center gap-2 ms-auto">
+      <!-- Buscador -->
+      <form method="GET" action="{{ route('clientes.index') }}" class="d-flex position-relative me-2 search-container">
+        <input type="text" name="search" class="form-control ps-5 pe-4 w-100" placeholder="Buscar cliente..." value="{{ request('search') }}">
+        <i class="ri-search-line position-absolute search-icon"></i>
+        @if(request('search'))
+        <a href="{{ route('clientes.index') }}" class="position-absolute clear-search" title="Limpiar búsqueda">
+          <i class="ri-close-circle-line"></i>
+        </a>
+        @endif
+      </form>
+
+      <button type="button" class="btn btn-outline-success" onclick="exportTableToExcel('clientes-table', 'clientes_zana')">
+        <i class="ri-file-excel-2-line me-1"></i> Exportar
+      </button>
+      <a href="{{ route('clientes.create') }}" class="btn btn-primary"><i class="ri-user-add-line me-1"></i> Nuevo Cliente</a>
+    </div>
   </div>
 
   <div class="table-responsive text-nowrap">
-    <table class="table" aria-label="Listado de clientes registrados">
+    <table class="table table-hover" id="clientes-table">
       <thead>
         <tr>
           <th>Código</th>
@@ -18,36 +38,27 @@
           <th>Apellido</th>
           <th>Teléfono</th>
           <th>Correo</th>
-          <th>Acciones</th>
+          <th class="text-center">Acciones</th>
         </tr>
       </thead>
       <tbody>
-        {{-- Itero sobre la colección de clientes que nos envía el controlador --}}
-        @foreach($clientes as $cliente)
+        @foreach($clientes as $c)
         <tr>
-          <td><strong class="text-primary">#{{ $cliente->id }}</strong></td>
-          <td><strong>{{ $cliente->nombre }}</strong></td>
-          <td>{{ $cliente->apellido }}</td>
-          <td>{{ $cliente->telefono }}</td>
-          <td>{{ $cliente->correo }}</td>
+          <td><strong class="text-primary">#{{ $c->id }}</strong></td>
+          <td>{{ $c->nombre }}</td>
+          <td>{{ $c->apellido }}</td>
+          <td>{{ $c->telefono }}</td>
+          <td>{{ $c->correo }}</td>
           <td>
-            <div class="d-flex align-items-center">
-              {{-- Botón nos lleva al formulario con los datos cargados --}}
-              <a href="{{ route('clientes.edit', $cliente->id) }}" class="btn btn-primary btn-sm me-2" aria-label="Editar cliente {{ $cliente->nombre }} {{ $cliente->apellido }}">
-                <i class="ri-pencil-line me-1" aria-hidden="true"></i> Editar
+            <div class="d-flex justify-content-center gap-2">
+              <a href="{{ route('clientes.edit', $c->id) }}" class="btn btn-sm btn-primary">
+                <i class="ri-pencil-line me-1"></i> Editar
               </a>
 
-              {{-- Formulario de eliminación enviamos el ID por método DELETE --}}
-              <form action="{{ route('clientes.destroy', $cliente->id) }}" method="POST">
-                @csrf
-                @method('DELETE')
-                <button type="submit"
-                  class="btn btn-sm btn-outline-danger d-flex align-items-center"
-                  {{-- Doble confirmación para evitar borrar el historial de un cliente por error --}}
-                  onclick="return confirm('¿Estás seguro de que deseas eliminar a {{ addslashes($cliente->nombre) }}? Esta acción no se puede deshacer.')"
-                  title="Eliminar cliente"
-                  aria-label="Eliminar a {{ $cliente->nombre }} {{ $cliente->apellido }}">
-                  <i class="ri-delete-bin-line me-1" aria-hidden="true"></i> Eliminar
+              <form action="{{ route('clientes.destroy', $c->id) }}" method="POST" onsubmit="return confirm('¿Eliminar cliente del sistema?')">
+                @csrf @method('DELETE')
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                  <i class="ri-delete-bin-line me-1"></i> Eliminar
                 </button>
               </form>
             </div>
@@ -57,5 +68,33 @@
       </tbody>
     </table>
   </div>
+  @if($clientes->hasPages())
+  <div class="card-footer d-flex justify-content-center">
+    {{ $clientes->appends(['search' => request('search')])->links() }}
+  </div>
+  @endif
 </div>
+
+<script>
+function exportTableToExcel(tableID, filename = ''){
+    let downloadLink;
+    const dataType = 'application/vnd.ms-excel';
+    const tableSelect = document.getElementById(tableID);
+    const tableClone = tableSelect.cloneNode(true);
+    const rows = tableClone.querySelectorAll('tr');
+    rows.forEach(row => { if(row.lastElementChild) row.removeChild(row.lastElementChild); });
+    const tableHTML = tableClone.outerHTML.replace(/ /g, '%20');
+    filename = filename ? filename + '.xls' : 'clientes_zana.xls';
+    downloadLink = document.createElement("a");
+    document.body.appendChild(downloadLink);
+    if(navigator.msSaveOrOpenBlob){
+        const blob = new Blob(['\ufeff', tableHTML], { type: dataType });
+        navigator.msSaveOrOpenBlob(blob, filename);
+    } else {
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+        downloadLink.download = filename;
+        downloadLink.click();
+    }
+}
+</script>
 @endsection
