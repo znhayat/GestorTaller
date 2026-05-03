@@ -265,8 +265,8 @@
                       <div class="card border-0 shadow-sm mb-4">
                           <div class="card-header bg-formal py-3 d-flex justify-content-between align-items-center rounded-top">
                               <h6 id="titulo-categoria-seleccionada" class="text-white mb-0 fw-bold"></h6>
-                              <button type="button" class="btn btn-sm btn-link text-white p-0" onclick="volverACategorias()">
-                                <i class="ri-close-line fs-4"></i>
+                              <button type="button" class="btn btn-sm btn-link text-white p-0 d-flex align-items-center" onclick="volverACategorias()">
+                                <small class="me-1">Cerrar</small> <i class="ri-close-line fs-4"></i>
                               </button>
                           </div>
                           <div class="card-body pt-4">

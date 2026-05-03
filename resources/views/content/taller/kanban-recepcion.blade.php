@@ -83,8 +83,8 @@
                   <button type="button" class="btn btn-success btn-sm flex-grow-1" onclick="mostrarModalFechaTrabajo({{ $encargo->id }})">
                     <i class="ri-check-line me-1"></i> Aceptar
                   </button>
-                  <button type="button" class="btn btn-outline-secondary btn-sm" onclick="moverEstado({{ $encargo->id }}, 'Cancelado')">
-                    <i class="ri-close-line"></i>
+                  <button type="button" class="btn btn-outline-secondary btn-sm" onclick="moverEstado({{ $encargo->id }}, 'Cancelado')" title="Rechazar presupuesto">
+                    <i class="ri-close-line me-1"></i> Rechazar
                   </button>
                   @endif
 

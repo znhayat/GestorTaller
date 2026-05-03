@@ -51,7 +51,7 @@ $container = ($container ?? 'container-xxl');
 
 
             <!-- Content wrapper -->
-            <div class="content-wrapper">
+            <div class="content-wrapper d-flex flex-column">
 
                 <!-- Content -->
                 @if ($isFlex)
