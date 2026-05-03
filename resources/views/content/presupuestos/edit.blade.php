@@ -1,8 +1,11 @@
 @extends('layouts/contentNavbarLayout')
 
 @section('content')
+<style>
+    .container-p-y { padding-top: 1.5rem !important; }
+</style>
 <div class="row">
-  <div class="col-md-8 mx-auto">
+  <div class="col-md-11 mx-auto">
     <div class="card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Editar Presupuesto #{{ $presupuesto->id }}</h5>

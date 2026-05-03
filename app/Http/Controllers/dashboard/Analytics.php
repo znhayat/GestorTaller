@@ -15,13 +15,15 @@ class Analytics extends Controller
 {
   public function index()
   {
-    // Suma de todas las facturas
-    $totalFacturado = Factura::sum('importe_total') ?? 0;
+    // Dinero en presupuestos pendientes de aceptar
+    $dineroPendiente = Presupuesto::where('aceptado', 0)
+        ->orWhereNull('aceptado')
+        ->sum('total') ?? 0;
+
     $totalClientes = Cliente::count() ?? 0;
-    $totalVehiculos = Vehiculo::count() ?? 0;
-    $presupuestosPendientes = Presupuesto::where('aceptado', 0)->orWhereNull('aceptado')->count();
     $encargosActivos = Encargo::whereNotIn('estado', ['Finalizado', 'Entregado', 'Cancelado'])->count();
     $encargosCompletados = Encargo::whereIn('estado', ['Finalizado', 'Entregado'])->count();
+    $presupuestosPendientes = Presupuesto::where('aceptado', 0)->orWhereNull('aceptado')->count();
     $totalMateriales = Material::count();
 
     // ========== ALERTAS DE CITAS ==========
@@ -65,13 +67,20 @@ class Analytics extends Controller
       })
       ->get();
 
+    // Materiales con bajo stock (Alertas)
+    $materialesBajoStock = Material::whereColumn('stock', '<=', 'stock_minimo')
+        ->where('stock_minimo', '>', 0)
+        ->get();
+
+    // Últimas 5 facturas
+    $ultimasFacturas = Factura::latest()->take(5)->get();
+
     // Últimos 5 encargos
-    $ultimosEncargos = Encargo::with('vehiculo.cliente')->latest()->take(5)->get();
+    $ultimosEncargos = Encargo::with(['vehiculo.cliente', 'presupuesto'])->latest()->take(5)->get();
 
     return view('content.dashboard.dashboards-analytics', [
-      'totalFacturado' => $totalFacturado,
+      'dineroPendiente' => $dineroPendiente,
       'totalClientes' => $totalClientes,
-      'totalVehiculos' => $totalVehiculos,
       'presupuestosPendientes' => $presupuestosPendientes,
       'encargosActivos' => $encargosActivos,
       'encargosCompletados' => $encargosCompletados,
@@ -81,6 +90,8 @@ class Analytics extends Controller
       'citasManana' => $citasManana,
       'citasProximas' => $citasProximas,
       'citasAtrasadas' => $citasAtrasadas,
+      'ultimasFacturas' => $ultimasFacturas,
+      'materialesBajoStock' => $materialesBajoStock,
       'totalCitasPendientes' => $totalCitasPendientes,
       'entregasUrgentes' => $entregasUrgentes,
       'ultimosEncargos' => $ultimosEncargos,

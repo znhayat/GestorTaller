@@ -144,12 +144,7 @@
 
           // Verificamos estricamente en el cliente si es un salto inválido o retroceso
           if (!transiciones[oldEstado] || !transiciones[oldEstado].includes(newEstado)) {
-             Swal.fire({
-                icon: 'warning',
-                title: 'Movimiento Denegado',
-                text: 'El proceso requiere seguir un orden lineal. No se puede retroceder de departamento ni realizar saltos.',
-                confirmButtonText: 'Entendido'
-             });
+             window.showToast('Movimiento Denegado: El proceso requiere seguir un orden lineal. No se puede retroceder ni realizar saltos.', 'warning');
              evt.from.appendChild(item); // Retorna inmediatamente la tarjeta visualmente a su origen
              return;
           }
@@ -161,14 +156,7 @@
   });
 
   function moverEstado(encargoId, nuevoEstado, item = null, fromColumn = null) {
-    Swal.fire({
-      title: 'Actualizando...',
-      allowOutsideClick: false,
-      didOpen: function() {
-        Swal.showLoading();
-      }
-    });
-
+    // Eliminamos el bloqueo visual de "Actualizando..."
     fetch('/encargos/' + encargoId + '/status', {
         method: 'POST',
         headers: {
@@ -184,16 +172,10 @@
       })
       .then(function(data) {
         if (data.success) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Actualizado',
-            text: data.message,
-            timer: 1500,
-            showConfirmButton: false
-          });
+          window.showToast(data.message, 'success');
           setTimeout(function() {
             location.reload();
-          }, 1500);
+          }, 800);
         } else {
           Swal.fire({
             icon: 'error',
@@ -225,13 +207,7 @@
       cancelButtonText: 'Cancelar'
     }).then(function(result) {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: 'Eliminando...',
-          allowOutsideClick: false,
-          didOpen: function() {
-            Swal.showLoading();
-          }
-        });
+        // Ejecución silenciosa tras confirmar
 
         fetch('/encargos/' + id, {
             method: 'DELETE',
@@ -245,16 +221,10 @@
           })
           .then(function(data) {
             if (data.success) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Eliminado',
-                text: data.message,
-                timer: 1500,
-                showConfirmButton: false
-              });
+              window.showToast(data.message, 'success');
               setTimeout(function() {
                 location.reload();
-              }, 1500);
+              }, 800);
             } else {
               Swal.fire({
                 icon: 'error',

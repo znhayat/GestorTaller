@@ -122,7 +122,7 @@
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire({ title: 'Restaurando...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+                // Ejecución directa
                 fetch(`/encargos/${id}/status`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
@@ -131,8 +131,8 @@
                 .then(r => r.json())
                 .then(data => {
                     if (data.success) {
-                        Swal.fire('Restaurado', 'El expediente ha sido devuelto a Recepción.', 'success');
-                        setTimeout(() => location.reload(), 1500);
+                        window.showToast('El expediente ha sido devuelto a Recepción.', 'success');
+                        setTimeout(() => location.reload(), 800);
                     } else {
                         Swal.fire('Error', data.message, 'error');
                     }
@@ -153,7 +153,7 @@
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire({ title: 'Eliminando...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+                // Ejecución directa
                 fetch(`/encargos/${id}`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
@@ -161,8 +161,8 @@
                 .then(r => r.json())
                 .then(data => {
                     if (data.success) {
-                        Swal.fire('Eliminado', 'El registro se ha borrado correctamente.', 'success');
-                        setTimeout(() => location.reload(), 1500);
+                        window.showToast('El registro se ha borrado correctamente.', 'success');
+                        setTimeout(() => location.reload(), 800);
                     } else {
                         Swal.fire('Error', data.message, 'error');
                     }

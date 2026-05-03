@@ -21,3 +21,25 @@
 @vite(['resources/js/app.js'])
 <script src="{{ asset('assets/js/table-to-csv.js') }}"></script>
 <!-- END: app JS-->
+<!-- Global Toast Notification Logic -->
+<script>
+window.showToast = function(message, type = 'success') {
+    const toastEl = document.getElementById('globalToast');
+    const toastMessage = document.getElementById('globalToastMessage');
+    if (!toastEl || !toastMessage) return;
+
+    // Limpiar clases previas
+    toastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'bg-primary');
+    
+    // Añadir clase de color
+    toastEl.classList.add('bg-' + type);
+    
+    // Inyectar mensaje
+    toastMessage.textContent = message;
+    
+    // Mostrar Toast (Bootstrap 5)
+    const toast = new bootstrap.Toast(toastEl, { delay: 3500 });
+    toast.show();
+}
+</script>
+<!-- END: Global Toast -->

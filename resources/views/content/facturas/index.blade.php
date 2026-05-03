@@ -63,8 +63,12 @@
           <td>{{ $f->created_at->format('d/m/Y') }}</td>
           <td>
             <div class="d-flex gap-2">
-              <a href="{{ route('facturas.imprimir', $f->id) }}" class="btn btn-sm btn-info" aria-label="Imprimir factura #{{ $f->id }}" target="_blank"><i class="ri-printer-line"></i></a>
-              <a href="{{ route('facturas.edit', $f->id) }}" class="btn btn-sm btn-primary" aria-label="Editar factura #{{ $f->id }}">Editar</a>
+              <a href="{{ route('facturas.imprimir', $f->id) }}" class="btn btn-sm btn-info fw-bold" target="_blank">
+                <i class="ri-printer-line me-1"></i> IMPRIMIR
+              </a>
+              <a href="{{ route('facturas.edit', $f->id) }}" class="btn btn-sm btn-primary fw-bold" aria-label="Editar factura #{{ $f->id }}">
+                <i class="ri-edit-line me-1"></i> EDITAR
+              </a>
               <form action="{{ route('facturas.destroy', $f->id) }}" method="POST">
                 @csrf @method('DELETE')
                 <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar factura?')" aria-label="Eliminar factura #{{ $f->id }}">Eliminar</button>

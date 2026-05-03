@@ -173,9 +173,27 @@ class CitaController extends Controller
      */
     public function destroy($id)
     {
-        Cita::findOrFail($id)->delete();
+        \App\Models\Cita::findOrFail($id)->delete();
         
         return redirect()->route('citas.index')
             ->with('success', 'Cita eliminada de la agenda.');
+    }
+
+    /**
+     * Devuelve un array con las fechas ocupadas (Y-m-d)
+     */
+    public function getMonthlyAvailability()
+    {
+        $fechasRevision = \App\Models\Encargo::whereNotNull('cita_revision')
+            ->whereNotIn('estado', ['Cancelado', 'Entregado'])
+            ->pluck('cita_revision')
+            ->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))
+            ->toArray();
+
+        $fechasCitas = \App\Models\Cita::pluck('fecha')
+            ->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))
+            ->toArray();
+
+        return response()->json(array_values(array_unique(array_merge($fechasRevision, $fechasCitas))));
     }
 }

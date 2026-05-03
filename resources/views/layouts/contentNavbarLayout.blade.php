@@ -60,6 +60,14 @@ $container = ($container ?? 'container-xxl');
                     <div class="{{ $container }} flex-grow-1 container-p-y">
                         @endif
 
+                        @if(session('success'))
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                window.showToast("{{ session('success') }}", 'success');
+                            });
+                        </script>
+                        @endif
+
                         @if(session('error'))
                         <div class="alert alert-danger mx-4 mt-4 alert-dismissible fade show" role="alert">
                             <i class="ri-error-warning-line me-2"></i> {{ session('error') }}
@@ -92,5 +100,14 @@ $container = ($container ?? 'container-xxl');
         <div class="drag-target"></div>
     </div>
     <!-- / Layout wrapper -->
+    <!-- Toast Container Global -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999">
+        <div id="globalToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="globalToastMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection

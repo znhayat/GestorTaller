@@ -33,7 +33,7 @@
         <div class="header">
             <div>
                 <div class="logo">ZANA TAPICERÍA</div>
-                <div>Carrer Fictici, 123<br>08000 Barcelona<br>info@zanatapiceria.com</div>
+                <div>Vilanna, Bescanó (Girona)<br>Tel: 631 498 980 | tapecero65@gmail.com</div>
             </div>
             <div class="invoice-details">
                 <h2>FACTURA</h2>

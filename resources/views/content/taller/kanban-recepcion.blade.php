@@ -113,66 +113,88 @@
   </div>
 </div>
 
-<!-- Modal para programar fecha de inicio -->
+<!-- Modal para programar fecha de inicio y fin al aceptar presupuesto -->
 <div class="modal fade" id="modalFechaTrabajo" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded border-0" style="box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
-      <div class="modal-header border-bottom-0 pb-3">
-        <div class="d-flex align-items-center">
-            <div class="avatar avatar-md me-3">
-                <span class="avatar-initial bg-label-success rounded-circle"><i class="ri-calendar-check-line fs-4"></i></span>
-            </div>
-            <div>
-                <h5 class="modal-title fw-bold mb-0">Confirmar Cita de Taller</h5>
-                <small class="text-muted">Aceptación Oficial de Presupuesto</small>
-            </div>
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-primary py-3">
+          <h5 class="modal-title text-white fw-bold"><i class="ri-calendar-check-line me-2"></i>Programar Ingreso al Taller</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body pt-2">
-        <input type="hidden" id="encargo_id_work">
-        
-        <div class="row mt-2 g-4 mb-4">
-            <!-- Ingreso -->
-            <div class="col-md-6">
-                <div class="form-floating form-floating-outline">
-                    <input type="text" class="form-control" id="fecha_inicio_trabajo" placeholder="Elige fecha y hora">
-                    <label for="fecha_inicio_trabajo" class="text-primary fw-medium"><i class="ri-login-circle-line me-1"></i> Ingreso al Taller</label>
+        <div class="modal-body p-0">
+          <div class="row g-0">
+            <!-- Columna del Calendario -->
+            <div class="col-md-7 p-4 border-end">
+              <input type="hidden" id="encargo_id_work">
+              
+              <div class="mb-4">
+                <label class="form-label fw-bold text-dark fs-6">Fecha y Hora de Inicio (Recepción)</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-primary border-primary text-white"><i class="ri-time-line"></i></span>
+                  <input type="text" id="fecha_inicio_trabajo" class="form-control form-control-lg border-primary shadow-sm" placeholder="Selecciona día y hora...">
                 </div>
-            </div>
-            <!-- Salida -->
-            <div class="col-md-6">
-                <div class="form-floating form-floating-outline">
-                    <input type="text" class="form-control" id="fecha_recogida_estimada" placeholder="Día estimado">
-                    <label for="fecha_recogida_estimada" class="text-success fw-medium"><i class="ri-logout-circle-line me-1"></i> Estimación Entrega</label>
+              </div>
+
+              <div class="mb-0">
+                <label class="form-label fw-bold text-dark fs-6">Fecha Estimada de Entrega</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-info border-info text-white"><i class="ri-car-line"></i></span>
+                  <input type="text" id="fecha_recogida_estimada" class="form-control form-control-lg border-info shadow-sm" placeholder="¿Cuándo estará listo?">
                 </div>
+              </div>
             </div>
-        </div>
 
-        <!-- Módulo Dinámico de Disponibilidad Ocupada -->
-        <div id="disponibilidadContenedor" class="alert alert-secondary d-none mb-4" style="border-left: 4px solid var(--bs-secondary);">
-            <div class="d-flex align-items-center mb-2">
-                <i class="ri-calendar-event-fill text-dark me-2 fs-5"></i>
-                <h6 class="mb-0 fw-bold text-dark">Agenda de este día</h6>
+            <!-- Columna de Agenda del Día -->
+            <div class="col-md-5 bg-light p-4">
+              <h6 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="ri-history-line me-1"></i>Ocupación para el día seleccionado:</h6>
+              <div id="disponibilidadContenedor">
+                  <div id="listaOcupadas" class="list-group list-group-flush shadow-sm rounded bg-white">
+                      <div class="text-center py-5 text-muted bg-white">
+                        <i class="ri-calendar-2-line fs-1 d-block mb-2"></i>
+                        Pincha un día para ver<br>la disponibilidad
+                      </div>
+                  </div>
+              </div>
             </div>
-            <ul id="listaOcupadas" class="mb-0 ps-3 small text-muted font-monospace" style="list-style-type: square;">
-                <!-- Rellenado por JS -->
-            </ul>
+          </div>
         </div>
-
-        <div class="alert alert-primary d-flex align-items-center mb-0" role="alert" style="border-left: 4px solid var(--bs-primary);">
-            <i class="ri-information-line me-3 fs-4"></i>
-            <div class="small">
-                Al certificar las fechas, el expediente será inyectado directamente en la cadena de <strong>Producción (Taller)</strong>.
-            </div>
+        <div class="modal-footer bg-light border-top p-3">
+          <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Posponer</button>
+          <button type="button" class="btn btn-primary px-5 fw-bold" onclick="aceptarYProgramar()">
+              <i class="ri-check-double-line me-1"></i>INICIAR TRABAJO
+          </button>
         </div>
-      </div>
-      <div class="modal-footer border-top-0 pt-0">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Posponer</button>
-        <button type="button" class="btn btn-success fw-bold px-4 shadow-sm" onclick="aceptarYProgramar()">Inyectar al Taller</button>
       </div>
     </div>
-  </div>
+</div>
+
+<!-- Modal para actualizar importe de presupuesto (PPT) -->
+<div class="modal fade" id="modalUpdatePPT" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-primary py-3">
+          <h5 class="modal-title text-white fw-bold"><i class="ri-money-euro-circle-line me-2"></i>Actualizar Importe PPT</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+            <input type="hidden" id="update_ppt_id">
+            <div class="mb-3">
+                <label class="form-label fw-bold text-dark fs-6">Nuevo Importe Total (€)</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-primary border-primary text-white"><i class="ri-money-euro-circle-line"></i></span>
+                    <input type="number" id="update_ppt_total" class="form-control form-control-lg border-primary shadow-sm" step="0.01" placeholder="0.00">
+                </div>
+                <small class="text-muted mt-2 d-block">Introduce el precio revisado tras la inspección física del vehículo.</small>
+            </div>
+        </div>
+        <div class="modal-footer bg-light border-top p-3 text-center">
+          <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">CANCELAR</button>
+          <button type="button" class="btn btn-primary px-5 fw-bold" onclick="ejecutarUpdatePPT()">
+              <i class="ri-save-3-line me-1"></i>GUARDAR CAMBIOS
+          </button>
+        </div>
+      </div>
+    </div>
 </div>
 @endsection
 
@@ -229,12 +251,7 @@
 
           // Verificamos estricamente en el cliente si es un salto inválido o retroceso
           if (!transiciones[oldEstado] || !transiciones[oldEstado].includes(newEstado)) {
-             Swal.fire({
-                icon: 'warning',
-                title: 'Movimiento Denegado',
-                text: 'El proceso requiere seguir un orden secuencial lógico o la tarjeta se encuentra en estado terminal.',
-                confirmButtonText: 'Entendido'
-             });
+             window.showToast('Movimiento Denegado: El proceso requiere seguir un orden secuencial lógico o la tarjeta se encuentra en estado terminal.', 'warning');
              evt.from.appendChild(item); // Retorna inmediatamente la tarjeta visualmente a su origen
              return;
           }
@@ -255,6 +272,18 @@
   function mostrarModalFechaTrabajo(encargoId) {
     document.getElementById('encargo_id_work').value = encargoId;
 
+    // Cargamos todas las fechas ocupadas antes de mostrar el calendario
+    fetch('/api/disponibilidad-mensual') // Necesitamos crear este endpoint o usar uno existente
+        .then(res => res.json())
+        .then(dates => {
+            window.occupiedDates = dates;
+            inicializarCalendarios();
+            var myModal = new bootstrap.Modal(document.getElementById('modalFechaTrabajo'));
+            myModal.show();
+        });
+  }
+
+  function inicializarCalendarios() {
     // Inicializar Flatpickr si no lo hemos hecho o refrescarlo
     if(!fpInicio) {
         fpInicio = flatpickr("#fecha_inicio_trabajo", {
@@ -266,6 +295,19 @@
             defaultHour: 8,
             minTime: "08:00",
             maxTime: "20:00",
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                // Obtenemos la fecha del día en formato YYYY-MM-DD
+                const date = dayElem.dateObj;
+                const dateStr = date.getFullYear() + "-" + 
+                               String(date.getMonth() + 1).padStart(2, '0') + "-" + 
+                               String(date.getDate()).padStart(2, '0');
+                
+                // Si el día tiene citas (lo sabremos por una variable global), añadimos la clase
+                if (window.occupiedDates && window.occupiedDates.includes(dateStr)) {
+                    dayElem.classList.add("has-appointments");
+                    dayElem.title = "Día con citas programadas";
+                }
+            },
             disable: [
                 function(date) {
                     // Deshabilitar Sábado (6) y Domingo (0)
@@ -332,13 +374,7 @@
     var fechaInicio = partes[0];
     var horaInicio = partes[1] ? partes[1] : '09:00';
 
-    Swal.fire({
-      title: 'Actualizando...',
-      allowOutsideClick: false,
-      didOpen: function() {
-        Swal.showLoading();
-      }
-    });
+    // Ejecutamos la acción directamente sin bloquear la pantalla
 
     fetch('/encargos/' + encargoId + '/aceptar-programar', {
         method: 'POST',
@@ -357,16 +393,10 @@
       })
       .then(function(data) {
         if (data.success) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Actualizado',
-            text: data.message,
-            timer: 1500,
-            showConfirmButton: false
-          });
+          window.showToast(data.message, 'success');
           setTimeout(function() {
             location.reload();
-          }, 1500);
+          }, 800);
         } else {
           Swal.fire({
             icon: 'error',
@@ -387,41 +417,45 @@
 
   // Consulta AJAX al hacer clic en el calendario de Flatpickr
   function verificarDisponibilidad(fechaIso) {
-      let divC = document.getElementById('disponibilidadContenedor');
       let ulList = document.getElementById('listaOcupadas');
-      
-      divC.classList.add('d-none');
-      ulList.innerHTML = '';
+      ulList.innerHTML = '<div class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary" role="status"></div></div>';
 
       fetch('/api/disponibilidad?date=' + fechaIso)
         .then(response => response.json())
         .then(ocupadas => {
+            ulList.innerHTML = '';
             if(ocupadas && ocupadas.length > 0) {
                 ocupadas.forEach(cita => {
-                    let li = document.createElement('li');
-                    li.innerHTML = `<strong class="text-dark">${cita.hora}h</strong> - ${cita.titulo}`;
-                    ulList.appendChild(li);
+                    let badgeClass = cita.tipo === 'recepcion' ? 'bg-primary' : 'bg-info';
+                    let icon = cita.tipo === 'recepcion' ? 'ri-login-circle-line' : 'ri-tools-line';
+                    
+                    let item = document.createElement('div');
+                    item.className = 'list-group-item d-flex align-items-center border-0 px-0 py-2';
+                    item.innerHTML = `
+                        <span class="badge ${badgeClass} text-white me-3" style="width: 55px; opacity: 0.9;">${cita.hora}</span>
+                        <div class="d-flex flex-column">
+                            <span class="fw-bold text-dark small">${cita.cliente}</span>
+                            <small class="text-muted" style="font-size: 0.7rem;"><i class="${icon} me-1"></i>${cita.tipo.toUpperCase()}</small>
+                        </div>
+                    `;
+                    ulList.appendChild(item);
                 });
-                divC.classList.remove('d-none');
             } else {
-                let li = document.createElement('li');
-                li.innerHTML = '<span class="text-success"><i class="ri-check-line"></i> Día completamente libre de citas</span>';
-                ulList.appendChild(li);
-                divC.classList.remove('d-none');
+                ulList.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="ri-checkbox-circle-line text-success fs-1 d-block mb-2"></i>
+                        <span class="text-success fw-bold">Día completamente libre</span>
+                    </div>`;
             }
         })
-        .catch(error => console.error("Error AJAX Disponibilidad:", error));
+        .catch(error => {
+            console.error("Error AJAX Disponibilidad:", error);
+            ulList.innerHTML = '<div class="text-danger p-3">Error al cargar agenda</div>';
+        });
   }
 
   function moverEstado(encargoId, nuevoEstado, item = null, fromColumn = null) {
-    Swal.fire({
-      title: 'Actualizando...',
-      allowOutsideClick: false,
-      didOpen: function() {
-        Swal.showLoading();
-      }
-    });
-
+    // Ya no bloqueamos con Swal de carga, hacemos el fetch directo para mayor fluidez
     fetch('/encargos/' + encargoId + '/status', {
         method: 'POST',
         headers: {
@@ -437,16 +471,10 @@
       })
       .then(function(data) {
         if (data.success) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Actualizado',
-            text: data.message,
-            timer: 1500,
-            showConfirmButton: false
-          });
+          window.showToast(data.message, 'success');
           setTimeout(function() {
             location.reload();
-          }, 1500);
+          }, 800);
         } else {
           Swal.fire({
             icon: 'error',
@@ -467,56 +495,41 @@
   }
 
   function abrirModalUpdatePresupuesto(id, totalActual) {
-    Swal.fire({
-      title: 'Actualizar Presupuesto',
-      text: 'Introduce el nuevo precio tras la revisión física del vehículo',
-      input: 'number',
-      inputLabel: 'Nuevo Total (€)',
-      inputValue: totalActual,
-      showCancelButton: true,
-      confirmButtonText: 'Actualizar Presupuesto',
-      cancelButtonText: 'Cancelar',
-      inputValidator: (value) => {
-        if (!value || value <= 0) {
-          return '¡Debes introducir un precio válido!'
-        }
-      }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Opcional: preguntar por una nota rápida
-        Swal.fire({
-            title: '¿Alguna nota aclaratoria?',
-            input: 'text',
-            inputPlaceholder: 'Ej: Se añade reparación de espuma lateral no vista antes',
-            showCancelButton: true,
-            confirmButtonText: 'Guardar todo',
-            cancelButtonText: 'Omitir nota'
-        }).then((resNota) => {
-            let nota = resNota.isConfirmed ? resNota.value : '';
-            
-            Swal.fire({ title: 'Procesando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    document.getElementById('update_ppt_id').value = id;
+    document.getElementById('update_ppt_total').value = totalActual;
+    
+    var myModal = new bootstrap.Modal(document.getElementById('modalUpdatePPT'));
+    myModal.show();
+  }
 
-            fetch(`/presupuestos/${id}/quick-update`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    total: result.value,
-                    nota_adicional: nota
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) {
-                    Swal.fire('¡Actualizado!', data.message, 'success').then(() => location.reload());
-                } else {
-                    Swal.fire('Error', data.message, 'error');
-                }
-            });
-        });
-      }
+  function ejecutarUpdatePPT() {
+    let id = document.getElementById('update_ppt_id').value;
+    let total = document.getElementById('update_ppt_total').value;
+
+    if (!total || total <= 0) {
+        window.showToast('¡Debes introducir un precio válido!', 'warning');
+        return;
+    }
+
+    fetch(`/presupuestos/${id}/quick-update`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            total: total
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('modalUpdatePPT')).hide();
+            window.showToast(data.message, 'success');
+            setTimeout(() => location.reload(), 800);
+        } else {
+            window.showToast(data.message, 'error');
+        }
     });
   }
 
@@ -532,13 +545,7 @@
       cancelButtonText: 'Cancelar'
     }).then(function(result) {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: 'Eliminando...',
-          allowOutsideClick: false,
-          didOpen: function() {
-            Swal.showLoading();
-          }
-        });
+        // Ejecución silenciosa tras confirmar
 
         fetch('/encargos/' + id, {
             method: 'DELETE',
@@ -552,16 +559,10 @@
           })
           .then(function(data) {
             if (data.success) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Eliminado',
-                text: data.message,
-                timer: 1500,
-                showConfirmButton: false
-              });
+              window.showToast(data.message, 'success');
               setTimeout(function() {
                 location.reload();
-              }, 1500);
+              }, 800);
             } else {
               Swal.fire({
                 icon: 'error',

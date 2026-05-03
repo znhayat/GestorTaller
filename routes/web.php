@@ -95,6 +95,7 @@ Route::middleware(['auth'])->group(function () {
   Route::get('/calendario', [CitaController::class, 'showCalendar'])->name('citas.calendario');
   Route::get('/api/eventos', [CitaController::class, 'getEvents'])->name('api.eventos');
   Route::get('/api/disponibilidad', [CitaController::class, 'checkAvailability'])->name('api.disponibilidad');
+  Route::get('/api/disponibilidad-mensual', [CitaController::class, 'getMonthlyAvailability'])->name('api.disponibilidad-mensual');
   Route::resource('citas', CitaController::class)->only(['index', 'show']);
   
   Route::resource('usos_materiales', UsoMaterialController::class)->only(['index', 'show']);
