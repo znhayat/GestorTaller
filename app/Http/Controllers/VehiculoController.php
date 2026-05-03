@@ -11,10 +11,22 @@ class VehiculoController extends Controller
     // Sacamos la lista de todos los coches que tenemos registrados.
     // He usado el "with('cliente')" porque así Laravel trae el nombre del dueño 
     // de una sola vez y no va preguntando a la base de datos por cada coche.
-    public function index()
+    public function index(Request $request)
     {
-        $vehiculos = Vehiculo::with('cliente')->get();
-        return view('content.vehiculos.index', compact('vehiculos'));
+        $search = $request->get('search');
+
+        $vehiculos = Vehiculo::with('cliente')
+            ->when($search, function ($query, $search) {
+                return $query->where('marca', 'like', "%{$search}%")
+                    ->orWhere('modelo', 'like', "%{$search}%")
+                    ->orWhereHas('cliente', function ($q) use ($search) {
+                        $q->where('nombre', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        return view('content.vehiculos.index', compact('vehiculos', 'search'));
     }
 
     public function create()
