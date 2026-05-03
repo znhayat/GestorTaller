@@ -11,22 +11,43 @@ class MaterialController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
+        $tipo = $request->get('tipo');
 
-        $materiales = Material::when($search, function ($query, $search) {
-            return $query->where('nombre', 'like', "%{$search}%")
-                ->orWhere('tipo', 'like', "%{$search}%")
-                ->orWhere('unidad', 'like', "%{$search}%");
-        })
+        // Si hay una búsqueda o se ha seleccionado un tipo, mostramos la tabla
+        if ($search || $tipo) {
+            $materiales = Material::when($search, function ($query, $search) {
+                return $query->where('nombre', 'like', "%{$search}%")
+                    ->orWhere('tipo', 'like', "%{$search}%");
+            })
+            ->when($tipo, function ($query, $tipo) {
+                return $query->where('tipo', $tipo);
+            })
             ->orderBy('nombre')
-            ->paginate(15);
+            ->paginate(20);
 
-        return view('content.materiales.index', compact('materiales', 'search'));
+            return view('content.materiales.index', compact('materiales', 'search', 'tipo'));
+        }
+
+        // Si no hay nada seleccionado, mostramos la rejilla de categorías
+        $categorias = Material::select('tipo', \DB::raw('count(*) as total'))
+            ->groupBy('tipo')
+            ->get();
+
+        return view('content.materiales.categorias', compact('categorias'));
     }
 
     public function create()
     {
-        // Pasamos las categorías existentes para el select
-        $categorias = Material::distinct()->pluck('tipo');
+        // Definimos las categorías oficiales del taller
+        $categorias = [
+            'Tejidos y pieles',
+            'Espumas y rellenos',
+            'Hilos y sistemas de costura',
+            'Elementos metálicos y fijaciones',
+            'Adhesivos y selladores',
+            'Preparación de superficies'
+        ];
+        
         return view('content.materiales.create', compact('categorias'));
     }
 
@@ -39,7 +60,15 @@ class MaterialController extends Controller
     public function edit($id)
     {
         $material = Material::findOrFail($id);
-        return view('content.materiales.edit', compact('material'));
+        $categorias = [
+            'Tejidos y pieles',
+            'Espumas y rellenos',
+            'Hilos y sistemas de costura',
+            'Elementos metálicos y fijaciones',
+            'Adhesivos y selladores',
+            'Preparación de superficies'
+        ];
+        return view('content.materiales.edit', compact('material', 'categorias'));
     }
 
     public function update(Request $request, $id)

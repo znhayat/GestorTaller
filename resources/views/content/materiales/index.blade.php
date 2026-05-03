@@ -2,44 +2,51 @@
 
 @section('content')
 <style>
-    .search-container { min-width: 250px; }
+    .search-container { min-width: 300px; }
     .search-icon { top: 50%; transform: translateY(-50%); left: 15px; color: #a1acb8; }
-    .clear-search { top: 50%; transform: translateY(-50%); right: 10px; color: #a1acb8; cursor: pointer; }
-    .desc-truncate { max-width: 200px; }
-    .status-badge-small { font-size: 0.65rem; }
-    .stock-min-text { font-size: 0.75rem; }
 </style>
 
 <div class="container-xxl">
-  <div class="d-flex justify-content-between align-items-center py-3 flex-wrap gap-3">
-    <h4 class="fw-bold">Inventario de Materiales</h4>
-    <div class="d-flex flex-wrap align-items-center gap-2 ms-auto">
-      <!-- Buscador -->
-      <form method="GET" action="{{ route('materiales.index') }}" class="d-flex position-relative me-2 search-container">
-        <input type="text" name="search" class="form-control ps-5 pe-4 w-100" placeholder="Buscar material..." value="{{ request('search') }}">
-        <i class="ri-search-line position-absolute search-icon"></i>
-        @if(request('search'))
-        <a href="{{ route('materiales.index') }}" class="position-absolute clear-search" title="Limpiar búsqueda">
-          <i class="ri-close-circle-line"></i>
+  <div class="d-flex justify-content-between align-items-center py-4 flex-wrap gap-3">
+    <div class="d-flex align-items-center">
+        <a href="{{ route('materiales.index') }}" class="btn btn-outline-secondary me-3 d-flex align-items-center">
+            <i class="ri-arrow-left-s-line me-1"></i> Volver
         </a>
-        @endif
+        <div>
+            <h4 class="fw-bold mb-0">Inventario: {{ $tipo ?: 'Búsqueda' }}</h4>
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{{ route('materiales.index') }}">Materiales</a></li>
+                <li class="breadcrumb-item active">{{ $tipo ?: 'Resultados' }}</li>
+              </ol>
+            </nav>
+        </div>
+    </div>
+    <div class="d-flex flex-wrap align-items-center gap-2 ms-auto">
+      <form method="GET" action="{{ route('materiales.index') }}" class="d-flex position-relative search-container">
+        <input type="hidden" name="tipo" value="{{ $tipo }}">
+        <input type="text" name="search" class="form-control ps-5 pe-4 w-100" placeholder="Buscar en esta categoría..." value="{{ request('search') }}">
+        <i class="ri-search-line position-absolute search-icon"></i>
       </form>
-      <a href="{{ route('materiales.create') }}" class="btn btn-primary"><i class="ri-add-line me-1"></i> Añadir Material</a>
+      <button type="button" class="btn btn-outline-success" onclick="exportTableToExcel('materiales-table', 'inventario_{{ Str::slug($tipo) }}')">
+        <i class="ri-file-excel-2-line me-1"></i> Exportar
+      </button>
+      <a href="{{ route('materiales.create') }}" class="btn btn-primary"><i class="ri-add-line me-1"></i> Nuevo</a>
     </div>
   </div>
 
-  <div class="card">
+  <div class="card shadow-sm border-0">
     <div class="table-responsive">
-      <table class="table table-hover">
-        <thead>
+      <table class="table table-hover mb-0" id="materiales-table">
+        <thead class="table-light">
           <tr>
             <th>Código</th>
             <th>Nombre</th>
             <th>Categoría</th>
             <th>Unidad</th>
             <th>Precio</th>
-            <th>Stock</th>
-            <th>Acciones</th>
+            <th>Stock Actual</th>
+            <th class="text-center">Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -50,7 +57,7 @@
               <div class="d-flex flex-column">
                 <strong class="text-dark">{{ $m->nombre }}</strong>
                 @if($m->descripcion)
-                <small class="text-muted text-truncate desc-truncate" title="{{ $m->descripcion }}">
+                <small class="text-muted text-truncate" style="max-width: 250px;" title="{{ $m->descripcion }}">
                   {{ $m->descripcion }}
                 </small>
                 @endif
@@ -61,35 +68,24 @@
             <td class="fw-bold">{{ number_format($m->precio_unitario, 2) }}€</td>
             <td>
               @php
-                $statusClass = 'bg-label-success';
-                $statusText = 'OK';
-                if($m->stock <= 0) {
-                  $statusClass = 'bg-label-danger';
-                  $statusText = 'Agotado';
-                } elseif($m->stock <= $m->stock_minimo) {
-                  $statusClass = 'bg-label-warning';
-                  $statusText = 'Bajo';
-                }
+                $sClass = 'bg-label-success';
+                if($m->stock <= 0) $sClass = 'bg-label-danger';
+                elseif($m->stock <= $m->stock_minimo) $sClass = 'bg-label-warning';
               @endphp
-              <div class="d-flex align-items-center gap-2">
-                <span class="badge {{ $statusClass }} p-2">
-                  <i class="ri-archive-line me-1"></i> {{ (float)$m->stock }} {{ $m->unidad }}
-                </span>
-                @if($statusText !== 'OK')
-                  <small class="fw-bold text-uppercase status-badge-small">{{ $statusText }}</small>
-                @endif
+              <div class="d-flex align-items-center">
+                <span class="badge {{ $sClass }} p-2 me-2" style="min-width: 60px;">{{ (float)$m->stock }}</span>
+                <small class="text-muted" style="font-size: 0.75rem;">Mín: {{ (float)$m->stock_minimo }}</small>
               </div>
-              <small class="text-muted stock-min-text">Mínimo: {{ (float)$m->stock_minimo }}</small>
             </td>
-            <td>
-              <div class="d-flex gap-2">
-                <a href="{{ route('materiales.edit', $m->id) }}" class="btn btn-sm btn-icon btn-outline-primary" title="Editar">
-                  <i class="ri-edit-line"></i>
+            <td class="text-center">
+              <div class="d-flex justify-content-center gap-2">
+                <a href="{{ route('materiales.edit', $m->id) }}" class="btn btn-sm btn-primary">
+                  <i class="ri-edit-line me-1"></i> Editar
                 </a>
-                <form action="{{ route('materiales.destroy', $m->id) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este material?')">
+                <form action="{{ route('materiales.destroy', $m->id) }}" method="POST" onsubmit="return confirm('¿Eliminar?')">
                   @csrf @method('DELETE')
-                  <button type="submit" class="btn btn-sm btn-icon btn-outline-danger" title="Eliminar">
-                    <i class="ri-delete-bin-line"></i>
+                  <button type="submit" class="btn btn-sm btn-outline-danger">
+                    <i class="ri-delete-bin-line me-1"></i> Borrar
                   </button>
                 </form>
               </div>
@@ -97,21 +93,42 @@
           </tr>
           @empty
           <tr>
-            <td colspan="6" class="text-center py-4">
-              <i class="ri-inbox-line fs-1 text-muted"></i>
-              <p class="mt-2">No se encontraron materiales</p>
+            <td colspan="7" class="text-center py-5 text-muted">
+                No hay productos en esta categoría
             </td>
           </tr>
           @endforelse
         </tbody>
       </table>
     </div>
+    @if($materiales->hasPages())
+    <div class="card-footer d-flex justify-content-center">
+        {{ $materiales->appends(request()->all())->links() }}
+    </div>
+    @endif
   </div>
-
-  @if($materiales->hasPages())
-  <div class="mt-3">
-    {{ $materiales->appends(['search' => request('search')])->links() }}
-  </div>
-  @endif
 </div>
+
+<script>
+function exportTableToExcel(tableID, filename = ''){
+    let downloadLink;
+    const dataType = 'application/vnd.ms-excel';
+    const tableSelect = document.getElementById(tableID);
+    const tableClone = tableSelect.cloneNode(true);
+    const rows = tableClone.querySelectorAll('tr');
+    rows.forEach(row => { if(row.lastElementChild) row.removeChild(row.lastElementChild); });
+    const tableHTML = tableClone.outerHTML.replace(/ /g, '%20');
+    filename = filename ? filename + '.xls' : 'inventario.xls';
+    downloadLink = document.createElement("a");
+    document.body.appendChild(downloadLink);
+    if(navigator.msSaveOrOpenBlob){
+        const blob = new Blob(['\ufeff', tableHTML], { type: dataType });
+        navigator.msSaveOrOpenBlob(blob, filename);
+    } else {
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+        downloadLink.download = filename;
+        downloadLink.click();
+    }
+}
+</script>
 @endsection
