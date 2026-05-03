@@ -5,39 +5,37 @@ namespace App\Http\Controllers;
 use App\Models\Cita;
 use App\Models\Encargo;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class CitaController extends Controller
 {
+    // Carga la vista del calendario central
     public function showCalendar()
     {
         return view('content.citas.calendario');
     }
 
-    /**
-     * Endpoint API JSON consumido por FullCalendar JS para repintar las tarjetas.
-     */
+    // Devuelve todos los eventos (revisiones y entregas) para el calendario JS
     public function getEvents()
     {
         $eventos = [];
 
-        // 1. Citas de revisión del nuevo trabajo
+        // 1. Citas de revisión (trabajos nuevos)
         $revisiones = Encargo::with('vehiculo.cliente')
             ->whereNotNull('cita_revision')
             ->whereNotIn('estado', ['Cancelado', 'Entregado'])
             ->get();
             
         foreach ($revisiones as $rev) {
-            $titulo = "Revisión: " . $rev->vehiculo->marca . ' ' . $rev->vehiculo->modelo . ' (' . $rev->vehiculo->cliente->nombre . ')';
-            $fechaHora = $rev->cita_revision . 'T' . ($rev->hora_cita ?? '00:00:00');
             $eventos[] = [
-                'title' => $titulo,
-                'start' => $fechaHora,
-                'color' => '#696cff', // Info
+                'title' => "Revisión: " . $rev->vehiculo->marca . " (" . $rev->vehiculo->cliente->nombre . ")",
+                'start' => $rev->cita_revision . 'T' . ($rev->hora_cita ?? '08:00:00'),
+                'color' => '#696cff', // Azul Materio
                 'url' => route('encargos.recepcion')
             ];
         }
 
-        // 2. Entregas estimadas
+        // 2. Entregas previstas (producción)
         $entregas = Encargo::with('vehiculo.cliente')
             ->whereNotNull('cita_recogida')
             ->whereNotIn('estado', ['Cancelado', 'Entregado'])
@@ -45,9 +43,9 @@ class CitaController extends Controller
             
         foreach ($entregas as $ent) {
             $eventos[] = [
-                'title' => "Entrega/Recogida: " . $ent->vehiculo->marca . ' ' . $ent->vehiculo->modelo,
+                'title' => "ENTREGA: " . $ent->vehiculo->marca,
                 'start' => $ent->cita_recogida,
-                'color' => '#71dd37', // Success
+                'color' => '#71dd37', // Verde Success
                 'allDay' => true,
                 'url' => route('encargos.produccion')
             ];
@@ -56,9 +54,7 @@ class CitaController extends Controller
         return response()->json($eventos);
     }
 
-    /**
-     * Devuelve las horas ocupadas para una fecha concreta (API AJAX)
-     */
+    // Comprueba qué horas están pilladas para un día concreto
     public function checkAvailability(Request $request)
     {
         $fecha = $request->get('date');
@@ -66,7 +62,7 @@ class CitaController extends Controller
 
         $ocupadas = [];
 
-        // 1. Recepciones (Citas de Revisión en Encargos)
+        // Buscamos recepciones en encargos
         $encargos = Encargo::with('vehiculo.cliente')
             ->whereDate('cita_revision', $fecha)
             ->whereNotIn('estado', ['Cancelado', 'Entregado'])
@@ -82,7 +78,7 @@ class CitaController extends Controller
             }
         }
 
-        // 2. Producción (Citas en tabla Citas)
+        // Buscamos trabajos en la tabla de citas
         $citas = Cita::with('encargo.vehiculo.cliente')
             ->whereDate('fecha', $fecha)
             ->get();
@@ -97,22 +93,15 @@ class CitaController extends Controller
             }
         }
 
-        // Ordenamos por hora
-        usort($ocupadas, function($a, $b) {
-            return strcmp($a['hora'], $b['hora']);
-        });
+        // Ordenamos por hora para que salga bonito
+        usort($ocupadas, fn($a, $b) => strcmp($a['hora'], $b['hora']));
 
         return response()->json($ocupadas);
     }
 
-    /**
-     * Muestra el listado de la agenda.
-     * Carga las relaciones en cascada (Encargo -> Vehículo -> Cliente) 
-     * para evitar consultas excesivas a la base de datos.
-     */
+    // Listado simple de la agenda
     public function index()
     {
-        // Recuperamos citas ordenadas cronológicamente para la gestión diaria
         $citas = Cita::with('encargo.vehiculo.cliente')
             ->orderBy('fecha')
             ->orderBy('hora')
@@ -121,77 +110,48 @@ class CitaController extends Controller
         return view('content.citas.index', compact('citas'));
     }
 
-    /**
-     * Muestra el formulario para programar una nueva cita.
-     * Recuperamos los encargos activos para vincular la cita a un trabajo específico.
-     */
     public function create()
     {
         $encargos = Encargo::with('vehiculo.cliente')->get();
         return view('content.citas.create', compact('encargos'));
     }
-    /**
-     * Almacena la cita en la base de datos.
-     * Utiliza asignación masiva. Es fundamental que el modelo Cita 
-     * tenga definidos los campos $fillable.
-     */
+
     public function store(Request $request)
     {
         Cita::create($request->all());
-        
-        return redirect()->route('citas.index')
-            ->with('success', 'Cita programada correctamente en la agenda.');
+        return redirect()->route('citas.index')->with('success', 'Cita guardada.');
     }
 
-    /**
-     * Recupera una cita específica para su edición.
-     * Verifica la existencia mediante findOrFail para evitar errores de ejecución.
-     */
     public function edit($id)
     {
         $cita = Cita::findOrFail($id);
         $encargos = Encargo::with('vehiculo.cliente')->get();
-        
         return view('content.citas.edit', compact('cita', 'encargos'));
     }
 
-    /**
-     * Actualiza los datos de una cita existente (ej. cambio de fecha o descripción).
-     */
     public function update(Request $request, $id)
     {
-        $cita = Cita::findOrFail($id);
-        $cita->update($request->all());
-
-        return redirect()->route('citas.index')
-            ->with('success', 'La cita se ha actualizado correctamente.');
+        Cita::findOrFail($id)->update($request->all());
+        return redirect()->route('citas.index')->with('success', 'Cita actualizada.');
     }
 
-    /**
-     * Elimina el registro de la cita.
-     * Ideal para cancelaciones o limpiezas de agenda.
-     */
     public function destroy($id)
     {
-        \App\Models\Cita::findOrFail($id)->delete();
-        
-        return redirect()->route('citas.index')
-            ->with('success', 'Cita eliminada de la agenda.');
+        Cita::findOrFail($id)->delete();
+        return redirect()->route('citas.index')->with('success', 'Cita eliminada.');
     }
 
-    /**
-     * Devuelve un array con las fechas ocupadas (Y-m-d)
-     */
+    // Saca todos los días que tienen algo (para pintar puntos rojos en el calendario)
     public function getMonthlyAvailability()
     {
-        $fechasRevision = \App\Models\Encargo::whereNotNull('cita_revision')
+        $fechasRevision = Encargo::whereNotNull('cita_revision')
             ->whereNotIn('estado', ['Cancelado', 'Entregado'])
             ->pluck('cita_revision')
-            ->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))
+            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
             ->toArray();
 
-        $fechasCitas = \App\Models\Cita::pluck('fecha')
-            ->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))
+        $fechasCitas = Cita::pluck('fecha')
+            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
             ->toArray();
 
         return response()->json(array_values(array_unique(array_merge($fechasRevision, $fechasCitas))));

@@ -3,17 +3,11 @@
     {
       "url": "/dashboard",
       "name": "Panel Principal",
-      "icon": "menu-icon icon-base ri ri-home-smile-line",
+      "icon": "menu-icon icon-base ri ri-dashboard-line",
       "slug": "dashboard-analytics"
     },
     {
-      "url": "/calendario",
-      "name": "Calendario Central",
-      "icon": "menu-icon icon-base ri ri-calendar-todo-line",
-      "slug": "citas.calendario"
-    },
-    {
-      "menuHeader": "Gestión de Operaciones"
+      "menuHeader": "Operaciones Taller"
     },
     {
       "url": "/taller/recepcion",
@@ -28,18 +22,24 @@
       "slug": "encargos.produccion"
     },
     {
-      "name": "Taller",
-      "icon": "menu-icon icon-base ri ri-tools-line",
+      "url": "/calendario",
+      "name": "Calendario Central",
+      "icon": "menu-icon icon-base ri ri-calendar-todo-line",
+      "slug": "citas.calendario"
+    },
+    {
+      "name": "Gestión Taller",
+      "icon": "menu-icon icon-base ri ri-folder-settings-line",
       "slug": "gestion-taller",
       "submenu": [
         {
           "url": "citas",
-          "name": "Citas",
+          "name": "Lista de Citas",
           "slug": "citas"
         },
         {
           "url": "encargos",
-          "name": "Encargos",
+          "name": "Lista de Encargos",
           "slug": "encargos"
         },
         {
@@ -55,7 +55,7 @@
       ]
     },
     {
-      "menuHeader": "Recursos"
+      "menuHeader": "Base de Datos"
     },
     {
       "name": "Catálogo",
@@ -63,9 +63,9 @@
       "slug": "recursos-taller",
       "submenu": [
         {
-          "url": "materiales",
-          "name": "Materiales",
-          "slug": "materiales"
+          "url": "clientes",
+          "name": "Clientes",
+          "slug": "clientes"
         },
         {
           "url": "vehiculos",
@@ -73,14 +73,20 @@
           "slug": "vehiculos"
         },
         {
-          "url": "clientes",
-          "name": "Clientes",
-          "slug": "clientes"
+          "url": "materiales",
+          "name": "Materiales",
+          "slug": "materiales"
         }
       ]
     },
     {
       "menuHeader": "Administración"
+    },
+    {
+      "url": "facturas",
+      "name": "Facturas",
+      "icon": "menu-icon icon-base ri ri-file-list-3-line",
+      "slug": "facturas"
     },
     {
       "url": "galeria",
@@ -93,15 +99,6 @@
       "name": "Usuarios",
       "icon": "menu-icon icon-base ri ri-user-settings-line",
       "slug": "usuarios"
-    },
-    {
-      "url": "facturas",
-      "name": "Facturas",
-      "icon": "menu-icon icon-base ri ri-file-list-3-line",
-      "slug": "facturas"
-    },
-    {
-      "menuHeader": "Configuración"
     }
   ]
 }

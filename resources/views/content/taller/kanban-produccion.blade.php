@@ -4,15 +4,12 @@
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
     <div>
-      <h4 class="fw-bold mb-1">Tablero de Produccion</h4>
-      <p class="text-muted mb-0">Arrastre las tarjetas para avanzar el trabajo</p>
+      <h4 class="fw-bold mb-1">Tablero de Producción</h4>
+      <p class="text-muted mb-0">Control de trabajos en curso y entregas</p>
     </div>
     <div class="d-flex gap-2">
       <a href="{{ route('encargos.recepcion') }}" class="btn btn-outline-primary">
-        <i class="ri-phone-line me-1"></i> Ir a Recepcion
-      </a>
-      <a href="{{ route('encargos.index') }}" class="btn btn-outline-secondary">
-        <i class="ri-list-view me-1"></i> Vista Lista
+        <i class="ri-phone-line me-1"></i> Ir a Recepción
       </a>
     </div>
   </div>
@@ -20,20 +17,18 @@
   <div class="row g-4">
     @foreach($estados as $estadoKey => $config)
     <div class="col-lg-4 col-md-6 col-12">
-      <div class="card h-100">
-        <div class="card-header {{ $config['bg'] }} text-white">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header {{ $config['bg'] }} text-white py-3">
           <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <h5 class="mb-0 text-white">{{ $config['title'] }}</h5>
-              <small class="text-white-50">{{ $config['description'] }}</small>
-            </div>
+            <h5 class="mb-0 text-white fw-bold">{{ $config['title'] }}</h5>
             <span class="badge bg-white text-dark rounded-pill">{{ $encargos->where('estado', $estadoKey)->count() }}</span>
           </div>
         </div>
-        <div class="card-body bg-light p-3" style="min-height: 550px; max-height: 600px; overflow-y: auto;">
+        <div class="card-body bg-light p-3" style="min-height: 550px; max-height: 700px; overflow-y: auto;">
           <div class="kanban-column" data-estado="{{ $estadoKey }}">
             @forelse($encargos->where('estado', $estadoKey) as $encargo)
-            <div class="card mb-3 shadow-sm border-start border-{{ $config['color'] }} border-3 kanban-item" data-id="{{ $encargo->id }}" data-estado-actual="{{ $estadoKey }}" style="cursor: grab;">
+            <div class="card mb-3 border-start border-{{ $config['color'] }} border-3 shadow-sm kanban-item" 
+                 data-id="{{ $encargo->id }}" data-estado-actual="{{ $estadoKey }}" style="cursor: grab;">
               <div class="card-body p-3">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                   <div>
@@ -44,53 +39,46 @@
                 </div>
 
                 @php
-                $citaTrabajo = $encargo->citas()->where('tipo', 'trabajo')->first();
+                  $citaTrabajo = $encargo->citas()->where('tipo', 'trabajo')->first();
                 @endphp
 
                 @if($citaTrabajo)
-                <div class="alert alert-success py-2 px-2 mb-2 small">
-                  <i class="ri-calendar-check-line me-1"></i> <strong>Cita de trabajo:</strong> {{ date('d/m/Y', strtotime($citaTrabajo->fecha)) }} - {{ \Carbon\Carbon::parse($citaTrabajo->hora)->format('H:i') }}h
+                <div class="bg-white p-2 rounded mb-2 border border-success border-opacity-50 small">
+                  <i class="ri-calendar-check-line text-success"></i> <strong>Cita:</strong> {{ date('d/m/Y', strtotime($citaTrabajo->fecha)) }} - {{ \Carbon\Carbon::parse($citaTrabajo->hora)->format('H:i') }}h
                 </div>
-                @elseif($encargo->fecha_inicio_trabajo)
-                <div class="alert alert-success py-2 px-2 mb-2 small">
-                  <i class="ri-calendar-check-line me-1"></i> <strong>Inicio programado:</strong> {{ date('d/m/Y', strtotime($encargo->fecha_inicio_trabajo)) }} - {{ \Carbon\Carbon::parse($encargo->hora_inicio_trabajo)->format('H:i') }}h
-                </div>
-                @endif
-
-                @if($encargo->fecha_entrada && $estadoKey == 'En Produccion')
-                <small class="text-muted d-block mb-2"><i class="ri-calendar-line me-1"></i> <strong>Entrada taller:</strong> {{ date('d/m/Y', strtotime($encargo->fecha_entrada)) }}</small>
                 @endif
 
                 @if($encargo->presupuesto)
-                <div class="alert alert-info py-2 px-2 mb-3 small">
-                  <strong>Total:</strong> {{ number_format($encargo->presupuesto->total, 2) }} €
+                <div class="bg-white p-2 rounded mb-3 border small">
+                  <span class="text-muted">Total Trabajo:</span>
+                  <span class="fw-bold text-dark float-end">{{ number_format($encargo->presupuesto->total, 2) }} €</span>
                 </div>
                 @endif
 
                 <div class="d-flex gap-2 flex-wrap">
                   @if($estadoKey == 'Esperando Recogida')
-                  <button type="button" class="btn btn-success btn-sm flex-grow-1" onclick="moverEstado({{ $encargo->id }}, 'Entregado')" title="Entregar Vehículo al Cliente">
-                    <i class="ri-hand-heart-line me-1"></i> Entregar Vehículo
+                  <button type="button" class="btn btn-success btn-sm flex-grow-1 fw-bold" onclick="moverEstado({{ $encargo->id }}, 'Entregado')">
+                    <i class="ri-hand-heart-line me-1"></i> ENTREGAR COCHE
                   </button>
                   @endif
 
-                  <a href="{{ route('encargos.edit', $encargo->id) }}?origin=produccion" class="btn btn-primary btn-sm flex-grow-1" aria-label="Editar encargo de {{ $encargo->vehiculo->marca }}" title="Ver Ficha y Subir Fotos">
-                    <i class="ri-edit-line me-1" aria-hidden="true"></i> Ficha Técnico
+                  <a href="{{ route('encargos.edit', $encargo->id) }}?origin=produccion" class="btn btn-outline-primary btn-sm flex-grow-1">
+                    <i class="ri-edit-line"></i> Ficha
                   </a>
-                  <button type="button" class="btn btn-danger btn-sm" onclick="eliminarEncargo({{ $encargo->id }})" aria-label="Eliminar exp." title="Eliminar del Sistema">
-                    <i class="ri-delete-bin-line me-1" aria-hidden="true"></i> Borrar
+                  <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarEncargo({{ $encargo->id }})">
+                    <i class="ri-delete-bin-line"></i>
                   </button>
                 </div>
 
-                <div class="text-center mt-2">
-                  <small class="text-muted"><i class="ri-arrow-left-right-line me-1"></i> Arrastre para avanzar</small>
+                <div class="text-center mt-3 opacity-50">
+                   <small class="text-muted"><i class="ri-arrow-left-right-line"></i> Arrastrar para mover</small>
                 </div>
               </div>
             </div>
             @empty
-            <div class="text-center text-muted py-5">
+            <div class="text-center text-muted py-5 opacity-50">
               <i class="ri-inbox-line fs-1"></i>
-              <p class="mt-2 mb-0">No hay trabajos</p>
+              <p class="mt-2 mb-0">Sin trabajos en curso</p>
             </div>
             @endforelse
           </div>
@@ -105,141 +93,71 @@
 @section('vendor-script')
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM cargado, inicializando Sortable...');
-
-    var columns = document.querySelectorAll('.kanban-column');
-    console.log('Columnas encontradas:', columns.length);
-
-    columns.forEach(function(column, index) {
-      console.log('Inicializando columna', index, 'con estado:', column.getAttribute('data-estado'));
-
+    // Configuración del Drag & Drop para Producción
+    document.querySelectorAll('.kanban-column').forEach(column => {
       new Sortable(column, {
-        group: {
-          name: 'kanban',
-          pull: true,
-          revertClone: false
-        },
+        group: 'kanban',
         animation: 300,
         ghostClass: 'opacity-50',
-        dragClass: 'cursor-grabbing',
         onEnd: function(evt) {
-          console.log('Drag ended');
-          var item = evt.item;
-          var newEstado = evt.to.getAttribute('data-estado');
-          var encargoId = item.getAttribute('data-id');
-          var oldEstado = item.getAttribute('data-estado-actual');
+          const id = evt.item.getAttribute('data-id'),
+                newEstado = evt.to.getAttribute('data-estado'),
+                oldEstado = evt.item.getAttribute('data-estado-actual');
 
-          console.log('Movimiento:', oldEstado, '->', newEstado, 'ID:', encargoId);
+          if (oldEstado === newEstado) return;
 
-          // Diccionario formal de transiciones válidas dictado por lógica de negocio
-          const transiciones = {
+          // Flujo lineal: Pendiente -> En Producción -> Esperando Recogida -> Entregado
+          const flujoValido = {
             'Pendiente Inicio': ['En Produccion'],
             'En Produccion': ['Esperando Recogida'],
             'Esperando Recogida': ['Entregado']
           };
 
-          if (oldEstado === newEstado) return;
-
-          // Verificamos estricamente en el cliente si es un salto inválido o retroceso
-          if (!transiciones[oldEstado] || !transiciones[oldEstado].includes(newEstado)) {
-             window.showToast('Movimiento Denegado: El proceso requiere seguir un orden lineal. No se puede retroceder ni realizar saltos.', 'warning');
-             evt.from.appendChild(item); // Retorna inmediatamente la tarjeta visualmente a su origen
+          if (!flujoValido[oldEstado] || !flujoValido[oldEstado].includes(newEstado)) {
+             window.showToast('Movimiento denegado: el trabajo debe seguir el orden lineal.', 'warning');
+             evt.from.appendChild(evt.item);
              return;
           }
 
-          moverEstado(encargoId, newEstado, item, evt.from);
+          moverEstado(id, newEstado);
         }
       });
     });
   });
 
-  function moverEstado(encargoId, nuevoEstado, item = null, fromColumn = null) {
-    // Eliminamos el bloqueo visual de "Actualizando..."
-    fetch('/encargos/' + encargoId + '/status', {
+  // Actualiza el estado en segundo plano y avisa por Toast
+  function moverEstado(id, nuevoEstado) {
+    fetch(`/encargos/${id}/status`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-          estado: nuevoEstado
-        })
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        body: JSON.stringify({ estado: nuevoEstado })
       })
-      .then(function(response) {
-        return response.json();
-      })
-      .then(function(data) {
+      .then(res => res.json())
+      .then(data => {
         if (data.success) {
-          window.showToast(data.message, 'success');
-          setTimeout(function() {
-            location.reload();
-          }, 800);
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error Operativo',
-            text: data.message
-          });
-          if (item && fromColumn) fromColumn.appendChild(item); // Rollback en caso de error de base de datos
+            window.showToast(data.message, 'success');
+            setTimeout(() => location.reload(), 800);
         }
-      })
-      .catch(function(error) {
-        console.error('Error:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Hubo un problema al actualizar'
-        });
       });
   }
 
+  // Confirmación de seguridad para borrar registros
   function eliminarEncargo(id) {
     Swal.fire({
-      title: 'Eliminar trabajo',
-      text: 'Esta accion no se puede deshacer',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Si, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then(function(result) {
-      if (result.isConfirmed) {
-        // Ejecución silenciosa tras confirmar
-
-        fetch('/encargos/' + id, {
-            method: 'DELETE',
-            headers: {
-              'X-CSRF-TOKEN': '{{ csrf_token() }}',
-              'Content-Type': 'application/json'
-            }
-          })
-          .then(function(response) {
-            return response.json();
-          })
-          .then(function(data) {
+      title: '¿Eliminar trabajo?', text: 'Esta acción borrará todo el historial del coche.', icon: 'warning',
+      showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Sí, borrar'
+    }).then(res => {
+      if (res.isConfirmed) {
+        fetch('/encargos/' + id, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }})
+          .then(res => res.json())
+          .then(data => {
             if (data.success) {
-              window.showToast(data.message, 'success');
-              setTimeout(function() {
-                location.reload();
-              }, 800);
-            } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: data.message
-              });
+                window.showToast(data.message, 'success');
+                setTimeout(() => location.reload(), 800);
             }
-          })
-          .catch(function(error) {
-            console.error('Error:', error);
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'No se pudo eliminar'
-            });
           });
       }
     });

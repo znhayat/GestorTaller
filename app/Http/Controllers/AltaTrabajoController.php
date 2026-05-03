@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\DB;
 class AltaTrabajoController extends Controller
 {
     /**
-     * Búsqueda de clientes y sus vehículos para el autocompletado
+     * Búsqueda de clientes y sus vehículos para el autocompletado en el formulario.
+     * Permite agilizar la carga de datos si el cliente ya ha venido al taller.
      */
     public function buscarCliente(Request $request)
     {
@@ -34,12 +35,17 @@ class AltaTrabajoController extends Controller
         return view('content.taller.nuevo-trabajo');
     }
 
+    /**
+     * Proceso principal de Alta de Trabajo.
+     * Gestiona en una sola transacción: Cliente -> Vehículo -> Encargo -> Presupuesto.
+     */
     public function store(Request $request)
     {
+        // 1. Validación estricta de los datos recibidos
         $request->validate([
             'nombre'      => 'required|string|max:100',
             'apellido'    => 'required|string|max:100',
-            'telefono'    => ['required', 'regex:/^[0-9]{9}$/'], // Exactamente 9 números
+            'telefono'    => ['required', 'regex:/^[0-9]{9}$/'], // Teléfono de 9 dígitos
             'correo'      => 'required|email|max:150',
             'marca'       => 'required|string|max:50',
             'modelo'      => 'required|string|max:50',
@@ -47,35 +53,33 @@ class AltaTrabajoController extends Controller
             'precio_materiales' => 'required|numeric|min:0',
             'precio_horas' => 'required|numeric|min:0',
             'cita_revision' => 'required|date|after_or_equal:today',
-            'hora_cita' => 'required|date_format:H:i',
-            'cita_recogida' => 'nullable|date|after_or_equal:cita_revision'
-        ], [
-            'nombre.required' => 'El nombre del cliente es obligatorio.',
-            'telefono.required' => 'El número de teléfono es obligatorio.',
-            'telefono.regex' => 'El teléfono debe tener 9 dígitos numéricos.',
-            'correo.required' => 'El correo electrónico es obligatorio.',
-            'correo.email' => 'El formato del correo electrónico no es válido.',
-            'cita_revision.after_or_equal' => 'La fecha de la cita no puede ser anterior a hoy.',
-            'cita_recogida.after_or_equal' => 'La fecha de entrega no puede ser anterior a la de revisión.',
-            'precio_materiales.numeric' => 'El precio debe ser un número.',
-            'hora_cita.date_format' => 'El formato de hora debe ser HH:MM.'
+            'hora_cita' => 'required|date_format:H:i'
         ]);
 
         try {
             return DB::transaction(function () use ($request) {
 
-                // 1. Obtener o crear cliente (Evitamos duplicados por teléfono)
-                $cliente = Cliente::firstOrCreate(
-                    ['telefono' => $request->telefono],
-                    [
+                /**
+                 * GESTIÓN DEL CLIENTE
+                 * Usamos el teléfono como identificador único para evitar duplicar fichas.
+                 * Si el cliente ya existe, lo recuperamos; si no, lo creamos.
+                 */
+                $cliente = Cliente::where('telefono', $request->telefono)->first();
+
+                if (!$cliente) {
+                    // Si no existe el teléfono, creamos ficha nueva desde cero
+                    $cliente = Cliente::create([
                         'nombre'   => $request->nombre,
                         'apellido' => $request->apellido,
                         'correo'   => $request->correo,
-                    ]
-                );
-
-                // Si el cliente ya existía, actualizamos sus datos por si han cambiado
-                if (!$cliente->wasRecentlyCreated) {
+                        'telefono' => $request->telefono,
+                    ]);
+                } else {
+                    /** 
+                     * IMPORTANTE: Si el cliente ya existe por teléfono, actualizamos sus datos 
+                     * solo si el usuario ha escrito algo diferente. Esto asegura que la base de 
+                     * datos esté siempre al día con el último contacto/nombre facilitado.
+                     */
                     $cliente->update([
                         'nombre'   => $request->nombre,
                         'apellido' => $request->apellido,
@@ -83,26 +87,31 @@ class AltaTrabajoController extends Controller
                     ]);
                 }
 
-                // 1.5. Registrar marca y modelo en el catálogo (API a medida)
+                /**
+                 * GESTIÓN DEL VEHÍCULO
+                 * Vinculamos el coche al cliente. Si es un coche nuevo para este cliente, se crea.
+                 */
                 $marcaSlug = trim($request->marca);
                 $modeloSlug = trim($request->modelo);
 
+                // Aseguramos que la Marca y el Modelo existan en nuestro catálogo auxiliar
                 $marcaRef = \App\Models\Marca::firstOrCreate(['nombre' => $marcaSlug]);
                 \App\Models\Modelo::firstOrCreate([
                     'marca_id' => $marcaRef->id,
                     'nombre'   => $modeloSlug
                 ]);
 
-                // 2. Obtener o crear vehículo para este cliente
-                $vehiculo = Vehiculo::firstOrCreate(
-                    [
-                        'cliente_id' => $cliente->id,
-                        'marca'      => $marcaSlug,
-                        'modelo'     => $modeloSlug,
-                    ]
-                );
+                // Buscamos si el cliente ya tiene este coche registrado (evita duplicar matrículas/modelos)
+                $vehiculo = Vehiculo::firstOrCreate([
+                    'cliente_id' => $cliente->id,
+                    'marca'      => $marcaSlug,
+                    'modelo'     => $modeloSlug,
+                ]);
 
-                // 3. Crear encargo
+                /**
+                 * CREACIÓN DEL ENCARGO (TRABAJO)
+                 * Se registra la entrada al taller y se agenda la cita inicial.
+                 */
                 $encargo = Encargo::create([
                     'vehiculo_id'   => $vehiculo->id,
                     'descripcion'   => $request->descripcion,
@@ -110,16 +119,19 @@ class AltaTrabajoController extends Controller
                     'fecha_entrada' => now(),
                     'cita_revision' => $request->cita_revision,
                     'hora_cita'     => $request->hora_cita,
-                    'cita_recogida' => $request->cita_recogida, // Fecha límite o entrega
+                    'cita_recogida' => $request->cita_recogida,
                     'recordatorio_enviado' => false,
                 ]);
 
-                // 4. Crear presupuesto inicial
+                /**
+                 * PRESUPUESTO ESTIMADO
+                 * Generamos un presupuesto base basado en los servicios seleccionados en el configurador.
+                 */
                 $total = $request->precio_materiales + $request->precio_horas;
 
                 Presupuesto::create([
                     'encargo_id' => $encargo->id,
-                    'estimacion_inicial' => $total, // Guardamos la oferta telefónica original
+                    'estimacion_inicial' => $total,
                     'precio_materiales' => $request->precio_materiales,
                     'precio_horas' => $request->precio_horas,
                     'total' => $total,
@@ -127,10 +139,11 @@ class AltaTrabajoController extends Controller
                 ]);
 
                 return redirect()->route('encargos.recepcion')
-                    ->with('success', 'Trabajo creado. Cita agendada para el ' . date('d/m/Y', strtotime($request->cita_revision)));
+                    ->with('success', '¡Trabajo creado con éxito! Cita agendada para el ' . date('d/m/Y', strtotime($request->cita_revision)));
             });
         } catch (\Exception $e) {
-            return back()->withErrors('Error al guardar: ' . $e->getMessage())->withInput();
+            // Si algo falla, volvemos atrás sin guardar nada (integridad de datos)
+            return back()->withErrors('Error al procesar el alta: ' . $e->getMessage())->withInput();
         }
     }
 }
