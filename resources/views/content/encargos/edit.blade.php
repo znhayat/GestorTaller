@@ -122,7 +122,7 @@
                 <td class="text-end">
                   <form action="{{ route('usos_materiales.destroy', $uso->id) }}" method="POST">
                     @csrf @method('DELETE')
-                    <button type="submit" class="btn btn-sm text-danger border-0"><i class="ri-delete-bin-line"></i></button>
+                    <button type="submit" class="btn btn-sm text-danger border-0"><i class="ri-delete-bin-line me-1"></i> Eliminar</button>
                   </form>
                 </td>
               </tr>

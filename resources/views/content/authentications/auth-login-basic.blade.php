@@ -15,14 +15,13 @@
                 <!-- Logo -->
                 <div class="app-brand justify-content-center mt-5">
                     <a href="{{ url('/') }}" class="app-brand-link gap-3">
-                        <span class="app-brand-logo demo">@include('_partials.macros')</span>
-                        <span class="app-brand-text demo text-heading fw-semibold" style="text-transform: uppercase;">ZANA</span>
+                        <span class="app-brand-logo demo">@include('_partials.macros', ['width' => '150', 'height' => '150'])</span>
                     </a>
                 </div>
                 <!-- /Logo -->
 
                 <div class="card-body mt-1">
-                    <h4 class="mb-1">Bienvenido</h4>
+                    <h5 class="mb-4 text-center fw-bold text-primary">Inicia sesión en el Gestor</h5>
                     @if(session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}

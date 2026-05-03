@@ -71,8 +71,8 @@
                 </a>
                 <form action="{{ route('facturas.destroy', $f->id) }}" method="POST" onsubmit="return confirm('¿Seguro que quieres borrar esta factura?')">
                   @csrf @method('DELETE')
-                  <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar registro">
-                    <i class="ri-delete-bin-line"></i>
+                  <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center" title="Eliminar registro">
+                    <i class="ri-delete-bin-line me-1"></i> Eliminar
                   </button>
                 </form>
               </div>

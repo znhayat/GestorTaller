@@ -147,7 +147,7 @@
                                 <form action="{{ route('galeria.destroy', $foto->id) }}" method="POST" onsubmit="return confirm('¿Seguro que quieres quitar esta foto de la web pública?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100"><i class="ri-delete-bin-line me-1"></i> Retirar</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100"><i class="ri-delete-bin-line me-1"></i> Eliminar</button>
                                 </form>
                             </div>
                         </div>
