@@ -45,7 +45,11 @@ class UserController extends Controller
         $request->validate([
             'role' => 'required|in:admin,user',
             'is_approved' => 'required|boolean',
-            'password' => 'nullable|string|min:6'
+            'password' => 'nullable|string|min:6|confirmed'
+        ], [
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
+            'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+            'password.symbols' => 'La contraseña debe contener al menos un símbolo.',
         ]);
 
         $data = [
