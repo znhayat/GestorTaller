@@ -45,11 +45,15 @@ class UserController extends Controller
         $request->validate([
             'role' => 'required|in:admin,user',
             'is_approved' => 'required|boolean',
-            'password' => 'nullable|string|min:6|confirmed'
+            'password' => ['nullable', 'string', \Illuminate\Validation\Rules\Password::min(8)->letters()->numbers()->symbols(), 'confirmed']
         ], [
-            'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
+            'role.required' => 'El rol es obligatorio.',
+            'is_approved.required' => 'El estado de aprobación es obligatorio.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.letters' => 'La contraseña debe incluir al menos una letra.',
+            'password.numbers' => 'La contraseña debe incluir al menos un número.',
+            'password.symbols' => 'La contraseña debe incluir al menos un símbolo (@, #, $, etc.).',
             'password.confirmed' => 'La confirmación de la contraseña no coincide.',
-            'password.symbols' => 'La contraseña debe contener al menos un símbolo.',
         ]);
 
         $data = [

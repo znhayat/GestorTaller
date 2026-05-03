@@ -138,7 +138,7 @@
                 <div class="mb-3">
                     <label class="form-label fw-bold text-danger">Nueva Contraseña</label>
                     <div class="input-group input-group-merge">
-                        <input type="password" name="password" id="edit_password" class="form-control" placeholder="Mínimo 6 caracteres">
+                        <input type="password" name="password" id="edit_password" class="form-control" placeholder="Mínimo 8 caracteres (letras, números y símbolos)">
                         <span class="input-group-text cursor-pointer" onclick="togglePassword('edit_password', 'toggleIcon1')"><i class="ri-eye-line" id="toggleIcon1"></i></span>
                     </div>
                 </div>

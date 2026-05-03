@@ -56,6 +56,6 @@ class ProfileController extends Controller
         
         $user->save();
 
-        return back()->with('success', 'Perfil actualitzat correctament.');
+        return back()->with('success', 'Perfil actualizado correctamente.');
     }
 }

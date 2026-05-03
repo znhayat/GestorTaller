@@ -44,7 +44,7 @@
                         <div class="mb-5 form-password-toggle">
                             <div class="input-group input-group-merge">
                                 <div class="form-floating form-floating-outline">
-                                    <input type="password" id="password" class="form-control" name="password" placeholder="············" required />
+                                    <input type="password" id="password" class="form-control" name="password" placeholder="Mínimo 8 caracteres (letras, números y símbolos)" required />
                                     <label for="password">Contraseña</label>
                                 </div>
                                 <span class="input-group-text cursor-pointer"><i class="ri-eye-off-line"></i></span>
@@ -64,9 +64,9 @@
                         <button class="btn btn-primary d-grid w-100 mb-5" type="submit">Registrarse</button>
                     </form>
                     <p class="text-center mb-5">
-                        <span>Ja tens un compte?</span>
+                        <span>¿Ya tienes una cuenta?</span>
                         <a href="{{ url('/login') }}">
-                            <span>Inicia sessió</span>
+                            <span>Inicia sesión</span>
                         </a>
                     </p>
                 </div>

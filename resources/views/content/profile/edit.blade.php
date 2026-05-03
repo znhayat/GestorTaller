@@ -32,7 +32,7 @@
 
         @if($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-          <h6 class="alert-heading mb-2"><i class="ri-error-warning-line me-1"></i> Si us plau, corregeix els errors:</h6>
+          <h6 class="alert-heading mb-2"><i class="ri-error-warning-line me-1"></i> Por favor, corrige los siguientes errores:</h6>
           <ul class="mb-0">
             @foreach($errors->all() as $error)
               <li>{{ $error }}</li>
@@ -61,7 +61,7 @@
           <div class="row">
             <div class="mb-3 col-md-6">
               <label for="password" class="form-label">Nueva Contraseña</label>
-              <input class="form-control" type="password" id="password" name="password" placeholder="Dejar en blanco si no deseas cambiarla" />
+              <input class="form-control" type="password" id="password" name="password" placeholder="Mínimo 8 caracteres (letras, números y símbolos)" />
             </div>
             <div class="mb-3 col-md-6">
               <label for="password_confirmation" class="form-label">Confirmar Contraseña</label>

@@ -37,18 +37,28 @@ class AltaTrabajoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre'      => 'required|string',
-            'apellido'    => 'required|string',
-            'telefono'    => 'required|string',
-            'correo'      => 'required|email',
-            'marca'       => 'required|string',
-            'modelo'      => 'required|string',
+            'nombre'      => 'required|string|max:100',
+            'apellido'    => 'required|string|max:100',
+            'telefono'    => ['required', 'regex:/^[0-9]{9}$/'], // Exactamente 9 números
+            'correo'      => 'required|email|max:150',
+            'marca'       => 'required|string|max:50',
+            'modelo'      => 'required|string|max:50',
             'descripcion' => 'required|string',
             'precio_materiales' => 'required|numeric|min:0',
             'precio_horas' => 'required|numeric|min:0',
-            'cita_revision' => 'required|date|after_or_equal:today', // Validación: fecha hoy o futura
+            'cita_revision' => 'required|date|after_or_equal:today',
             'hora_cita' => 'required|date_format:H:i',
-            'cita_recogida' => 'nullable|date|after_or_equal:cita_revision' // Fecha de entrega
+            'cita_recogida' => 'nullable|date|after_or_equal:cita_revision'
+        ], [
+            'nombre.required' => 'El nombre del cliente es obligatorio.',
+            'telefono.required' => 'El número de teléfono es obligatorio.',
+            'telefono.regex' => 'El teléfono debe tener 9 dígitos numéricos.',
+            'correo.required' => 'El correo electrónico es obligatorio.',
+            'correo.email' => 'El formato del correo electrónico no es válido.',
+            'cita_revision.after_or_equal' => 'La fecha de la cita no puede ser anterior a hoy.',
+            'cita_recogida.after_or_equal' => 'La fecha de entrega no puede ser anterior a la de revisión.',
+            'precio_materiales.numeric' => 'El precio debe ser un número.',
+            'hora_cita.date_format' => 'El formato de hora debe ser HH:MM.'
         ]);
 
         try {
