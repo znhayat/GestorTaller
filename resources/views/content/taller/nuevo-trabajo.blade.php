@@ -123,13 +123,31 @@
       border-bottom: none;
   }
 
-  /* CLASES DE LIMPIEZA */
-  .search-worker-width { width: 300px; }
-  .carrito-scroll { min-height: 250px; max-height: 400px; overflow-y: auto; }
-  .precio-total-input { background-color: #fff !important; font-size: 1.5rem !important; }
-  .cursor-pointer { cursor: pointer; }
-  .hover-shadow:hover { box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1) !important; }
-  .transition-all { transition: all 0.3s ease; }
+  /* NAVEGACIÓN DE TEXTO PURO MATERIO */
+  .step-indicator { display: flex; justify-content: space-around; margin-bottom: 2.5rem; border-bottom: 1px solid #eee; }
+  .step-item { padding: 1rem 0; cursor: pointer; text-align: center; flex: 1; transition: all 0.2s; border-bottom: 2px solid transparent; }
+  .step-item:hover { color: #9055FD; }
+  .step-item.active { border-bottom: 2px solid #9055FD; }
+  .step-item.active .step-label { color: #9055FD; font-weight: 700; }
+  .step-label { font-size: 0.85rem; font-weight: 500; color: #999; text-transform: uppercase; }
+  .step-item.completed .step-label { color: #555; }
+  .step-item.completed::after { content: " \ea10"; font-family: "remixicon"; margin-left: 5px; color: #50cd89; }
+  
+  .card { border: 1px solid #eff2f5; box-shadow: none; border-radius: 0.75rem; }
+  .bg-formal { background-color: #1e1e2d !important; color: #ffffff !important; }
+  .bg-light-grey { background-color: #f5f8fa !important; }
+  
+  .category-card { border: 1px solid #eff2f5; transition: all 0.2s; }
+  .category-card:hover { border-color: #0095e8; background: #ffffff; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+  
+  .precio-total-input { background-color: transparent !important; font-size: 2.2rem !important; border: none !important; border-bottom: 3px solid #0095e8 !important; border-radius: 0 !important; color: #1e1e2d !important; font-weight: 800 !important; }
+  
+  .btn-delete-service { background: transparent; color: #f1416c; border: 1px solid #f1416c; padding: 0.4rem; border-radius: 0.4rem; transition: all 0.2s; }
+  .btn-delete-service:hover { background: #f1416c; color: #fff; }
+
+  /* Validaciones visuales */
+  .is-invalid-phone { border-color: #f1416c !important; }
+  .phone-feedback { color: #f1416c; font-size: 0.75rem; font-weight: 600; margin-top: 0.25rem; }
 </style>
 
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -141,19 +159,19 @@
   <div class="card">
     <div class="card-body pt-5">
       
-      <!-- Indicador de Pasos -->
-      <div class="step-indicator mb-5 shadow-sm">
-         <div class="step-item active" id="indicator-1">
-            <i class="ri-user-line step-icon"></i> <span>1. Cliente</span>
+      <!-- Indicador de Pasos Texto Puro Materio -->
+      <div class="step-indicator">
+         <div class="step-item active" id="indicator-1" onclick="goToStep(1)">
+            <div class="step-label">1. Cliente</div>
          </div>
-         <div class="step-item" id="indicator-2">
-            <i class="ri-car-line step-icon"></i> <span>2. Vehículo</span>
+         <div class="step-item" id="indicator-2" onclick="goToStep(2)">
+            <div class="step-label">2. Vehículo</div>
          </div>
-         <div class="step-item" id="indicator-3">
-            <i class="ri-tools-line step-icon"></i> <span>3. Servicios</span>
+         <div class="step-item" id="indicator-3" onclick="goToStep(3)">
+            <div class="step-label">3. Servicios</div>
          </div>
-         <div class="step-item" id="indicator-4">
-            <i class="ri-calendar-check-line step-icon"></i> <span>4. Resumen</span>
+         <div class="step-item" id="indicator-4" onclick="goToStep(4)">
+            <div class="step-label">4. Resumen</div>
          </div>
       </div>
 
@@ -242,60 +260,79 @@
                       <!-- Se genera por JS -->
                   </div>
 
-                  <!-- Pantalla 2: Opciones de la Categoría (Oculto por defecto) -->
-                  <div id="panel-opciones" class="d-none animate__animated animate__fadeIn">
-                      <button type="button" class="btn btn-sm btn-outline-secondary mb-3" onclick="volverACategorias()">
-                        <i class="ri-arrow-left-line me-1"></i> Volver a categorías
-                      </button>
-                      <h6 id="titulo-categoria-seleccionada" class="fw-bold text-dark mb-3"></h6>
-                      <div id="lista-opciones" class="list-group mb-3 shadow-sm">
-                          <!-- Se genera por JS -->
-                      </div>
-                      
-                      <!-- Campo de Notas Rápidas -->
-                      <div class="card bg-lighter border shadow-none mb-3">
-                        <div class="card-body p-3">
-                            <label class="form-label fw-bold small text-muted"><i class="ri-edit-2-line me-1"></i> Notas para este servicio</label>
-                            <input type="text" id="anotacion-servicio" class="form-control form-control-sm" placeholder="Ej: Hilo rojo, cuero perforado, etc.">
-                        </div>
-                      </div>
+                  <!-- Pantalla 2: Opciones de la Categoría -->
+                  <div id="panel-opciones" class="d-none">
+                      <div class="card border-0 shadow-sm mb-4">
+                          <div class="card-header bg-formal py-3 d-flex justify-content-between align-items-center rounded-top">
+                              <h6 id="titulo-categoria-seleccionada" class="text-white mb-0 fw-bold"></h6>
+                              <button type="button" class="btn btn-sm btn-link text-white p-0" onclick="volverACategorias()">
+                                <i class="ri-close-line fs-4"></i>
+                              </button>
+                          </div>
+                          <div class="card-body pt-4">
+                              <div id="lista-opciones" class="mb-4">
+                                  <!-- Se genera por JS (Checkboxes) -->
+                              </div>
+                              
+                              <div class="row g-3">
+                                  <div class="col-md-8">
+                                      <label class="form-label fw-bold text-muted small uppercase">Anotaciones Técnicas</label>
+                                      <input type="text" id="anotacion-servicio" class="form-control" placeholder="Ej: Hilo rojo, piel napa...">
+                                  </div>
+                                  <div class="col-md-4">
+                                      <label class="form-label fw-bold text-primary small uppercase">Precio Servicio (€)</label>
+                                      <input type="number" id="precio-individual" class="form-control fw-bold border-primary" value="0" step="0.01">
+                                  </div>
+                              </div>
 
-                      <button type="button" class="btn btn-primary w-100 py-2" id="btn-confirmar-seleccion">
-                        <i class="ri-add-line me-1"></i> Añadir al Presupuesto
-                      </button>
+                              <div class="d-grid gap-2 mt-4">
+                                <button type="button" class="btn btn-primary py-2 fw-bold" id="btn-confirmar-seleccion">
+                                    <i class="ri-add-line me-1"></i> Añadir este presupuesto al trabajo
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="volverACategorias()">
+                                    <i class="ri-arrow-left-line me-1"></i> Volver a categorías
+                                </button>
+                              </div>
+                          </div>
+                      </div>
                   </div>
               </div>
 
-              <!-- Panel derecho: Resumen del Trabajo -->
+              <!-- Panel derecho: Resumen de Servicios (ESTILO PREMIUM) -->
               <div class="col-md-5">
-                  <div class="card h-100 shadow-none border">
-                    <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
-                        <span class="fw-bold text-dark small"><i class="ri-shopping-cart-2-line me-1"></i> SERVICIOS AÑADIDOS</span>
-                        <span id="badge-contador" class="badge rounded-pill bg-primary">0</span>
+                  <div class="card h-100 border shadow-none">
+                    <div class="card-header border-bottom bg-light py-3">
+                        <h6 class="mb-0 fw-bold text-dark"><i class="ri-file-list-3-line me-2"></i> RESUMEN DE SERVICIOS</h6>
                     </div>
                     <div class="card-body p-0 carrito-scroll" id="carrito-contenedor">
-                        <div id="carrito-vacio" class="text-center py-5 text-muted">
-                            <i class="ri-inbox-line fs-1 d-block mb-2 opacity-50"></i>
-                            <small>No hay servicios todavía</small>
+                        <div id="carrito-vacio" class="text-center py-5">
+                            <i class="ri-inbox-archive-line fs-1 text-muted opacity-25"></i>
+                            <p class="text-muted small mt-2">No se han añadido servicios todavía</p>
                         </div>
-                        <div id="carrito-lista" class="p-2"></div>
+                        <table class="table table-sm table-hover mb-0 d-none" id="tabla-carrito">
+                            <thead class="bg-lighter">
+                                <tr>
+                                    <th class="ps-3 py-2 small">Servicio</th>
+                                    <th class="py-2 small text-end">Precio</th>
+                                    <th class="py-2 text-center small"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="carrito-lista"></tbody>
+                        </table>
                     </div>
-                    <div class="card-footer bg-light p-3 border-top">
-                        <div class="d-flex justify-content-between mb-3">
-                            <span class="small text-muted">Precio Estimado:</span>
-                            <span class="fw-bold text-primary" id="txt-total-global">0.00 €</span>
-                        </div>
-                        <div class="form-floating form-floating-outline mb-0">
-                          <input type="number" id="precio-global-step3" class="form-control fw-bold text-primary" placeholder="0.00" value="0">
-                          <label for="precio-global-step3">Precio Total Global (€)</label>
+                    <div class="card-footer border-top bg-white p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-0">
+                            <span class="fw-bold text-muted small">TOTAL PRESUPUESTADO</span>
+                            <div class="text-end">
+                                <span class="fs-2 fw-bolder text-dark d-block" id="txt-total-global">0.00 €</span>
+                                <input type="hidden" id="precio-global-step3" value="0">
+                            </div>
                         </div>
                     </div>
                   </div>
 
                   <!-- Textarea oculto para la BD -->
                   <textarea id="trabajo-descripcion" name="descripcion" class="d-none"></textarea>
-                  <input type="hidden" id="trabajo-materiales" name="precio_materiales" value="0">
-                  <input type="hidden" id="trabajo-horas" name="precio_horas" value="0">
               </div>
             </div>
         </div>
@@ -319,7 +356,7 @@
                   <input type="date" id="trabajo-fecha" name="cita_revision" class="form-control" value="{{ date('Y-m-d', strtotime('+1 days')) }}" required>
               </div>
               <div class="col-md-6 mb-3">
-                  <label class="form-label" for="trabajo-hora">Hora</label>
+                  <label class="form-label" for="trabajo-hora">Hora de la Cita</label>
                   <input type="time" id="trabajo-hora" name="hora_cita" class="form-control" value="09:00" required>
               </div>
             </div>
@@ -370,7 +407,6 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: 'techo', nombre: 'Techo / Cielo', icono: 'ri-arrow-up-circle-line', color: 'danger', opciones: ['Retapizado de techo', 'Techo solar / Cortinilla', 'Pilares (A, B, C)', 'Parasoles'] },
         { id: 'puertas', nombre: 'Puertas', icono: 'ri-door-line', color: 'success', opciones: ['Paneles completos', 'Apoyabrazos puerta', 'Inserciones tela/piel'] },
         { id: 'volante', nombre: 'Volante / Cambio', icono: 'ri-steering-fill', color: 'info', opciones: ['Retapizar volante', 'Pomo de cambio', 'Fuelle de cambio', 'Freno de mano'] },
-        { id: 'suelo', nombre: 'Suelo / Alfombras', icono: 'ri-grid-line', color: 'warning', opciones: ['Moqueta completa', 'Alfombrillas a medida', 'Insonorización suelo'] },
         { id: 'otros', nombre: 'Otros / Especiales', icono: 'ri-more-line', color: 'secondary', opciones: ['Bandeja trasera', 'Salpicadero', 'Maletero', 'Capota (Cabrio)', 'Bordado personalizado'] }
     ];
 
@@ -405,134 +441,111 @@ document.addEventListener('DOMContentLoaded', function() {
         taxonomias.forEach(cat => {
             panelCategorias.insertAdjacentHTML('beforeend', `
                 <div class="col-6 col-sm-4">
-                    <div class="card h-100 cursor-pointer border shadow-none hover-shadow transition-all" onclick="seleccionarCategoria('${cat.id}')">
-                        <div class="card-body text-center py-4 bg-label-${cat.color}">
-                            <i class="${cat.icono} display-5 mb-2 text-${cat.color}"></i>
+                    <div class="card h-100 cursor-pointer category-card shadow-none" onclick="seleccionarCategoria('${cat.id}')">
+                        <div class="card-body text-center py-4">
+                            <i class="${cat.icono} display-5 mb-2 text-formal"></i>
                             <h6 class="mb-0 fw-bold text-dark" style="font-size: 0.85rem;">${cat.nombre}</h6>
                         </div>
                     </div>
                 </div>
             `);
         });
-        panelCategorias.insertAdjacentHTML('beforeend', `
-            <div class="col-6 col-sm-4">
-                <div class="card h-100 cursor-pointer border border-dashed shadow-none" onclick="servicioPersonalizado()">
-                    <div class="card-body text-center py-4 bg-label-secondary">
-                        <i class="ri-add-line display-5 mb-2 text-secondary"></i>
-                        <h6 class="mb-0 fw-bold text-muted" style="font-size: 0.85rem;">Personalizado</h6>
-                    </div>
-                </div>
-            </div>
-        `);
     }
 
     window.seleccionarCategoria = function(id) {
         categoriaActual = taxonomias.find(c => c.id === id);
-        tituloCat.innerHTML = `<i class="${categoriaActual.icono} me-2 text-${categoriaActual.color}"></i> ${categoriaActual.nombre}`;
+        tituloCat.innerHTML = `<i class="${categoriaActual.icono} me-2 text-primary"></i> ${categoriaActual.nombre}`;
         listaOpciones.innerHTML = '';
-        categoriaActual.opciones.forEach(opc => {
+        categoriaActual.opciones.forEach((opc, idx) => {
             listaOpciones.insertAdjacentHTML('beforeend', `
-                <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3" onclick="seleccionarOpcion(this, '${opc}')">
-                    <span>${opc}</span>
-                    <i class="ri-arrow-right-s-line text-muted"></i>
-                </button>
+                <div class="list-group-item d-flex align-items-center py-3">
+                    <div class="form-check me-2">
+                        <input class="form-check-input service-check" type="checkbox" value="${opc}" id="check-${idx}">
+                        <label class="form-check-label w-100 cursor-pointer" for="check-${idx}">
+                            <span class="ms-2 fw-medium text-dark">${opc}</span>
+                        </label>
+                    </div>
+                </div>
             `);
         });
         panelCategorias.classList.add('d-none');
         panelOpciones.classList.remove('d-none');
         inputAnotacion.value = '';
-        opcionSeleccionada = null;
-    };
-
-    window.volverACategorias = function() {
-        panelOpciones.classList.add('d-none');
-        panelCategorias.classList.remove('d-none');
-    };
-
-    window.seleccionarOpcion = function(btn, opc) {
-        listaOpciones.querySelectorAll('.list-group-item').forEach(i => i.classList.remove('active', 'bg-primary', 'text-white'));
-        btn.classList.add('active', 'bg-primary', 'text-white');
-        opcionSeleccionada = opc;
-    };
-
-    window.servicioPersonalizado = async function() {
-        const { value: text } = await Swal.fire({
-            title: 'Servicio Personalizado',
-            input: 'text',
-            inputLabel: '¿Qué vamos a hacer?',
-            placeholder: 'Escribe el trabajo aquí...',
-            showCancelButton: true
-        });
-        if (text) {
-            categoriaActual = { nombre: 'Especial', icono: 'ri-star-line', color: 'secondary' };
-            opcionSeleccionada = text;
-            añadirAlCarrito();
-        }
     };
 
     document.getElementById('btn-confirmar-seleccion')?.addEventListener('click', () => {
-        if (!opcionSeleccionada) {
-            Swal.fire('Atención', 'Selecciona una opción antes de continuar.', 'warning');
+        const checks = document.querySelectorAll('.service-check:checked');
+        const precio = parseFloat(document.getElementById('precio-individual').value) || 0;
+
+        if (checks.length === 0) {
+            Swal.fire('Atención', 'Selecciona al menos una opción.', 'warning');
             return;
         }
-        añadirAlCarrito();
-    });
-
-    function añadirAlCarrito() {
-        const nota = inputAnotacion.value.trim();
+        
+        // Dividimos el precio entre los servicios seleccionados si son varios, 
+        // o lo aplicamos al conjunto. Para que sea sencillo, lo aplicamos al conjunto.
+        const nombresServicios = Array.from(checks).map(c => c.value).join(', ');
+        
         carritoTrabajos.push({
-            id: Date.now(),
+            id: Date.now() + Math.random(),
             categoria: categoriaActual.nombre,
             icono: categoriaActual.icono,
-            color: categoriaActual.color,
-            trabajo: opcionSeleccionada,
-            anotacion: nota
+            color: 'primary',
+            trabajo: nombresServicios,
+            anotacion: document.getElementById('anotacion-servicio').value.trim(),
+            precio: precio
         });
+        
         renderizarCarrito();
         volverACategorias();
-    }
-
-    window.borrarDelCarrito = function(id) {
-        carritoTrabajos = carritoTrabajos.filter(i => i.id !== id);
-        renderizarCarrito();
-    };
+        document.getElementById('precio-individual').value = 0;
+    });
 
     function renderizarCarrito() {
-        if (!carritoLista) return;
+        const tabla = document.getElementById('tabla-carrito');
+        const lista = document.getElementById('carrito-lista');
+        const vacio = document.getElementById('carrito-vacio');
+        
+        if (!lista) return;
+
         if (carritoTrabajos.length === 0) {
-            carritoVacio.classList.remove('d-none');
-            carritoLista.innerHTML = '';
-            badgeContador.textContent = '0';
+            vacio.classList.remove('d-none');
+            tabla.classList.add('d-none');
+            lista.innerHTML = '';
         } else {
-            carritoVacio.classList.add('d-none');
-            carritoLista.innerHTML = '';
+            vacio.classList.add('d-none');
+            tabla.classList.remove('d-none');
+            lista.innerHTML = '';
+            
             carritoTrabajos.forEach(i => {
-                carritoLista.insertAdjacentHTML('beforeend', `
-                    <div class="card border mb-2 shadow-none animate__animated animate__fadeInRight">
-                        <div class="card-body p-2 d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <div class="p-2 rounded me-3 bg-label-${i.color}">
-                                    <i class="${i.icono} text-${i.color}"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-0 small fw-bold text-dark">${i.trabajo}</h6>
-                                    <small class="text-muted">${i.categoria}${i.anotacion ? ' • ' + i.anotacion : ''}</small>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-sm text-danger" onclick="borrarDelCarrito(${i.id})"><i class="ri-delete-bin-line"></i></button>
-                        </div>
-                    </div>
+                lista.insertAdjacentHTML('beforeend', `
+                    <tr class="animate__animated animate__fadeIn">
+                        <td class="ps-3 py-3">
+                            <div class="fw-bold text-dark small">${i.trabajo}</div>
+                            <div class="text-muted tiny" style="font-size: 0.7rem;">${i.categoria}${i.anotacion ? ' | ' + i.anotacion : ''}</div>
+                        </td>
+                        <td class="text-end py-3 fw-bold text-dark">${i.precio.toFixed(2)} €</td>
+                        <td class="text-center py-3">
+                            <button type="button" class="btn btn-outline-danger btn-sm px-2" onclick="borrarDelCarrito(${i.id})">
+                                <i class="ri-delete-bin-line me-1"></i> <span class="small">Eliminar</span>
+                            </button>
+                        </td>
+                    </tr>
                 `);
             });
-            badgeContador.textContent = carritoTrabajos.length;
         }
         actualizarTotal();
     }
 
     function actualizarTotal() {
-        const total = parseFloat(inputPrecioGlobal.value) || 0;
+        const totalCarrito = carritoTrabajos.reduce((sum, item) => sum + item.precio, 0);
+        const totalManual = parseFloat(inputPrecioGlobal?.value) || 0;
+        const total = totalManual > 0 ? totalManual : totalCarrito;
+        
         if (txtTotalGlobal) txtTotalGlobal.textContent = total.toFixed(2) + ' €';
+        
         document.getElementById('trabajo-materiales').value = total;
+        document.getElementById('trabajo-materiales-display').value = total;
         
         let desc = "";
         carritoTrabajos.forEach(i => {
@@ -541,9 +554,50 @@ document.addEventListener('DOMContentLoaded', function() {
         if (textareaDescripcion) textareaDescripcion.value = desc;
     }
 
+    window.borrarDelCarrito = function(id) {
+        carritoTrabajos = carritoTrabajos.filter(i => i.id !== id);
+        renderizarCarrito();
+    };
+
+    window.volverACategorias = function() {
+        document.getElementById('panel-opciones').classList.add('d-none');
+        document.getElementById('panel-categorias').classList.remove('d-none');
+    };
+
     inputPrecioGlobal?.addEventListener('input', actualizarTotal);
 
+    // VALIDACIÓN DE TELÉFONO EN TIEMPO REAL
+    const inputTel = document.getElementById('trabajo-telefono');
+    inputTel?.addEventListener('input', function() {
+        const val = this.value.replace(/\D/g, ''); 
+        this.value = val;
+        
+        if (val.length > 0 && val.length !== 9) {
+            this.classList.add('is-invalid-phone');
+            if (!document.getElementById('phone-err')) {
+                this.insertAdjacentHTML('afterend', '<div id="phone-err" class="phone-feedback">Debe tener exactamente 9 números.</div>');
+            }
+        } else {
+            this.classList.remove('is-invalid-phone');
+            document.getElementById('phone-err')?.remove();
+        }
+    });
+
     // ---- 3. LÓGICA DEL WIZARD (NAVEGACIÓN) ----
+    window.goToStep = function(n) {
+        if (n === currentStep) return;
+        if (n < currentStep) {
+            currentStep = n;
+            showStep(n);
+        } else {
+            // Para ir adelante, validamos el paso actual
+            if (validateCurrentStep()) {
+                currentStep = n;
+                showStep(n);
+            }
+        }
+    };
+
     window.showStep = function(step) {
         document.querySelectorAll('.wizard-step').forEach(el => el.classList.add('d-none'));
         document.getElementById('step-' + step).classList.remove('d-none');
@@ -575,12 +629,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const inputs = currentDiv.querySelectorAll('input[required], select[required], textarea[required]');
         let isValid = true;
         
+        // Validación estándar de HTML5
         inputs.forEach(input => {
             if (!input.checkValidity()) {
                 input.reportValidity();
                 isValid = false;
             }
         });
+
+        // Validación específica de Teléfono (Paso 1)
+        if (currentStep === 1) {
+            const telInput = document.getElementById('trabajo-telefono');
+            if (telInput.value.length !== 9) {
+                telInput.classList.add('is-invalid-phone');
+                if (!document.getElementById('phone-err')) {
+                    telInput.insertAdjacentHTML('afterend', '<div id="phone-err" class="phone-feedback">Debe tener exactamente 9 números.</div>');
+                }
+                telInput.focus();
+                isValid = false;
+            }
+        }
 
         if (currentStep === 3 && carritoTrabajos.length === 0) {
              Swal.fire('Atención', 'Añade al menos un trabajo para continuar.', 'warning');
@@ -684,6 +752,16 @@ document.addEventListener('DOMContentLoaded', function() {
         inputModelo.focus();
     };
 
+    inputModelo.addEventListener('focus', function() {
+        const q = this.value.trim();
+        let url = `${baseUrl}/api/vehiculos/modelos?q=${q}`;
+        if (marcaId) url += `&marca_id=${marcaId}`;
+        fetch(url).then(res => res.json()).then(data => {
+            resModelo.innerHTML = data.map(m => `<div class="search-item" onclick="seleccionarModelo('${m.nombre}')">${m.nombre}</div>`).join('');
+            resModelo.classList.toggle('d-none', data.length === 0);
+        });
+    });
+
     inputModelo.addEventListener('input', function() {
         const q = this.value.trim();
         let url = `${baseUrl}/api/vehiculos/modelos?q=${q}`;
@@ -696,17 +774,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.seleccionarModelo = function(n) { inputModelo.value = n; resModelo.classList.add('d-none'); };
 
-    // Disponibilidad de Agenda
+    // Disponibilidad de Agenda Unificada
     const fechaInput = document.getElementById('trabajo-fecha');
     const agendaPreview = document.getElementById('agenda-preview-container');
+    
     function checkAvailability() {
-        if (!fechaInput.value) return;
+        if (!fechaInput || !fechaInput.value) return;
+        agendaPreview.innerHTML = '<div class="spinner-border spinner-border-sm text-primary"></div> Consultando agenda...';
+        
         fetch(`/api/disponibilidad?date=${fechaInput.value}`).then(res => res.json()).then(data => {
-            if (data.length === 0) agendaPreview.innerHTML = '<span class="text-success fw-bold">Día libre</span>';
-            else agendaPreview.innerHTML = `Ocupado: ${data.map(i => i.hora+'h').join(', ')}`;
+            if (data.length === 0) {
+                agendaPreview.innerHTML = '<div class="alert alert-success py-2 mb-0"><i class="ri-checkbox-circle-line me-1"></i> No hay citas agendadas para este día.</div>';
+            } else {
+                let html = '<div class="row g-2 mt-1">';
+                data.forEach(i => {
+                    const isProd = i.tipo === 'produccion';
+                    html += `
+                        <div class="col-6 col-md-4">
+                            <div class="d-flex align-items-center bg-white border p-2 rounded shadow-none">
+                                <span class="badge ${isProd ? 'bg-warning' : 'bg-info'} me-2">${i.hora}</span>
+                                <span class="text-truncate small" style="max-width: 80px;">${i.cliente}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                agendaPreview.innerHTML = html;
+            }
         });
     }
-    fechaInput.addEventListener('change', checkAvailability);
+    fechaInput?.addEventListener('change', checkAvailability);
 
     // Inicialización
     renderCategorias();

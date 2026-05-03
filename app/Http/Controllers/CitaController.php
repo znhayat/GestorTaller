@@ -66,7 +66,7 @@ class CitaController extends Controller
 
         $ocupadas = [];
 
-        // 1. Revisiones de nuevo trabajo (Encargo)
+        // 1. Recepciones (Citas de Revisión en Encargos)
         $encargos = Encargo::with('vehiculo.cliente')
             ->whereDate('cita_revision', $fecha)
             ->whereNotIn('estado', ['Cancelado', 'Entregado'])
@@ -74,37 +74,25 @@ class CitaController extends Controller
 
         foreach ($encargos as $enc) {
             if ($enc->hora_cita) {
-                // Formato simple HH:MM
-                $horaStr = substr($enc->hora_cita, 0, 5);
-                $cliente = $enc->vehiculo && $enc->vehiculo->cliente ? $enc->vehiculo->cliente->nombre : 'Desconocido';
-                $coche = $enc->vehiculo ? $enc->vehiculo->marca . ' ' . $enc->vehiculo->modelo : 'Vehículo Desconocido';
-                
                 $ocupadas[] = [
-                    'hora' => $horaStr,
-                    'titulo' => 'Revisión: ' . $coche . ' (' . $cliente . ')'
+                    'hora' => substr($enc->hora_cita, 0, 5),
+                    'cliente' => $enc->vehiculo->cliente->nombre ?? 'S/N',
+                    'tipo' => 'recepcion'
                 ];
             }
         }
 
-        // 2. Citas programadas generales (Cita)
+        // 2. Producción (Citas en tabla Citas)
         $citas = Cita::with('encargo.vehiculo.cliente')
             ->whereDate('fecha', $fecha)
             ->get();
 
         foreach ($citas as $c) {
             if ($c->hora) {
-                $horaStr = substr($c->hora, 0, 5);
-                $titulo = 'Cita / Reparación';
-                
-                if ($c->encargo && $c->encargo->vehiculo) {
-                    $coche = $c->encargo->vehiculo->marca . ' ' . $c->encargo->vehiculo->modelo;
-                    $cliente = $c->encargo->vehiculo->cliente ? $c->encargo->vehiculo->cliente->nombre : 'Desconocido';
-                    $titulo .= ' - ' . $coche . ' (' . $cliente . ')';
-                }
-                
                 $ocupadas[] = [
-                    'hora' => $horaStr,
-                    'titulo' => $titulo
+                    'hora' => substr($c->hora, 0, 5),
+                    'cliente' => $c->encargo->vehiculo->cliente->nombre ?? 'S/N',
+                    'tipo' => 'produccion'
                 ];
             }
         }

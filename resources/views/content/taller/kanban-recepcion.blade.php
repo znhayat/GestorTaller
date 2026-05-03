@@ -53,7 +53,6 @@
                 @if($encargo->presupuesto)
                 <div class="bg-label-info p-2 rounded mb-3 small border border-info border-opacity-25">
                   <div class="d-flex justify-content-between align-items-center mb-1">
-                    <span class="text-muted"><i class="ri-phone-fill me-1"></i> Est. Telefónica:</span>
                     <span class="fw-bold text-dark">{{ number_format($encargo->presupuesto->estimacion_inicial ?? $encargo->presupuesto->total, 2) }} €</span>
                   </div>
                   @if($encargo->presupuesto->total != ($encargo->presupuesto->estimacion_inicial ?? $encargo->presupuesto->total))

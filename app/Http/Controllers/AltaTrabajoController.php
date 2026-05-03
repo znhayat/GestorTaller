@@ -83,12 +83,22 @@ class AltaTrabajoController extends Controller
                     ]);
                 }
 
+                // 1.5. Registrar marca y modelo en el catálogo (API a medida)
+                $marcaSlug = trim($request->marca);
+                $modeloSlug = trim($request->modelo);
+
+                $marcaRef = \App\Models\Marca::firstOrCreate(['nombre' => $marcaSlug]);
+                \App\Models\Modelo::firstOrCreate([
+                    'marca_id' => $marcaRef->id,
+                    'nombre'   => $modeloSlug
+                ]);
+
                 // 2. Obtener o crear vehículo para este cliente
                 $vehiculo = Vehiculo::firstOrCreate(
                     [
                         'cliente_id' => $cliente->id,
-                        'marca'      => $request->marca,
-                        'modelo'     => $request->modelo,
+                        'marca'      => $marcaSlug,
+                        'modelo'     => $modeloSlug,
                     ]
                 );
 
