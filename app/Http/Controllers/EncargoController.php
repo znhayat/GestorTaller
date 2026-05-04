@@ -195,6 +195,13 @@ class EncargoController extends Controller
             'fecha_recogida' => 'required|date',
         ]);
 
+        if ($request->fecha_recogida < $request->fecha_inicio) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La data de lliurament no pot ser anterior a la data d\'entrada.'
+            ], 422);
+        }
+
         $encargo = Encargo::findOrFail($id);
 
         DB::transaction(function () use ($request, $encargo) {

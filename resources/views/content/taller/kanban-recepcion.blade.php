@@ -255,7 +255,10 @@
             disable: [date => (date.getDay() === 0 || date.getDay() === 6)],
             onChange: (selectedDates, dateStr, instance) => {
                 if(selectedDates.length > 0) {
-                    verificarDisponibilidad(dateStr.split(" ")[0]);
+                    const fecha = dateStr.split(" ")[0];
+                    verificarDisponibilidad(fecha);
+                    // Sincronizar minDate de fecha fin
+                    if(fpFin) fpFin.set('minDate', fecha);
                 }
             }
         });
@@ -302,17 +305,34 @@
     if (!inicio || !fin) return window.showToast('Completa las fechas en el calendario', 'warning');
 
     const partes = inicio.split(" ");
+    
+    // Validación de accesibilidad: comprobar fechas antes de enviar
+    if (new Date(fin) < new Date(partes[0])) {
+        return window.showToast('La fecha de salida debe ser posterior a la de entrada', 'error');
+    }
+
     fetch('/encargos/' + id + '/aceptar-programar', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+        headers: { 
+            'Content-Type': 'application/json', 
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        },
         body: JSON.stringify({ fecha_inicio: partes[0], hora_inicio: partes[1] || '09:00', fecha_recogida: fin })
       })
-      .then(res => res.json())
+      .then(async res => {
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || 'Error en la validación');
+          return data;
+      })
       .then(data => {
         if (data.success) {
             window.showToast(data.message, 'success');
             setTimeout(() => location.reload(), 800);
         }
+      })
+      .catch(error => {
+          window.showToast(error.message, 'error');
       });
   }
 
