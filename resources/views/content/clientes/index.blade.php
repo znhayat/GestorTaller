@@ -45,22 +45,29 @@
         @foreach($clientes as $c)
         <tr>
           <td><strong class="text-primary">#{{ $c->id }}</strong></td>
-          <td>{{ $c->nombre }}</td>
+          <td>
+            <a href="{{ route('clientes.show', $c->id) }}" class="fw-bold text-dark h6 mb-0">{{ $c->nombre }}</a>
+          </td>
           <td>{{ $c->apellido }}</td>
           <td>{{ $c->telefono }}</td>
           <td>{{ $c->correo }}</td>
           <td>
-            <div class="d-flex justify-content-center gap-2">
-              <a href="{{ route('clientes.edit', $c->id) }}" class="btn btn-sm btn-primary">
+            <div class="d-flex justify-content-center gap-1">
+              <a href="{{ route('clientes.show', $c->id) }}" class="btn btn-sm btn-info" title="Ver Ficha">
+                <i class="ri-eye-line me-1"></i> Ver
+              </a>
+              <a href="{{ route('clientes.edit', $c->id) }}" class="btn btn-sm btn-primary" title="Editar">
                 <i class="ri-pencil-line me-1"></i> Editar
               </a>
 
+              @if(auth()->user()->role === 'admin')
               <form action="{{ route('clientes.destroy', $c->id) }}" method="POST" onsubmit="return confirm('¿Eliminar cliente del sistema?')">
                 @csrf @method('DELETE')
-                <button type="submit" class="btn btn-sm btn-outline-danger">
+                <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
                   <i class="ri-delete-bin-line me-1"></i> Eliminar
                 </button>
               </form>
+              @endif
             </div>
           </td>
         </tr>

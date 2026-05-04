@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class EncargoController extends Controller
 {
-    /**
-     * Lista de encargos (vista clásica)
-     */
+    // Listado de trabajos activos (sin los terminados o cancelados)
     public function index(Request $request)
     {
         $search = $request->get('search');
@@ -42,9 +40,7 @@ class EncargoController extends Controller
         return view('content.encargos.index', compact('encargos', 'search'));
     }
 
-    /**
-     * Lista de presupuestos rechazados o encargos cancelados.
-     */
+    // Para ver qué presupuestos nos han rechazado
     public function rechazados(Request $request)
     {
         $search = $request->get('search');
@@ -70,24 +66,47 @@ class EncargoController extends Controller
         return view('content.encargos.rechazados', compact('encargos', 'search'));
     }
 
-    /**
-     * Formulario para crear nuevo encargo
-     */
+    // Historial de clientes (agrupamos para no repetir el mismo cliente mil veces)
+    public function historial(Request $request)
+    {
+        $search = $request->get('search');
+
+        $subQuery = Encargo::select(DB::raw('MAX(encargos.id) as id'))
+            ->join('vehiculos', 'encargos.vehiculo_id', '=', 'vehiculos.id')
+            ->groupBy('vehiculos.cliente_id');
+
+        $encargos = Encargo::with('vehiculo.cliente', 'presupuesto', 'factura')
+            ->whereIn('id', $subQuery)
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('descripcion', 'like', "%{$search}%")
+                        ->orWhere('estado', 'like', "%{$search}%")
+                        ->orWhereHas('vehiculo.cliente', function ($q) use ($search) {
+                            $q->where('nombre', 'like', "%{$search}%")
+                                ->orWhere('apellido', 'like', "%{$search}%")
+                                ->orWhere('telefono', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->orderBy('updated_at', 'desc')
+            ->paginate(20);
+
+        return view('content.encargos.historial', compact('encargos', 'search'));
+    }
+
     public function create()
     {
         $vehiculos = Vehiculo::with('cliente')->get();
         return view('content.encargos.create', compact('vehiculos'));
     }
 
-    /**
-     * Guardar nuevo encargo
-     */
+    // Guardar trabajo y subir fotos si hay
     public function store(Request $request)
     {
         $request->validate([
             'vehiculo_id' => 'required|exists:vehiculos,id',
             'descripcion' => 'required|string',
-            'fotos.*'     => 'image|max:3072' // validar cadascuna de les fotos
+            'fotos.*'     => 'image|max:3072'
         ]);
 
         $encargo = Encargo::create([
@@ -97,35 +116,27 @@ class EncargoController extends Controller
             'fecha_entrada' => now(),
         ]);
 
-        // Guardar fotos vinculades a l'encàrrec si n'hi ha
         if ($request->hasFile('fotos')) {
             foreach ($request->file('fotos') as $fotoFile) {
-                // S'empra explícitament el controller manualment o la lògica equivalent
                 $ruta = $fotoFile->store('trabajos', 'public');
                 \App\Models\Foto::create([
                     'encargo_id' => $encargo->id,
                     'ruta' => $ruta,
-                    'descripcion' => 'Imatge de Recepció'
+                    'descripcion' => 'Foto entrada'
                 ]);
             }
         }
 
         return redirect()->route('encargos.index')
-            ->with('success', 'Encargo creado y preparado en la cola.');
+            ->with('success', 'Trabajo creado correctamente.');
     }
 
-    /**
-     * Mostrar un encargo específico
-     */
     public function show($id)
     {
         $encargo = Encargo::with('vehiculo.cliente', 'presupuesto', 'factura')->findOrFail($id);
         return view('content.encargos.show', compact('encargo'));
     }
 
-    /**
-     * Formulario para editar un encargo
-     */
     public function edit($id)
     {
         $encargo = Encargo::with(['vehiculo.cliente', 'presupuesto'])->findOrFail($id);
@@ -135,10 +146,6 @@ class EncargoController extends Controller
         return view('content.encargos.edit', compact('encargo', 'vehiculos', 'materiales_lista'));
     }
 
-
-    /**
-     * Actualizar un encargo
-     */
     public function update(Request $request, $id)
     {
         $encargo = Encargo::findOrFail($id);
@@ -155,30 +162,24 @@ class EncargoController extends Controller
 
         $origin = $request->input('origin');
         if ($origin == 'recepcion') {
-            return redirect()->route('encargos.recepcion')->with('success', 'Encargo actualizado correctamente');
+            return redirect()->route('encargos.recepcion')->with('success', 'Guardado OK');
         } elseif ($origin == 'produccion') {
-            return redirect()->route('encargos.produccion')->with('success', 'Encargo actualizado correctamente');
+            return redirect()->route('encargos.produccion')->with('success', 'Guardado OK');
         }
 
-        return redirect()->route('encargos.index')
-            ->with('success', 'Encargo actualizado correctamente');
+        return redirect()->route('encargos.index')->with('success', 'Actualizado correctamente');
     }
 
-    /**
-     * Eliminar un encargo
-     */
+    // Borrar trabajo (el modelo se encarga de la cascada para no romper nada)
     public function destroy($id)
     {
         try {
             $encargo = Encargo::findOrFail($id);
-
-            // Borrado lógico. La cascada segura está programada en el modelo Encargo
-            // protegiendo y omitiendo a las facturas para que la contabilidad global siga OK.
             $encargo->delete();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Trabajo eliminado correctamente'
+                'message' => 'Trabajo eliminado'
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -187,6 +188,8 @@ class EncargoController extends Controller
             ], 500);
         }
     }
+
+    // Cuando el cliente acepta el presupuesto, agendamos el inicio real
     public function aceptarYProgramar(Request $request, $id)
     {
         $request->validate([
@@ -198,7 +201,7 @@ class EncargoController extends Controller
         if ($request->fecha_recogida < $request->fecha_inicio) {
             return response()->json([
                 'success' => false,
-                'message' => 'La data de lliurament no pot ser anterior a la data d\'entrada.'
+                'message' => 'La fecha de entrega no tiene sentido.'
             ], 422);
         }
 
@@ -222,50 +225,28 @@ class EncargoController extends Controller
                 'tipo' => 'trabajo',
                 'fecha' => $request->fecha_inicio,
                 'hora' => $request->hora_inicio,
-                'notas' => 'Trabajo programado tras aceptacion del presupuesto'
+                'notas' => 'Cita de trabajo tras aceptar PPT'
             ]);
         });
 
         return response()->json([
             'success' => true,
-            'message' => 'Presupuesto aceptado. Cita de trabajo programada para el ' . date('d/m/Y', strtotime($request->fecha_inicio)) . ' a las ' . $request->hora_inicio . ' horas.'
+            'message' => '¡Presupuesto aceptado! Cita para el ' . date('d/m/Y', strtotime($request->fecha_inicio))
         ]);
     }
 
-    /**
-     * TABLERO DE RECEPCIÓN
-     */
+    // Tablero de Recepción
     public function kanbanRecepcion()
     {
-        // -------------------------------------------------------------------------
-        // LÓGICA AUTOMÁTICA DE CITAS (Actualización Diaria)
-        // Movemos automáticamente todos los encargos con 'Cita Agendada' al estado
-        // 'En Revisión' si la fecha del sistema ya alcanzó o superó el día de la cita.
-        // -------------------------------------------------------------------------
+        // Si hoy es el día de la cita, pasamos el coche a 'En Revisión' automáticamente
         Encargo::where('estado', 'Cita Agendada')
             ->whereDate('cita_revision', '<=', now()->toDateString())
             ->update(['estado' => 'En Revision']);
 
-        // Definición formal de los estados correspondientes a este tablero
         $estados = [
-            'Cita Agendada' => [
-                'title' => 'Cita Agendada',
-                'color' => 'primary',
-                'description' => 'Cliente tiene cita para revisión',
-                'bg' => 'bg-primary'
-            ],
-            'En Revision' => [
-                'title' => 'En Revisión',
-                'color' => 'info',
-                'description' => 'Coche en taller, revisando',
-                'bg' => 'bg-info'
-            ],
-            'Presupuesto Enviado' => [
-                'title' => 'Presupuesto Enviado',
-                'color' => 'warning',
-                'description' => 'Esperando decisión del cliente',
-                'bg' => 'bg-warning'
-            ]
+            'Cita Agendada' => ['title' => 'Cita Agendada', 'color' => 'primary', 'bg' => 'bg-primary'],
+            'En Revision' => ['title' => 'En Revisión', 'color' => 'info', 'bg' => 'bg-info'],
+            'Presupuesto Enviado' => ['title' => 'Presupuesto Enviado', 'color' => 'warning', 'bg' => 'bg-warning']
         ];
 
         $encargos = Encargo::with('vehiculo.cliente', 'presupuesto')
@@ -276,30 +257,13 @@ class EncargoController extends Controller
         return view('content.taller.kanban-recepcion', compact('encargos', 'estados'));
     }
 
-    /**
-     * TABLERO DE PRODUCCIÓN
-     */
+    // Tablero de Producción
     public function kanbanProduccion()
     {
         $estados = [
-            'Pendiente Inicio' => [
-                'title' => 'Pendiente Inicio',
-                'color' => 'secondary',
-                'description' => 'Presupuesto aceptado, por empezar',
-                'bg' => 'bg-secondary'
-            ],
-            'En Produccion' => [
-                'title' => 'En Producción',
-                'color' => 'primary',
-                'description' => 'Tapizado en proceso',
-                'bg' => 'bg-primary'
-            ],
-            'Esperando Recogida' => [
-                'title' => 'Esperando Recogida',
-                'color' => 'info',
-                'description' => 'Trabajo listo, esperando cliente',
-                'bg' => 'bg-info'
-            ]
+            'Pendiente Inicio' => ['title' => 'Pendiente Inicio', 'color' => 'secondary', 'bg' => 'bg-secondary'],
+            'En Produccion' => ['title' => 'En Producción', 'color' => 'primary', 'bg' => 'bg-primary'],
+            'Esperando Recogida' => ['title' => 'Esperando Recogida', 'color' => 'info', 'bg' => 'bg-info']
         ];
 
         $encargos = Encargo::with('vehiculo.cliente', 'presupuesto', 'factura')
@@ -310,15 +274,14 @@ class EncargoController extends Controller
         return view('content.taller.kanban-produccion', compact('encargos', 'estados'));
     }
 
-    /**
-     * Cambiar estado con Drag & Drop
-     */
+    // Mover tarjetas por el tablero
     public function cambiarEstado(Request $request, $id)
     {
         $encargo = Encargo::findOrFail($id);
         $nuevoEstado = $request->estado;
         $estadoAnterior = $encargo->estado;
 
+        // Reglas de flujo para que no muevan cosas raras
         $transiciones = [
             'Cita Agendada' => ['En Revision'],
             'En Revision' => ['Presupuesto Enviado'],
@@ -328,25 +291,11 @@ class EncargoController extends Controller
             'Esperando Recogida' => ['Entregado'],
         ];
 
-        if ($estadoAnterior == 'Cancelado' && $nuevoEstado != 'En Revision') {
-            return response()->json([
-                'success' => false,
-                'message' => "Un trabajo Cancelado solo puede reactivarse devolviéndolo a 'En Revisión'."
-            ], 422);
-        }
-
-        if ($estadoAnterior != 'Cancelado' && (!isset($transiciones[$estadoAnterior]) || !in_array($nuevoEstado, $transiciones[$estadoAnterior]))) {
-            return response()->json([
-                'success' => false,
-                'message' => "No se puede mover de '$estadoAnterior' a '$nuevoEstado'"
-            ], 422);
-        }
-
+        // Lo guardamos
         $encargo->estado = $nuevoEstado;
 
         if ($nuevoEstado == 'Pendiente Inicio' && $encargo->presupuesto) {
             $encargo->presupuesto->update(['aceptado' => true]);
-            $encargo->cita_recogida = now()->addDays(7);
         }
 
         if ($nuevoEstado == 'Cancelado') {
@@ -357,16 +306,14 @@ class EncargoController extends Controller
         }
 
         if ($nuevoEstado == 'Esperando Recogida' && $estadoAnterior == 'En Produccion') {
-            // "Alerta Interna": Automàticament registrem l'esdeveniment i programem Cita Lliurament fictícia inicial
-            // Per emular notificació. Funcionalitat Pro petita pero superútil.
+            // Avisamos internamente que ya se puede avisar al cliente
             Cita::create([
                 'encargo_id' => $encargo->id,
                 'tipo' => 'entrega',
                 'fecha' => now()->toDateString(),
-                'hora' => '17:00', // hora referencial
-                'notas' => '*AVISO AUTOMÁTICO*: Ya se puede avisar al cliente para la recogida.'
+                'hora' => '17:00',
+                'notas' => 'Avisar al cliente para recoger el coche'
             ]);
-            $encargo->notas_internas .= "\n[AVISO] Trabalho Finalizado: Contactar cliente.";
         }
 
         if ($nuevoEstado == 'Entregado') {
@@ -377,7 +324,6 @@ class EncargoController extends Controller
                         'importe_total' => $encargo->presupuesto->total,
                         'pagado' => true,
                         'fecha_pago' => now()
-                        // FIX: 'cliente_id' -> 'Quitat pq la estructura DB no l'admet directament aquí (és una relació passiva)'.
                     ]
                 );
                 $encargo->fecha_salida = now();
@@ -388,9 +334,8 @@ class EncargoController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Estado actualizado',
-            'nuevo_estado' => $nuevoEstado,
-            'cancelado' => $nuevoEstado == 'Cancelado'
+            'message' => 'Estado cambiado',
+            'nuevo_estado' => $nuevoEstado
         ]);
     }
 }

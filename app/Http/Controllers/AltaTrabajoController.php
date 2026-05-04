@@ -11,10 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class AltaTrabajoController extends Controller
 {
-    /**
-     * Búsqueda de clientes y sus vehículos para el autocompletado en el formulario.
-     * Permite agilizar la carga de datos si el cliente ya ha venido al taller.
-     */
+    // Buscamos clientes por nombre o telf para el autocompletado del wizard
     public function buscarCliente(Request $request)
     {
         $term = $request->query('q');
@@ -35,17 +32,14 @@ class AltaTrabajoController extends Controller
         return view('content.taller.nuevo-trabajo');
     }
 
-    /**
-     * Proceso principal de Alta de Trabajo.
-     * Gestiona en una sola transacción: Cliente -> Vehículo -> Encargo -> Presupuesto.
-     */
+    // Aquí es donde se guarda todo: Cliente -> Coche -> Trabajo -> Presupuesto
     public function store(Request $request)
     {
-        // 1. Validación estricta de los datos recibidos
+        // Validamos que no falte nada importante
         $request->validate([
             'nombre'      => 'required|string|max:100',
             'apellido'    => 'required|string|max:100',
-            'telefono'    => ['required', 'regex:/^[0-9]{9}$/'], // Teléfono de 9 dígitos
+            'telefono'    => ['required', 'regex:/^[0-9]{9}$/'],
             'correo'      => 'required|email|max:150',
             'marca'       => 'required|string|max:50',
             'modelo'      => 'required|string|max:50',
@@ -59,15 +53,11 @@ class AltaTrabajoController extends Controller
         try {
             return DB::transaction(function () use ($request) {
 
-                /**
-                 * GESTIÓN DEL CLIENTE
-                 * Usamos el teléfono como identificador único para evitar duplicar fichas.
-                 * Si el cliente ya existe, lo recuperamos; si no, lo creamos.
-                 */
+                // Miramos si el cliente ya existe por el teléfono
                 $cliente = Cliente::where('telefono', $request->telefono)->first();
 
                 if (!$cliente) {
-                    // Si no existe el teléfono, creamos ficha nueva desde cero
+                    // Si es nuevo, lo creamos
                     $cliente = Cliente::create([
                         'nombre'   => $request->nombre,
                         'apellido' => $request->apellido,
@@ -75,11 +65,7 @@ class AltaTrabajoController extends Controller
                         'telefono' => $request->telefono,
                     ]);
                 } else {
-                    /** 
-                     * IMPORTANTE: Si el cliente ya existe por teléfono, actualizamos sus datos 
-                     * solo si el usuario ha escrito algo diferente. Esto asegura que la base de 
-                     * datos esté siempre al día con el último contacto/nombre facilitado.
-                     */
+                    // Si ya existe, actualizamos sus datos por si han cambiado
                     $cliente->update([
                         'nombre'   => $request->nombre,
                         'apellido' => $request->apellido,
@@ -87,31 +73,24 @@ class AltaTrabajoController extends Controller
                     ]);
                 }
 
-                /**
-                 * GESTIÓN DEL VEHÍCULO
-                 * Vinculamos el coche al cliente. Si es un coche nuevo para este cliente, se crea.
-                 */
                 $marcaSlug = trim($request->marca);
                 $modeloSlug = trim($request->modelo);
 
-                // Aseguramos que la Marca y el Modelo existan en nuestro catálogo auxiliar
+                // Guardamos la marca y el modelo en las tablas auxiliares si no están
                 $marcaRef = \App\Models\Marca::firstOrCreate(['nombre' => $marcaSlug]);
                 \App\Models\Modelo::firstOrCreate([
                     'marca_id' => $marcaRef->id,
                     'nombre'   => $modeloSlug
                 ]);
 
-                // Buscamos si el cliente ya tiene este coche registrado (evita duplicar matrículas/modelos)
+                // Vinculamos el coche al cliente
                 $vehiculo = Vehiculo::firstOrCreate([
                     'cliente_id' => $cliente->id,
                     'marca'      => $marcaSlug,
                     'modelo'     => $modeloSlug,
                 ]);
 
-                /**
-                 * CREACIÓN DEL ENCARGO (TRABAJO)
-                 * Se registra la entrada al taller y se agenda la cita inicial.
-                 */
+                // Creamos el encargo y lo ponemos en "Cita Agendada"
                 $encargo = Encargo::create([
                     'vehiculo_id'   => $vehiculo->id,
                     'descripcion'   => $request->descripcion,
@@ -123,10 +102,7 @@ class AltaTrabajoController extends Controller
                     'recordatorio_enviado' => false,
                 ]);
 
-                /**
-                 * PRESUPUESTO ESTIMADO
-                 * Generamos un presupuesto base basado en los servicios seleccionados en el configurador.
-                 */
+                // Generamos el presupuesto inicial con lo que viene del wizard
                 $total = $request->precio_materiales + $request->precio_horas;
 
                 Presupuesto::create([
@@ -139,11 +115,11 @@ class AltaTrabajoController extends Controller
                 ]);
 
                 return redirect()->route('encargos.recepcion')
-                    ->with('success', '¡Trabajo creado con éxito! Cita agendada para el ' . date('d/m/Y', strtotime($request->cita_revision)));
+                    ->with('success', '¡Trabajo creado! Cita para el día ' . date('d/m/Y', strtotime($request->cita_revision)));
             });
         } catch (\Exception $e) {
-            // Si algo falla, volvemos atrás sin guardar nada (integridad de datos)
-            return back()->withErrors('Error al procesar el alta: ' . $e->getMessage())->withInput();
+            // Si algo peta, no guardamos nada y avisamos
+            return back()->withErrors('Vaya, algo ha fallado: ' . $e->getMessage())->withInput();
         }
     }
 }

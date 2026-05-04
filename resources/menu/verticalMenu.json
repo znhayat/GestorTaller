@@ -51,6 +51,11 @@
           "url": "encargos/rechazados",
           "name": "P. Rechazados",
           "slug": "encargos.rechazados"
+        },
+        {
+          "url": "encargos/historial",
+          "name": "Historial Completo",
+          "slug": "encargos.historial"
         }
       ]
     },

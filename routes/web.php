@@ -90,6 +90,7 @@ Route::middleware(['auth'])->group(function () {
 
   Route::resource('vehiculos', VehiculoController::class)->only(['index', 'show']);
   Route::get('/encargos/rechazados', [EncargoController::class, 'rechazados'])->name('encargos.rechazados');
+  Route::get('/encargos/historial', [EncargoController::class, 'historial'])->name('encargos.historial');
   Route::resource('encargos', EncargoController::class)->only(['index', 'show']);
   
   Route::get('/calendario', [CitaController::class, 'showCalendar'])->name('citas.calendario');

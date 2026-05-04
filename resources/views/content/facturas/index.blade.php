@@ -6,11 +6,13 @@
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="fw-bold mb-0">Historial Económico</h4>
+    @if(auth()->user()->role === 'admin')
     <div class="d-flex gap-2">
       <a href="{{ route('facturas.create') }}" class="btn btn-primary">
         <i class="ri-add-line me-1"></i> Generar Factura
       </a>
     </div>
+    @endif
   </div>
 
   <div class="card shadow-sm border-0">
@@ -66,6 +68,7 @@
                 <a href="{{ route('facturas.imprimir', $f->id) }}" class="btn btn-sm btn-info fw-bold" target="_blank">
                   <i class="ri-printer-line me-1"></i> IMPRIMIR
                 </a>
+                @if(auth()->user()->role === 'admin')
                 <a href="{{ route('facturas.edit', $f->id) }}" class="btn btn-sm btn-primary fw-bold">
                   <i class="ri-edit-line me-1"></i> EDITAR
                 </a>
@@ -75,6 +78,7 @@
                     <i class="ri-delete-bin-line me-1"></i> Eliminar
                   </button>
                 </form>
+                @endif
               </div>
             </td>
           </tr>

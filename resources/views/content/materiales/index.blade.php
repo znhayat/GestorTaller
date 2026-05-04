@@ -31,7 +31,9 @@
       <button type="button" class="btn btn-outline-success" onclick="exportTableToExcel('materiales-table', 'inventario_{{ Str::slug($tipo) }}')">
         <i class="ri-file-excel-2-line me-1"></i> Exportar
       </button>
+      @if(auth()->user()->role === 'admin')
       <a href="{{ route('materiales.create') }}" class="btn btn-primary"><i class="ri-add-line me-1"></i> Nuevo</a>
+      @endif
     </div>
   </div>
 
@@ -79,6 +81,7 @@
             </td>
             <td class="text-center">
               <div class="d-flex justify-content-center gap-2">
+                @if(auth()->user()->role === 'admin')
                 <a href="{{ route('materiales.edit', $m->id) }}" class="btn btn-sm btn-primary">
                   <i class="ri-edit-line me-1"></i> Editar
                 </a>
@@ -88,6 +91,9 @@
                     <i class="ri-delete-bin-line me-1"></i> Borrar
                   </button>
                 </form>
+                @else
+                <span class="text-muted small">Solo lectura</span>
+                @endif
               </div>
             </td>
           </tr>
