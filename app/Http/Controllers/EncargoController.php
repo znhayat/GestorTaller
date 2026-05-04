@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Encargo;
 use App\Models\Vehiculo;
 use App\Models\Presupuesto;
-use App\MOdels\Cita;
+use App\Models\Cita;
 use App\Models\Factura;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
