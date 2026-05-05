@@ -88,7 +88,7 @@
                     Ficha
                   </a>
                   <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarEncargo({{ $encargo->id }})">
-                    <i class="ri-delete-bin-line"></i>
+                    <i class="ri-delete-bin-line me-1"></i> Eliminar
                   </button>
                 </div>
               </div>
