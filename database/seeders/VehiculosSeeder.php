@@ -28,19 +28,17 @@ class VehiculosSeeder extends Seeder
         ];
 
         foreach ($data as $marca => $modelos) {
-            $marcaId = DB::table('marcas')->insertGetId([
-                'nombre' => $marca,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            DB::table('marcas')->updateOrInsert(
+                ['nombre' => $marca],
+                ['created_at' => now(), 'updated_at' => now()]
+            );
+            $marcaId = DB::table('marcas')->where('nombre', $marca)->first()->id;
 
             foreach ($modelos as $modelo) {
-                DB::table('modelos')->insert([
-                    'marca_id' => $marcaId,
-                    'nombre' => $modelo,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+                DB::table('modelos')->updateOrInsert(
+                    ['marca_id' => $marcaId, 'nombre' => $modelo],
+                    ['created_at' => now(), 'updated_at' => now()]
+                );
             }
         }
     }

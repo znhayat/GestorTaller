@@ -365,7 +365,11 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const baseUrl = "{{ url('/') }}";
+    const apiRoutes = {
+        clientes: "{{ route('api.clientes.buscar') }}",
+        marcas: "{{ route('api.vehiculos.marcas') }}",
+        modelos: "{{ route('api.vehiculos.modelos') }}"
+    };
     // Categorías de tapicería
     const taxonomias = [
         { id: 'asientos', nombre: 'Asientos', icono: 'ri-sofa-line', opciones: ['Retapizado integral', 'Reparar orejeras', 'Espumas', 'Quemaduras'] },
@@ -487,6 +491,44 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Control de los pasos
+    window.validateStep = function(step) {
+        if (step === 1) {
+            const nombre = document.getElementById('trabajo-nombre').value.trim();
+            const apellido = document.getElementById('trabajo-apellido').value.trim();
+            const telefono = document.getElementById('trabajo-telefono').value.trim();
+            const correo = document.getElementById('trabajo-correo').value.trim();
+
+            if (!nombre || !apellido || !telefono || !correo) {
+                Swal.fire('Faltan datos', 'Por favor, rellena todos los campos del cliente.', 'warning');
+                return false;
+            }
+            // Validación básica de teléfono (9 dígitos)
+            if (!/^[0-9]{9}$/.test(telefono)) {
+                Swal.fire('Teléfono no válido', 'El teléfono debe tener 9 dígitos numéricos.', 'warning');
+                return false;
+            }
+        }
+        
+        if (step === 2) {
+            const marca = document.getElementById('trabajo-marca').value.trim();
+            const modelo = document.getElementById('trabajo-modelo').value.trim();
+
+            if (!marca || !modelo) {
+                Swal.fire('Datos del coche', 'Debes indicar la marca y el modelo del vehículo.', 'warning');
+                return false;
+            }
+        }
+
+        if (step === 3) {
+            if (carritoTrabajos.length === 0) {
+                Swal.fire('Sin servicios', 'Añade al menos un servicio para continuar.', 'warning');
+                return false;
+            }
+        }
+
+        return true;
+    };
+
     window.showStep = function(step) {
         document.querySelectorAll('.wizard-step').forEach(el => el.classList.add('d-none'));
         document.getElementById('step-' + step).classList.remove('d-none');
@@ -508,7 +550,10 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     document.getElementById('btn-next').addEventListener('click', () => {
-        if (currentStep < 4) { currentStep++; showStep(currentStep); }
+        if (currentStep < 4 && validateStep(currentStep)) { 
+            currentStep++; 
+            showStep(currentStep); 
+        }
     });
 
     document.getElementById('btn-prev').addEventListener('click', () => {
@@ -521,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const q = this.value;
         if (q.length < 3) return document.getElementById('resultados-busqueda-cliente').classList.add('d-none');
         
-        fetch(`${baseUrl}/api/clientes/buscar?q=${q}`).then(res => res.json()).then(data => {
+        fetch(`${apiRoutes.clientes}?q=${q}`).then(res => res.json()).then(data => {
             const resDiv = document.getElementById('resultados-busqueda-cliente');
             resDiv.innerHTML = data.map((c, i) => `
                 <div class="search-item" onclick="cargarCliente(${JSON.stringify(c).replace(/"/g, '&quot;')})">
@@ -556,6 +601,60 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('trabajo-modelo').value = mo;
         document.getElementById('btn-next').click();
     };
+
+    // Buscador de marcas
+    const buscadorMarca = document.getElementById('trabajo-marca');
+    buscadorMarca.addEventListener('input', function() {
+        const q = this.value;
+        if (q.length < 1) return document.getElementById('resultados-busqueda-marca').classList.add('d-none');
+        
+        fetch(`${apiRoutes.marcas}?q=${q}`).then(res => res.json()).then(data => {
+            const resDiv = document.getElementById('resultados-busqueda-marca');
+            resDiv.innerHTML = data.map(m => `
+                <div class="search-item" onclick="cargarMarca(${m.id}, '${m.nombre}')">
+                    <strong>${m.nombre}</strong>
+                </div>
+            `).join('');
+            resDiv.classList.toggle('d-none', data.length === 0);
+        });
+    });
+
+    window.cargarMarca = function(id, nombre) {
+        document.getElementById('trabajo-marca').value = nombre;
+        document.getElementById('trabajo-marca').dataset.id = id;
+        document.getElementById('resultados-busqueda-marca').classList.add('d-none');
+        document.getElementById('trabajo-modelo').value = '';
+        document.getElementById('trabajo-modelo').focus();
+    };
+
+    // Buscador de modelos
+    const buscadorModelo = document.getElementById('trabajo-modelo');
+    buscadorModelo.addEventListener('input', function() {
+        const q = this.value;
+        const marcaId = document.getElementById('trabajo-marca').dataset.id || '';
+        
+        fetch(`${apiRoutes.modelos}?q=${q}&marca_id=${marcaId}`).then(res => res.json()).then(data => {
+            const resDiv = document.getElementById('resultados-busqueda-modelo');
+            resDiv.innerHTML = data.map(m => `
+                <div class="search-item" onclick="cargarModelo('${m.nombre}')">
+                    <strong>${m.nombre}</strong>
+                </div>
+            `).join('');
+            resDiv.classList.toggle('d-none', data.length === 0);
+        });
+    });
+
+    window.cargarModelo = function(nombre) {
+        document.getElementById('trabajo-modelo').value = nombre;
+        document.getElementById('resultados-busqueda-modelo').classList.add('d-none');
+    };
+
+    // Cerrar buscadores al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.position-relative')) {
+            document.querySelectorAll('.search-results').forEach(el => el.classList.add('d-none'));
+        }
+    });
 
     renderCategorias();
 });

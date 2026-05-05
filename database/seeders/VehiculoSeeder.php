@@ -30,9 +30,9 @@ class VehiculoSeeder extends Seeder
         ];
 
         foreach ($data as $marcaNombre => $modelos) {
-            $marca = \App\Models\Marca::create(['nombre' => $marcaNombre]);
+            $marca = \App\Models\Marca::firstOrCreate(['nombre' => $marcaNombre]);
             foreach ($modelos as $modeloNombre) {
-                \App\Models\Modelo::create([
+                \App\Models\Modelo::firstOrCreate([
                     'marca_id' => $marca->id,
                     'nombre' => $modeloNombre
                 ]);
