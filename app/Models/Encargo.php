@@ -52,7 +52,7 @@ class Encargo extends Model
             }
             $encargo->citas()->delete();
             $encargo->fotos()->delete();
-            $encargo->usos_materiales()->delete();
+            $encargo->materiales()->detach();
         });
     }
 }
