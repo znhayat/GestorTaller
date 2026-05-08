@@ -67,11 +67,7 @@
   </div>
 </div>
 
-@php
-  $esDesdeTablero = in_array(request('origin'), ['recepcion', 'produccion']);
-@endphp
 
-@if(!$esDesdeTablero)
 <div class="row">
   {{-- SECCIÓN 2: Gestión de Materiales (Costos) --}}
   <div class="col-md-7">
@@ -179,5 +175,5 @@
     </div>
   </div>
 </div>
-@endif
+</div>
 @endsection

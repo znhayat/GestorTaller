@@ -44,6 +44,11 @@ class Encargo extends Model
             ->withTimestamps();
     }
 
+    public function usos_materiales()
+    {
+        return $this->hasMany(UsoMaterial::class);
+    }
+
     protected static function booted()
     {
         static::deleting(function ($encargo) {
