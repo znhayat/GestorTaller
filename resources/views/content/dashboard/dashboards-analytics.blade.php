@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                     </td>
                                     <td>{{ $c->vehiculo->cliente->nombre }}</td>
                                     <td class="text-end pe-4">
-                                        <a href="{{ route('encargos.edit', $c->id) }}" class="btn btn-sm btn-icon btn-primary"><i class="ri-arrow-right-up-line"></i></a>
+                                        <a href="{{ route('encargos.show', $c->id) }}" class="btn btn-sm btn-icon btn-primary"><i class="ri-arrow-right-up-line"></i></a>
                                     </td>
                                 </tr>
                                 @empty
@@ -232,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 @foreach($ultimosEncargos as $ue)
                                 <tr>
                                     <td class="ps-4 small">{{ \Carbon\Carbon::parse($ue->created_at)->format('d/m') }}</td>
-                                    <td><span class="fw-bold">{{ $ue->vehiculo->marca }}</span></td>
+                                    <td><a href="{{ route('encargos.show', $ue->id) }}" class="fw-bold text-dark text-decoration-none">{{ $ue->vehiculo->marca }} {{ $ue->vehiculo->modelo }}</a></td>
                                     <td class="text-end pe-4">
                                         <span class="badge bg-label-primary px-2 py-1 small">{{ strtoupper($ue->estado) }}</span>
                                     </td>

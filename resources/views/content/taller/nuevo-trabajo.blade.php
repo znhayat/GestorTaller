@@ -785,15 +785,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const esHoy   = fecha.getTime() === hoy.getTime();
             const esPasado = fecha < hoy;
+            const esFinDeSemana = fecha.getDay() === 0 || fecha.getDay() === 6;
             const tieneCita = diaConCita.has(dateStr);
             const esSeleccionado = dateStr === calSelectedDate;
 
             if (esHoy) el.classList.add('today');
-            if (esPasado) { el.classList.add('past'); }
+            if (esPasado || esFinDeSemana) { el.classList.add('past'); }
             if (tieneCita) el.classList.add('has-cita');
             if (esSeleccionado) el.classList.add('selected');
 
-            if (!esPasado) {
+            if (!esPasado && !esFinDeSemana) {
                 el.addEventListener('click', () => seleccionarDia(dateStr));
             }
             calGrid.appendChild(el);

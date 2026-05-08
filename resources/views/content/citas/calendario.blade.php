@@ -34,7 +34,8 @@
         right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
       },
       navLinks: true, // can click day/week names to navigate views
-      dayMaxEvents: true, // allow "more" link when too many events
+      dayMaxEvents: true,
+      hiddenDays: [0, 6], // Ocultar Sábado (6) y Domingo (0)
       events: '/api/eventos',
       eventClick: function(info) {
         if (info.event.url) {

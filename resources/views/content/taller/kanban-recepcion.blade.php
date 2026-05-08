@@ -91,8 +91,8 @@
                   </button>
                   @endif
 
-                  <a href="{{ route('encargos.edit', $encargo->id) }}?origin=recepcion" class="btn btn-outline-primary btn-sm flex-grow-1">
-                    <i class="ri-edit-line"></i> Ficha
+                  <a href="{{ route('encargos.show', $encargo->id) }}" class="btn btn-outline-primary btn-sm flex-grow-1">
+                    <i class="ri-eye-line me-1"></i> Ficha
                   </a>
                   <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarEncargo({{ $encargo->id }})">
                     <i class="ri-delete-bin-line me-1"></i> Eliminar
