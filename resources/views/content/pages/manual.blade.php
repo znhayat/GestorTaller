@@ -5,203 +5,239 @@
 @section('content')
 <div class="row">
   <div class="col-12">
-    <!-- HERO HEADER - CLEAN VERSION -->
-    <div class="card mb-4 border-0 shadow-sm overflow-hidden bg-primary">
-        <div class="card-body p-5">
-            <div class="text-white">
-                <small class="text-uppercase fw-bold opacity-75">Documentación del Sistema</small>
-                <h1 class="display-4 fw-bold text-white mb-2">Manual de Usuario</h1>
-                <p class="fs-4 opacity-75 mb-0">Gestor Taller: Gestión Integral para Tapicerías</p>
-            </div>
-        </div>
-    </div>
+    <!-- Título Principal -->
+    <h4 class="fw-bold py-3 mb-4">
+      <span class="text-muted fw-light">Documentación /</span> Manual de Usuario
+    </h4>
 
-    <!-- MAIN CONTENT GRID -->
-    <div class="row g-4">
-        <!-- Sidebar Navigation -->
-        <div class="col-lg-3 d-none d-lg-block">
-            <div class="card sticky-top border-0 shadow-sm" style="top: 100px; z-index: 10;">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h6 class="fw-bold mb-0 text-uppercase small">Índice</h6>
-                </div>
-                <div class="list-group list-group-flush rounded-bottom">
-                    <a href="#sec-intro" class="list-group-item list-group-item-action py-3 border-0">1. Introducción</a>
-                    <a href="#sec-acces" class="list-group-item list-group-item-action py-3 border-0">2. Acceso al Sistema</a>
-                    <a href="#sec-dash" class="list-group-item list-group-item-action py-3 border-0">3. Dashboard</a>
-                    <a href="#sec-crm" class="list-group-item list-group-item-action py-3 border-0">4. CRM de Clients</a>
-                    <a href="#sec-wizard" class="list-group-item list-group-item-action py-3 border-0">5. Asistente Wizard</a>
-                    <a href="#sec-kanban" class="list-group-item list-group-item-action py-3 border-0">6. Tableros Kanban</a>
-                    <a href="#sec-galeria" class="list-group-item list-group-item-action py-3 border-0">7. Galería Web</a>
-                    <a href="#sec-eco" class="list-group-item list-group-item-action py-3 border-0">8. Gestión Económica</a>
-                    <a href="#sec-admin" class="list-group-item list-group-item-action py-3 border-0">9. Administración</a>
-                    <a href="#sec-faq" class="list-group-item list-group-item-action py-3 border-0 text-primary fw-bold">10. FAQ</a>
-                </div>
-            </div>
+    <div class="row">
+      <!-- Navegación lateral -->
+      <div class="col-md-3">
+        <div class="card mb-4 shadow-none border">
+          <div class="card-header border-bottom">
+            <h5 class="mb-0">ÍNDICE</h5>
+          </div>
+          <div class="list-group list-group-flush">
+            <a href="#sec-1" class="list-group-item list-group-item-action">1. INTRODUCCIÓN</a>
+            <a href="#sec-2" class="list-group-item list-group-item-action">2. ACCESO AL SISTEMA</a>
+            <a href="#sec-3" class="list-group-item list-group-item-action">3. EL CUADRO DE MANDO</a>
+            <a href="#sec-4" class="list-group-item list-group-item-action">4. GESTIÓN CRM</a>
+            <a href="#sec-5" class="list-group-item list-group-item-action">5. EL FLUJO DE TRABAJO</a>
+            <a href="#sec-6" class="list-group-item list-group-item-action">6. TABLEROS KANBAN</a>
+            <a href="#sec-7" class="list-group-item list-group-item-action">7. DOCUMENTACIÓN VISUAL</a>
+            <a href="#sec-8" class="list-group-item list-group-item-action">8. GESTIÓN ECONÓMICA</a>
+            <a href="#sec-9" class="list-group-item list-group-item-action">9. CONFIGURACIÓN Y SEGURIDAD</a>
+            <a href="#sec-10" class="list-group-item list-group-item-action text-danger">10. FAQ</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contenido del Manual -->
+      <div class="col-md-9">
+        
+        <!-- PORTADA -->
+        <div class="card mb-4 text-center p-5">
+            <h2 class="fw-bold mb-0">GESTOR TALLER</h2>
+            <p class="text-muted mb-4">Sistema de Gestión Integral para Talleres de Tapicería de Automóviles</p>
+            <h1 class="display-5 fw-bold mb-0">MANUAL DE USUARIO</h1>
         </div>
 
-        <!-- Manual Sections -->
-        <div class="col-lg-9">
+        <!-- 1. INTRODUCCIÓN -->
+        <div class="card mb-4" id="sec-1">
+          <div class="card-header border-bottom">
+            <h5 class="mb-0 fw-bold">1. INTRODUCCIÓN</h5>
+          </div>
+          <div class="card-body mt-3">
+            <h6 class="fw-bold">1.1. Bienvenida al sistema</h6>
+            <p>Bienvenido/a a GestorTaller, tu nueva herramienta de gestión integral para el taller de tapicería. Este sistema ha sido diseñado específicamente para ayudarte a olvidar el papel y las libretas, centralizando toda la información del día a día en un entorno digital seguro y fácil de utilizar.</p>
+            <p>Con GestorTaller podrás:</p>
+            <ul>
+                <li>Controlar tus clientes y sus vehículos de forma rápida.</li>
+                <li>Gestionar las citas de entrada y salida sin errores.</li>
+                <li>Ver el estado de todos los trabajos de un solo vistazo mediante tableros visuales (Kanban).</li>
+                <li>Documentar tus restauraciones con fotos del "Antes y Después".</li>
+                <li>Gestionar presupuestos, facturas y los materiales.</li>
+            </ul>
+            <p>El objetivo de este manual es guiarte paso a paso por todas las funcionalidades del programa para que puedas sacarle el máximo provecho desde el primer día.</p>
             
-            <!-- 1. INTRODUCCIÓN -->
-            <div id="sec-intro" class="mb-5 scroll-mt-5">
-                <h2 class="fw-bold mb-3">1. Introducción</h2>
-                <hr class="mb-4">
-                
-                <h5 class="fw-bold text-dark mb-3">1.1. Bienvenida al sistema</h5>
-                <p class="fs-5 text-muted mb-4">GestorTaller es tu herramienta centralizada para digitalizar el día a día de tu tapicería.</p>
-                
-                <div class="row g-4 mb-4">
-                    <div class="col-md-6">
-                        <div class="h-100 border-start border-primary border-4 ps-3">
-                            <h6 class="fw-bold mb-2">¿Qué podrás hacer?</h6>
-                            <ul class="list-unstyled mb-0 small">
-                                <li class="mb-2">Control de clientes y vehículos</li>
-                                <li class="mb-2">Gestión de citas sin errores</li>
-                                <li class="mb-2">Seguimiento visual con Kanban</li>
-                                <li>Facturación y Presupuestos</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="h-100 border-start border-dark border-4 ps-3 text-muted small">
-                            <h6 class="fw-bold mb-2 text-dark">Dispositivos</h6>
-                            <p class="mb-0">Compatible con PC (Administración), Tablet (Taller) y Móvil (Consultas rápidas).</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. ACCESO AL SISTEMA -->
-            <div id="sec-acces" class="mb-5">
-                <h2 class="fw-bold mb-3">2. Acceso al Sistema</h2>
-                <hr class="mb-4">
-
-                <div class="alert alert-dark border-0 mb-4 rounded-0 border-start border-warning border-4 shadow-none">
-                    <h6 class="fw-bold mb-1">2.3. Activación de la cuenta</h6>
-                    <p class="mb-0 small">Por seguridad, el administrador debe validar tu cuenta antes de que puedas entrar por primera vez.</p>
-                </div>
-
-                <div class="row g-4">
-                    <div class="col-sm-4">
-                        <div class="py-2 border-bottom">
-                            <h6 class="fw-bold mb-1">Registro</h6>
-                            <p class="small text-muted mb-0">Crea tu perfil con el email de la empresa.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="py-2 border-bottom">
-                            <h6 class="fw-bold mb-1">Aprobación</h6>
-                            <p class="small text-muted mb-0">El administrador activa tu cuenta.</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="py-2 border-bottom border-primary">
-                            <h6 class="fw-bold text-primary mb-1">Acceso</h6>
-                            <p class="small text-muted mb-0">Ya puedes gestionar el taller.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. DASHBOARD -->
-            <div id="sec-dash" class="mb-5">
-                <h2 class="fw-bold mb-3">3. Dashboard</h2>
-                <hr class="mb-4">
-                <p>Resumen estadístico de la producción mensual y el volumen de encargos activos.</p>
-                
-                <div class="table-responsive">
-                    <table class="table table-sm mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Indicador</th>
-                                <th>Utilidad</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td><strong>Total Clientes</strong></td><td class="small">Crecimiento de la base de datos.</td></tr>
-                            <tr><td><strong>Encargos Activos</strong></td><td class="small">Volumen de trabajo actual.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- 4. CRM CLIENTES -->
-            <div id="sec-crm" class="mb-5">
-                <h2 class="fw-bold mb-3">4. Gestión de Clients y Vehículos</h2>
-                <hr class="mb-4">
-                <p>Listado inteligente optimizado para buscar por teléfono, nombre o matrícula. Historial completo vinculado a cada vehículo.</p>
-            </div>
-
-            <!-- 5. WIZARD -->
-            <div id="sec-wizard" class="mb-5">
-                <h2 class="fw-bold mb-3">5. Asistente de Nuevos Trabajos</h2>
-                <hr class="mb-4">
-                <div class="row text-center g-2">
-                    <div class="col-3"><div class="p-2 border small fw-bold">1. CLIENTE</div></div>
-                    <div class="col-3"><div class="p-2 border small fw-bold">2. VEHÍCULO</div></div>
-                    <div class="col-3"><div class="p-2 border small fw-bold">3. SERVICIOS</div></div>
-                    <div class="col-3"><div class="p-2 border small fw-bold text-primary border-primary">4. CITA</div></div>
-                </div>
-            </div>
-
-            <!-- 6. KANBAN -->
-            <div id="sec-kanban" class="mb-5">
-                <h2 class="fw-bold mb-3">6. Tableros Kanban Visuales</h2>
-                <hr class="mb-4">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="p-3 border">
-                            <h6 class="fw-bold border-bottom pb-2 mb-2">Recepción</h6>
-                            <p class="small mb-0">Citas, revisiones y presupuestos.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="p-3 border">
-                            <h6 class="fw-bold border-bottom pb-2 mb-2">Producción</h6>
-                            <p class="small mb-0">Corte, costura y montaje.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 7. GALERÍA -->
-            <div id="sec-galeria" class="mb-5">
-                <h2 class="fw-bold mb-3">7. Galería "Antes y Después"</h2>
-                <hr class="mb-4">
-                <p>Sube y vincula fotos para mostrar la transformación de tus trabajos en la web pública.</p>
-            </div>
-
-            <!-- 8. ECONOMÍA -->
-            <div id="sec-eco" class="mb-5">
-                <h2 class="fw-bold mb-3">8. Gestión Económica</h2>
-                <hr class="mb-4">
-                <p class="small">Facturación automática al entregar el vehículo y marcado manual de cobros (Pagado/Pendiente).</p>
-            </div>
-
-            <!-- 9. ADMINISTRACIÓN -->
-            <div id="sec-admin" class="mb-5">
-                <h2 class="fw-bold mb-3">9. Administración</h2>
-                <hr class="mb-4">
-                <p class="small">Control de usuarios, aprobación de registros y exportación de datos a Excel.</p>
-            </div>
-
-            <!-- 10. FAQ -->
-            <div id="sec-faq" class="mb-5 bg-light p-4 rounded border">
-                <h2 class="fw-bold mb-4">10. FAQ</h2>
-                <div class="mb-3">
-                    <h6 class="fw-bold mb-1 text-primary">¿No puedes mover una tarjeta?</h6>
-                    <p class="small mb-0">Verifica que el presupuesto esté aceptado y tenga un precio definitivo.</p>
-                </div>
-                <div>
-                    <h6 class="fw-bold mb-1 text-primary">¿Dónde están los trabajos terminados?</h6>
-                    <p class="small mb-0">En el menú de Historial Completo.</p>
-                </div>
-            </div>
-
+            <h6 class="fw-bold mt-4">1.2. Requerimientos mínimos (Navegador y dispositivos)</h6>
+            <p>GestorTaller es una aplicación web moderna. Esto significa que no necesitas instalar ningún programa complicado en tu ordenador; sólo necesitas una conexión a Internet y un navegador actualizado.</p>
+            <p><strong>Dispositivos recomendados:</strong></p>
+            <ul>
+                <li><strong>Ordenador de sobremesa o Portátil:</strong> Ideal para las tareas administrativas, gestión de facturas y visualización de gráficos estadísticos.</li>
+                <li><strong>Tablets:</strong> El sistema está optimizado para dispositivos táctiles. Una tablet es la herramienta perfecta para llevarla al lado del coche, hacer fotos y mover las tarjetas en el tablero de producción.</li>
+                <li><strong>Teléfono Móvil:</strong> Útil para consultas rápidas de teléfonos de clientes o para comprobar el calendario de citas desde cualquier lugar.</li>
+            </ul>
+            <p><strong>Navegadores compatibles:</strong></p>
+            <p>Se recomienda utilizar las últimas versiones de Google Chrome (Muy recomendado), Mozilla Firefox, Safari o Microsoft Edge.</p>
+          </div>
         </div>
+
+        <!-- 2. ACCESO -->
+        <div class="card mb-4" id="sec-2">
+          <div class="card-header border-bottom">
+            <h5 class="mb-0 fw-bold">2. ACCESO AL SISTEMA</h5>
+          </div>
+          <div class="card-body mt-3">
+            <p>Para entrar al gestor, debes estar registrado y tu cuenta debe haber sido aprobada por el administrador del taller.</p>
+            
+            <h6 class="fw-bold">2.1. Pantalla de Login (Inicio de sesión)</h6>
+            <p>Introduce tus credenciales: Correo electrónico y Contraseña (mínimo 8 caracteres).</p>
+            
+            <h6 class="fw-bold mt-4">2.2. Registro de nuevos usuarios</h6>
+            <p>Si eres un nuevo trabajador, crea tu cuenta rellenando el formulario: Nombre, Email, Contraseña y Confirmación.</p>
+            
+            <h6 class="fw-bold mt-4 text-warning">2.3. Activación de la cuenta (Proceso de aprobación)</h6>
+            <div class="alert alert-warning border-0">
+                <strong>IMPORTANTE:</strong> Por motivos de seguridad, una vez te registras, tu cuenta no se activa automáticamente. El Administrador del taller debe validar tu identidad desde el panel de control para permitirte el acceso. Esto garantiza que ninguna persona externa al taller pueda ver los datos de nuestros clientes.
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. DASHBOARD -->
+        <div class="card mb-4" id="sec-3">
+          <div class="card-header border-bottom text-primary">
+            <h5 class="mb-0 fw-bold text-primary">3. EL CUADRO DE MANDO (DASHBOARD)</h5>
+          </div>
+          <div class="card-body mt-3">
+            <p>El Dashboard es la pantalla principal. Está diseñado para ofrecer al gerente una "radiografía" instantánea de cómo va el negocio sin tener que entrar en cada menú por separado. La información se actualiza en tiempo real.</p>
+            
+            <h6 class="fw-bold">3.1. Visión general de las estadísticas</h6>
+            <p>Tarjetas de resumen en la parte superior:</p>
+            <ul>
+                <li><strong>Total de Clientes:</strong> Crecimiento del negocio.</li>
+                <li><strong>Vehículos Registrados:</strong> Cuántos coches distintos han pasado por el taller.</li>
+                <li><strong>Encargos Activos:</strong> Trabajos ahora mismo en el taller.</li>
+                <li><strong>Trabajos por Entregar:</strong> Coches acabados esperando recogida.</li>
+            </ul>
+            <p>Incluye el <strong>Gráfico de Producción Mensual</strong> interactivo para ver la evolución de la carga de trabajo.</p>
+            
+            <h6 class="fw-bold mt-4">3.2. Configuración del Catálogo de Materials</h6>
+            <p>Fundamental para personalizar el sistema. Puedes organizar los recursos por tipos (Telas, Espumas, Hilos, Accesorios) e introducir tus propios precios de coste y unidades de medida.</p>
+            
+            <h6 class="fw-bold mt-4">3.3. Citas y tareas del día</h6>
+            <p>Calendario de gestión diaria visible en el Dashboard para guiar al personal de recepción con listado cronológico e identificación rápida de cliente y vehículo.</p>
+          </div>
+        </div>
+
+        <!-- 4. CRM -->
+        <div class="card mb-4" id="sec-4">
+          <div class="card-header border-bottom text-primary">
+            <h5 class="mb-0 fw-bold text-primary">4. GESTIÓN DE CLIENTES Y VEHÍCULOS (CRM)</h5>
+          </div>
+          <div class="card-body mt-3">
+            <h6 class="fw-bold">4.1. Listado de clientes</h6>
+            <p>Motor de búsqueda inteligente por nombre, apellido o teléfono. Acceso rápido a datos de contacto y gestión de edición/borrado.</p>
+            
+            <h6 class="fw-bold mt-4">4.2. Cómo crear un cliente nuevo</h6>
+            <p>Rápido registro con Nombre, Apellidos y Teléfono (campo clave). Validación automática para evitar duplicados.</p>
+            
+            <h6 class="fw-bold mt-4">4.3. Ficha del vehículo e historial de reparaciones</h6>
+            <p>Vehículos vinculados a propietarios. Uso de marcas y modelos oficiales (API) para datos exactos. Consulta del historial completo de intervenciones pasadas.</p>
+          </div>
+        </div>
+
+        <!-- 5. WIZARD -->
+        <div class="card mb-4" id="sec-5">
+          <div class="card-header border-bottom text-primary">
+            <h5 class="mb-0 fw-bold text-primary">5. EL FLUJO DE TRABAJO (WIZARD)</h5>
+          </div>
+          <div class="card-body mt-3">
+            <p>Asistente inteligente guiado por 4 pasos lógicos:</p>
+            <ul>
+                <li><strong>Paso 1: Selección del cliente:</strong> Existente o creación de uno nuevo.</li>
+                <li><strong>Paso 2: Selección del vehículo:</strong> Buscador de marcas y modelos inteligentes.</li>
+                <li><strong>Paso 3: Selección de servicios y tarifas:</strong> Categorías visuales y presupuesto inicial.</li>
+                <li><strong>Paso 4: Programación de cita y confirmación:</strong> Fecha de entrada y finalización del proceso.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 6. KANBAN -->
+        <div class="card mb-4" id="sec-6">
+          <div class="card-header border-bottom text-primary">
+            <h5 class="mb-0 fw-bold text-primary">6. GESTIÓN VISUAL: TABLEROS KANBAN</h5>
+          </div>
+          <div class="card-body mt-3">
+            <h6 class="fw-bold">6.1. Kanban de Recepción</h6>
+            <p>Fases: Cita Agendada, En Revisión y Presupuesto Enviado.</p>
+            
+            <h6 class="fw-bold mt-4">6.2. Kanban de Producción</h6>
+            <p>Fases: Pendiente Inicio, En Producción y Esperando Recogida.</p>
+            
+            <h6 class="fw-bold mt-4">6.3. Cómo mover las tarjetas (Drag & Drop)</h6>
+            <p>Interacción intuitiva arrastrando y soltando para actualizar el estado automáticamente.</p>
+            
+            <h6 class="fw-bold mt-4 text-danger">6.4. Bloqueos de seguridad</h6>
+            <p>Reglas de negocio integradas: No se puede saltar el orden lógico, se requiere presupuesto aceptado para pasar a producción y fecha estimada de entrega obligatoria.</p>
+          </div>
+        </div>
+
+        <!-- 7. GALERIA -->
+        <div class="card mb-4" id="sec-7">
+          <div class="card-header border-bottom text-primary">
+            <h5 class="mb-0 fw-bold text-primary">7. DOCUMENTACIÓN VISUAL (GALERÍA WEB)</h5>
+          </div>
+          <div class="card-body mt-3">
+            <h6 class="fw-bold">7.1. Cómo subir fotografías a la Galería Pública</h6>
+            <p>Gestión de contenidos para la Landing Page con descripciones para el marketing del taller.</p>
+            
+            <h6 class="fw-bold mt-4">7.2. Vincular fotos (Efecto "Antes y Después")</h6>
+            <p>Función de comparación visual vinculando fotos de entrada y salida del trabajo.</p>
+          </div>
+        </div>
+
+        <!-- 8. ECONOMIA -->
+        <div class="card mb-4" id="sec-8">
+          <div class="card-header border-bottom text-primary">
+            <h5 class="mb-0 fw-bold text-primary">8. GESTIÓ ECONÓMICA</h5>
+          </div>
+          <div class="card-body mt-3">
+            <h6 class="fw-bold">8.1. Registro del presupuesto</h6>
+            <p>Estimación inicial en el Wizard y ajuste final desde el Tablero de Recepción.</p>
+            
+            <h6 class="fw-bold mt-4">8.2. Generación de la factura final</h6>
+            <p>Creación automática al entregar el vehículo, vinculada a los datos del cliente y presupuesto inicial.</p>
+            
+            <h6 class="fw-bold mt-4">8.3. Control de pagos (Pagado/Pendiente)</h6>
+            <p>Marcado manual de cobros y archivo histórico de facturación para contabilidad.</p>
+          </div>
+        </div>
+
+        <!-- 9. ADMIN -->
+        <div class="card mb-4" id="sec-9">
+          <div class="card-header border-bottom text-primary">
+            <h5 class="mb-0 fw-bold text-primary">9. CONFIGURACIÓN Y SEGURETAT (ADMIN)</h5>
+          </div>
+          <div class="card-body mt-3">
+            <h6 class="fw-bold">9.1. Gestión de usuarios y roles</h6>
+            <p><strong>Rol Administrador:</strong> Acceso total, aprobación de usuarios y gestión económica.</p>
+            <p><strong>Rol Operario:</strong> Trabajo diario del taller con restricciones en datos sensibles.</p>
+            
+            <h6 class="fw-bold mt-4">9.2. Exportación de datos a Excel/CSV</h6>
+            <p>Botones de exportación en todas las tablas principales para inventarios y copias de seguridad.</p>
+          </div>
+        </div>
+
+        <!-- 10. FAQ -->
+        <div class="card border border-danger shadow-none" id="sec-10">
+          <div class="card-header border-bottom text-danger">
+            <h5 class="mb-0 fw-bold text-danger">10. RESOLUCIÓN DE PROBLEMAS COMUNES (FAQ)</h5>
+          </div>
+          <div class="card-body mt-3">
+            <h6 class="fw-bold">He creado mi cuenta pero no puedo entrar.</h6>
+            <p>El administrador debe activarte manualmente desde la sección de Usuarios.</p>
+            
+            <h6 class="fw-bold mt-4">Intento arrastrar una tarjeta y no se mueve.</h6>
+            <p>Verifica el orden lógico y asegúrate de que el presupuesto esté aceptado.</p>
+            
+            <h6 class="fw-bold mt-4">No encuentro un modelo de coche.</h6>
+            <p>Selecciona primero la marca para que carguen los modelos correspondientes.</p>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 </div>
-
-<link rel="stylesheet" href="{{ asset('assets/css/custom/manual.css') }}?v={{ time() }}">
 @endsection
