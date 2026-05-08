@@ -80,6 +80,29 @@
           </form>
         </div>
       </div>
+
+      <!-- SECCIÓN ELIMINAR CUENTA (Nativa de Materio) -->
+      <div class="card border-danger shadow-none">
+        <h5 class="card-header text-danger">Eliminar Cuenta</h5>
+        <div class="card-body">
+          <div class="mb-3 col-12 mb-0">
+            <div class="alert alert-warning">
+              <h6 class="alert-heading fw-bold mb-1">¿Estás seguro de que deseas eliminar tu cuenta?</h6>
+              <p class="mb-0 small text-dark">Una vez que elimines tu cuenta, no hay vuelta atrás. Por favor, asegúrate.</p>
+            </div>
+          </div>
+          <form id="formAccountDeactivation" onsubmit="return confirm('¿Estás totalmente seguro de eliminar tu perfil? Esta acción es irreversible.')" method="POST" action="{{ route('profile.destroy') }}">
+            @csrf
+            @method('DELETE')
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" name="accountActivation" id="accountActivation" required />
+              <label class="form-check-label" for="accountActivation">Confirmo que deseo desactivar y eliminar permanentemente mi acceso al sistema.</label>
+            </div>
+            <button type="submit" class="btn btn-danger deactivate-account">Eliminar mi perfil</button>
+          </form>
+        </div>
+      </div>
+
     </div>
   </div>
 @endsection
