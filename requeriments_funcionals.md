@@ -5,9 +5,9 @@ Aquest document detalla totes les funcionalitats del sistema GestorTaller, garan
 ## MÒDUL I: SEGURETAT I CONTROL D'ACCÉS
 1. **Autenticació Centralitzada**: Accés mitjançant correu i contrasenya xifrada (`BCrypt`). No es permet l'accés anònim a cap part del gestor.
 2. **Sistema de Rols (RBAC)**:
-   - **Administrador**: Accés total, gestió d'usuaris i esborrat definitiu.
-   - **Operari**: Gestió de treballs, fotos i materials, però amb restriccions en la configuració del sistema.
-3. **Aprovació d'Usuaris**: Sistema de "whitelist" on un administrador ha d'aprovar manualment cada nou registre abans que pugui entrar al sistema.
+   - **Administrador (Cap)**: Accés total al sistema, incloent comptabilitat, resum de vendes, gestió de preus de materials i control total d'usuaris.
+   - **Operari (Empleat)**: Gestió operativa de treballs (Kanban), pujada de fotos i consulta de clients. Té restringit l'accés a dades econòmiques, preus de materials i gestió administrativa.
+3. **Control d'Aprovació**: Quan un usuari es registra, el seu compte queda bloquejat per defecte. L'administrador rep un avís visual i ha d'activar el compte manualment des de la secció de "Usuarios" per permetre l'accés.
 4. **Protecció de Dades**: Validació estricta de formularis (Server-side) i protecció contra `CSRF`, `XSS` i `SQL Injection`.
 
 ## MÒDUL II: GESTIÓ DE CLIENTS I VEHICLES (CRM)

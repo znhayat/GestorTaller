@@ -68,11 +68,6 @@
       "slug": "recursos-taller",
       "submenu": [
         {
-          "url": "clientes",
-          "name": "Clientes",
-          "slug": "clientes"
-        },
-        {
           "url": "vehiculos",
           "name": "Vehículos",
           "slug": "vehiculos"
@@ -91,19 +86,31 @@
       "url": "facturas",
       "name": "Facturas",
       "icon": "menu-icon icon-base ri ri-file-list-3-line",
-      "slug": "facturas"
+      "slug": "facturas",
+      "admin_only": true
     },
     {
       "url": "galeria",
       "name": "Galería Web",
       "icon": "menu-icon icon-base ri ri-image-line",
-      "slug": "galeria"
+      "slug": "galeria",
+      "admin_only": true
     },
     {
       "url": "usuarios",
       "name": "Usuarios",
       "icon": "menu-icon icon-base ri ri-user-settings-line",
-      "slug": "usuarios"
+      "slug": "usuarios",
+      "admin_only": true
+    },
+    {
+      "menuHeader": "Soporte"
+    },
+    {
+      "url": "manual",
+      "name": "Manual Usuario",
+      "icon": "menu-icon icon-base ri ri-book-line",
+      "slug": "manual.index"
     }
   ]
 }

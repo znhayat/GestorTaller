@@ -18,6 +18,10 @@ use Illuminate\Support\Facades\Route;
 
     <ul class="menu-inner py-1">
         @foreach ($menuData[0]->menu as $menu)
+            {{-- Filtro de seguridad: si es admin_only y no es admin, saltamos --}}
+            @if(isset($menu->admin_only) && $menu->admin_only && Auth::user()->role !== 'admin')
+                @continue
+            @endif
 
         {{-- adding active and open class if child is active --}}
 

@@ -1,0 +1,69 @@
+[33mbc2b103[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{0}: reset: moving to bc2b103
+[33me908b38[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{1}: commit: Mejoras de UX y retoques en la sección de contacto
+[33m23bf37a[m HEAD@{2}: commit: Mejoras de UX y retoques en la sección de contacto
+[33m16f9ddb[m HEAD@{3}: commit: Mejoras de UX y retoques en la sección de contacto
+[33mbc2b103[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m HEAD@{4}: commit: Fix: Corregido error de mayúsculas en el import de Cita para compatibilidad con servidor
+[33me45766a[m HEAD@{5}: commit: Fix: Mejorada la accesibilidad y validación de fechas en el agendamiento del Kanban
+[33mf0da606[m HEAD@{6}: commit: UI: Ajuste de footer y adición de etiquetas de texto a botones del gestor
+[33madf596b[m HEAD@{7}: commit: Ajuste de tamaño del logo y actualización de rutas de imágenes
+[33m4a46128[m HEAD@{8}: commit: Manual de usuario, corrección de imágenes y personalización de pantalla de login
+[33mbadca1a[m HEAD@{9}: commit: Fix: Lógica de identidad de clientes robustecida y documentación detallada en Alta de Trabajo
+[33mf88943d[m HEAD@{10}: commit: Mejoras globales de UI: Notificaciones, Calendario con disponibilidad y Facturación profesional
+[33m7892644[m HEAD@{11}: commit: Mejoras en el alta de trabajos, agenda unificada y corrección de presupuestos
+[33m9c94f26[m HEAD@{12}: commit: fix: blindaje de seguridad (passwords 8+ chars) y limpieza total de idiomas (100% castellano)
+[33m7a4c017[m HEAD@{13}: commit: feat: mejoras en gestión de usuarios (modal, contraseñas)
+[33mb1c272f[m HEAD@{14}: commit: feat: rediseño integral de la web pública (Portfolio Rojo) y mejoras en el CMS de galería
+[33m51fe7d4[m HEAD@{15}: commit: feat: buscador multicampo y exportación a Excel en gestión de clientes
+[33m42653ff[m HEAD@{16}: commit: feat: añadir buscador y exportación a Excel en la tabla de vehículos
+[33m276d626[m HEAD@{17}: commit: feat: nuevo sistema de inventario por categorías y limpieza visual de materiales
+[33m48e72f5[m HEAD@{18}: commit: style: cambiar encabezados de ID a Código en todas las tablas
+[33m03f2aaa[m HEAD@{19}: commit: feat: visibilidad de IDs en todas las tablas y limpieza de estilos
+[33me453062[m HEAD@{20}: commit: feat: añadir exportación a Excel en presupuestos y centralización de CSS en vistas
+[33m2d50ded[m HEAD@{21}: commit: feat: implementar API de vehículos y flujo profesional de presupuestos
+[33m3b877fe[m HEAD@{22}: commit: Correcion en el .env a la hora de subir fotos al landing.
+[33mdf67594[m HEAD@{23}: commit: chore: ignore .env file and remove from tracking
+[33m51e1213[m HEAD@{24}: commit: fix: corregir visibilidad de fotos y optimizar subida desde moviles. He unificado la forma en que se guardan las rutas de las fotos para evitar que aparezcan rotas y he subido el limite a 10MB.
+[33m2dad122[m HEAD@{25}: commit: fix: corregir visibilidad de fotos y optimizar subida desde moviles. He unificado la forma en que se guardan las rutas de las fotos para evitar que aparezcan rotas y he subido el limite a 10MB.
+[33m78a0fb2[m HEAD@{26}: commit: corrección de menú responsivo móvil y refuerzo de seguridad en perfil
+[33m10e30c0[m HEAD@{27}: commit: feat: Implementación del menu vertical, responsive.
+[33mc9cc700[m HEAD@{28}: commit: feat(wizard): carrito multiservicio dinámico y mejora visual del stepper
+[33m61b1336[m HEAD@{29}: commit: feat(citas): horario inteligente y disponibilidad ajax en modal kanban
+[33m83d205f[m HEAD@{30}: commit: feat(ui, kanban): implementado Flatpickr y Floating-Forms para modal de citas
+[33meeaf82d[m HEAD@{31}: commit: fix: mejoras ux en kanban y botones accesibles con texto explicativo en historial de rechazados
+[33m5f3b766[m HEAD@{32}: commit: fix: mejoras ux en botones kanban y vista rechazados con funcion restaurar
+[33m2b94b3c[m HEAD@{33}: commit: feat(dashboard, kanban): Rediseño del panel principal y gestión de presupuestos rechazados
+[33m38dd22f[m HEAD@{34}: commit: implementar user admin, la primera vez que se registra un user
+[33m6ee9bf2[m HEAD@{35}: commit: feat: implementar sistema de roles y middleware de administrador
+[33m0f5f803[m HEAD@{36}: commit: Se sustituyó 'firstOrCreate' por 'create' en AltaTrabajoController para evitar
+[33mcc12e61[m HEAD@{37}: commit: El usuario puede registrarse
+[33m4648f8d[m HEAD@{38}: commit: Se puede modificar la contraseña en el perfil de cada usuaario
+[33m7fd64c9[m HEAD@{39}: commit: Correccion error Movimiento de las tarjetas del KanBan
+[33m894836c[m HEAD@{40}: commit: Evitar que se sobrescriba el nombre del cliente con datos de terceros al guardar
+[33m9f83ec3[m HEAD@{41}: commit: Creacion de los kanbans
+[33m4eddfa0[m HEAD@{42}: reset: moving to origin/main
+[33m4eddfa0[m HEAD@{43}: reset: moving to HEAD
+[33m4eddfa0[m HEAD@{44}: reset: moving to origin/main
+[33m4eddfa0[m HEAD@{45}: reset: moving to HEAD
+[33m4eddfa0[m HEAD@{46}: reset: moving to HEAD
+[33m4eddfa0[m HEAD@{47}: reset: moving to HEAD
+[33m4eddfa0[m HEAD@{48}: reset: moving to HEAD
+[33m4eddfa0[m HEAD@{49}: commit: Actualizacion de nuevo trabajo
+[33m5939784[m HEAD@{50}: commit: Categorias añadidas a materiales
+[33m6cc762f[m HEAD@{51}: rebase (finish): returning to refs/heads/main
+[33m6cc762f[m HEAD@{52}: rebase (continue): Cambiar nombre del template
+[33m18f3ee0[m HEAD@{53}: pull --tags -r origin main (start): checkout 18f3ee0005d79344d788f0b14d6587f97a63ad96
+[33mc272579[m HEAD@{54}: commit (merge): Merge branch 'main' of https://github.com/znhayat/GestorTaller
+[33m453ba5e[m HEAD@{55}: commit (amend): Cambiar nombre del template
+[33m4fdb584[m HEAD@{56}: commit (amend): Cambiar nombre del template
+[33m416e96c[m HEAD@{57}: commit (amend): Cambiar nombre del template
+[33m18f3ee0[m HEAD@{58}: commit (amend): Corregidas rutas de navegación, controlador de Analytics y actualización de perfil
+[33m09ec8b6[m HEAD@{59}: commit (amend): Corregidas rutas de navegación, controlador de Analytics y actualización de perfil
+[33m2d4b988[m HEAD@{60}: commit: Neteja menu
+[33m29ac4f8[m HEAD@{61}: commit: Neteja menu
+[33md0621ba[m HEAD@{62}: commit: Afegit el registre
+[33m5119319[m HEAD@{63}: commit: Afegint carpetes de build per al desplegament
+[33ma465c3d[m HEAD@{64}: commit: feat: implementar arquitectura MVC completa para todos los modulos del taller
+[33mceeaa9c[m HEAD@{65}: Branch: renamed refs/heads/main to refs/heads/main
+[33mceeaa9c[m HEAD@{67}: commit: Creaccion de las Tablas y los Modelos con las Relaciones
+[33mbda6916[m HEAD@{68}: Branch: renamed refs/heads/master to refs/heads/main
+[33mbda6916[m HEAD@{70}: commit (initial): Estructura inicial Materio i configuració

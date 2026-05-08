@@ -25,7 +25,9 @@ class UserController extends Controller
         }
 
         $usuarios = User::orderBy('created_at', 'desc')->paginate(10);
-        return view('content.users.index', compact('usuarios'));
+        $pendientes = User::where('is_approved', false)->count();
+
+        return view('content.users.index', compact('usuarios', 'pendientes'));
     }
 
     /**

@@ -6,7 +6,7 @@
 <div class="container-xxl flex-grow-1 container-p-y">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="fw-bold mb-0">Historial Económico</h4>
-    @if(auth()->user()->role === 'admin')
+    @if(Auth::user()->role === 'admin')
     <div class="d-flex gap-2">
       <a href="{{ route('facturas.create') }}" class="btn btn-primary">
         <i class="ri-add-line me-1"></i> Generar Factura
@@ -68,16 +68,24 @@
                 <a href="{{ route('facturas.imprimir', $f->id) }}" class="btn btn-sm btn-info fw-bold" target="_blank">
                   <i class="ri-printer-line me-1"></i> IMPRIMIR
                 </a>
-                @if(auth()->user()->role === 'admin')
-                <a href="{{ route('facturas.edit', $f->id) }}" class="btn btn-sm btn-primary fw-bold">
-                  <i class="ri-edit-line me-1"></i> EDITAR
-                </a>
-                <form action="{{ route('facturas.destroy', $f->id) }}" method="POST" onsubmit="return confirm('¿Seguro que quieres borrar esta factura?')">
-                  @csrf @method('DELETE')
-                  <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center" title="Eliminar registro">
-                    <i class="ri-delete-bin-line me-1"></i> Eliminar
-                  </button>
-                </form>
+                @if(Auth::user()->role === 'admin')
+                  @if(!$f->pagado)
+                  <form action="{{ route('facturas.marcarPagado', $f->id) }}" method="POST" onsubmit="return confirm('¿Marcar como pagada?')">
+                    @csrf @method('PATCH')
+                    <button type="submit" class="btn btn-sm btn-success fw-bold">
+                      <i class="ri-check-line me-1"></i> Cobrado
+                    </button>
+                  </form>
+                  @endif
+                  <a href="{{ route('facturas.edit', $f->id) }}" class="btn btn-sm btn-primary fw-bold">
+                    <i class="ri-edit-line me-1"></i> EDITAR
+                  </a>
+                  <form action="{{ route('facturas.destroy', $f->id) }}" method="POST" onsubmit="return confirm('¿Seguro que quieres borrar esta factura?')">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="btn btn-sm btn-outline-danger d-flex align-items-center" title="Eliminar registro">
+                      <i class="ri-delete-bin-line me-1"></i> Eliminar
+                    </button>
+                  </form>
                 @endif
               </div>
             </td>

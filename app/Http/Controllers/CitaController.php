@@ -141,16 +141,28 @@ class CitaController extends Controller
         return redirect()->route('citas.index')->with('success', 'Cita eliminada.');
     }
 
-    // Saca todos los días que tienen algo (para pintar puntos rojos en el calendario)
-    public function getMonthlyAvailability()
+    // Saca los días del MES solicitado que tienen cita (para pintar puntos en el mini-calendario)
+    public function getMonthlyAvailability(Request $request)
     {
+        $month = $request->get('month'); // Formato: 'YYYY-MM-DD' (primer día del mes)
+        
+        if ($month) {
+            $inicio = Carbon::parse($month)->startOfMonth();
+            $fin    = Carbon::parse($month)->endOfMonth();
+        } else {
+            $inicio = Carbon::now()->startOfMonth();
+            $fin    = Carbon::now()->endOfMonth();
+        }
+
         $fechasRevision = Encargo::whereNotNull('cita_revision')
             ->whereNotIn('estado', ['Cancelado', 'Entregado'])
+            ->whereBetween('cita_revision', [$inicio->toDateString(), $fin->toDateString()])
             ->pluck('cita_revision')
             ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
             ->toArray();
 
-        $fechasCitas = Cita::pluck('fecha')
+        $fechasCitas = Cita::whereBetween('fecha', [$inicio->toDateString(), $fin->toDateString()])
+            ->pluck('fecha')
             ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
             ->toArray();
 

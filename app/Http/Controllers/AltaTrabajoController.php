@@ -47,8 +47,18 @@ class AltaTrabajoController extends Controller
             'precio_materiales' => 'required|numeric|min:0',
             'precio_horas' => 'required|numeric|min:0',
             'cita_revision' => 'required|date|after_or_equal:today',
-            'hora_cita' => 'required|date_format:H:i'
+            'hora_cita' => 'required'
         ]);
+
+        // Comprobación de colisión de hora (opcional pero recomendada para UX)
+        $existeCita = Encargo::where('cita_revision', $request->cita_revision)
+            ->where('hora_cita', $request->hora_cita)
+            ->whereNotIn('estado', ['Cancelado', 'Entregado'])
+            ->exists();
+
+        if ($existeCita) {
+            return back()->withErrors(['hora_cita' => 'Ya existe una cita programada exactamente a esa hora. Por favor, elige otra hora.'])->withInput();
+        }
 
         try {
             return DB::transaction(function () use ($request) {

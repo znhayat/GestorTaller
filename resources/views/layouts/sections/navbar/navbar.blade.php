@@ -42,7 +42,10 @@ $navbarDetached = ($navbarDetached ?? 'navbar-detached');
                             </div>
                             <div class="flex-grow-1">
                                 <span class="fw-semibold d-block">{{ Auth::user()->name }}</span>
-                                <small class="text-muted">Admin del Taller</small>
+                                {{-- Mostramos el rol real, no siempre "Admin" --}}
+                                <small class="text-muted">
+                                    {{ Auth::user()->role === 'admin' ? 'Administrador' : 'Operario' }}
+                                </small>
                             </div>
                         </div>
                     </a>

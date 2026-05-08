@@ -37,9 +37,11 @@ class Encargo extends Model
     {
         return $this->hasMany(Foto::class);
     }
-    public function usos_materiales()
+    public function materiales()
     {
-        return $this->hasMany(UsoMaterial::class);
+        return $this->belongsToMany(Material::class, 'usos_materiales')
+            ->withPivot('cantidad', 'costo_total')
+            ->withTimestamps();
     }
 
     protected static function booted()

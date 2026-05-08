@@ -253,4 +253,7 @@ If you want to [Free Admin Templates](https://themeselection.com/item/category/f
 - [Pinterest](https://www.pinterest.com/themeselection/)
 - [Instagram](https://www.instagram.com/themeselection/)
 - [Discord](https://discord.com/invite/kBHkY7DekX)
-- [YouTube](https://www.youtube.com/channel/UCuryo5s0CW4aP83itLjIdZg)
+## Manual de Usuario 📘
+
+Puedes encontrar la guía detallada sobre cómo utilizar el sistema, gestionar roles y aprobar nuevos usuarios en el siguiente enlace:
+- [Manual de Usuario (Gestión de Personal)](file:///c:/xampp/htdocs/GestorTaller/documentation/Manual_Usuari.md)

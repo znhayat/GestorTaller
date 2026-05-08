@@ -86,4 +86,14 @@ class FacturaController extends Controller
 
         return view('content.facturas.pdf', compact('factura'));
     }
+
+    public function marcarPagado($id)
+    {
+        $factura = Factura::findOrFail($id);
+        $factura->update([
+            'pagado' => true,
+            'fecha_pago' => now()
+        ]);
+        return back()->with('success', '¡Factura cobrada correctamente!');
+    }
 }

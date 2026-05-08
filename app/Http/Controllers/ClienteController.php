@@ -50,14 +50,15 @@ class ClienteController extends Controller
     }
 
     /**
-     * Visualización detallada de un cliente.
+     * Visualización detallada de un cliente con todo su historial.
      */
     public function show(string $id)
     {
-        $cliente = Cliente::with(['vehiculos.encargos' => function($query) {
-            $query->orderBy('created_at', 'desc');
-        }, 'vehiculos.encargos.presupuesto', 'vehiculos.encargos.factura'])->findOrFail($id);
-        
+        $cliente = Cliente::with([
+            'vehiculos.encargos.presupuesto',
+            'vehiculos.encargos.factura',
+        ])->findOrFail($id);
+
         return view('content.clientes.show', compact('cliente'));
     }
 

@@ -49,13 +49,37 @@ class ProfileController extends Controller
         // Actualizamos los datos
         $user->name = $request->name;
         $user->email = $request->email;
-        
+
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
-        
+
         $user->save();
 
-        return back()->with('success', 'Perfil actualizado correctamente.');
+    }
+
+    /**
+     * Dar de baja la cuenta (Eliminar)
+     */
+    public function destroy(Request $request)
+    {
+        $user = Auth::user();
+
+        // Seguridad: Si es admin, comprobamos que no sea el único
+        if ($user->role === 'admin') {
+            $otrosAdmins = User::where('role', 'admin')->where('id', '!=', $user->id)->count();
+            if ($otrosAdmins === 0) {
+                return back()->withErrors(['email' => 'No puedes eliminar tu cuenta porque eres el único administrador del sistema.']);
+            }
+        }
+
+        Auth::logout();
+
+        $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('success', 'Tu cuenta ha sido eliminada correctamente.');
     }
 }

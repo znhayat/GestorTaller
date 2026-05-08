@@ -28,17 +28,34 @@ class VehiculosSeeder extends Seeder
         ];
 
         foreach ($data as $marca => $modelos) {
-            DB::table('marcas')->updateOrInsert(
-                ['nombre' => $marca],
-                ['created_at' => now(), 'updated_at' => now()]
-            );
-            $marcaId = DB::table('marcas')->where('nombre', $marca)->first()->id;
+            // Verificar si la marca ya existe
+            $marcaRow = DB::table('marcas')->where('nombre', $marca)->first();
+            
+            if (!$marcaRow) {
+                $marcaId = DB::table('marcas')->insertGetId([
+                    'nombre' => $marca,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } else {
+                $marcaId = $marcaRow->id;
+            }
 
             foreach ($modelos as $modelo) {
-                DB::table('modelos')->updateOrInsert(
-                    ['marca_id' => $marcaId, 'nombre' => $modelo],
-                    ['created_at' => now(), 'updated_at' => now()]
-                );
+                // Verificar si el modelo ya existe para esa marca
+                $exists = DB::table('modelos')
+                    ->where('marca_id', $marcaId)
+                    ->where('nombre', $modelo)
+                    ->exists();
+
+                if (!$exists) {
+                    DB::table('modelos')->insert([
+                        'marca_id' => $marcaId,
+                        'nombre' => $modelo,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
             }
         }
     }

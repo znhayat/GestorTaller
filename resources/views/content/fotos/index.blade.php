@@ -22,6 +22,7 @@
         </h6>
         <p class="text-muted small">{{ $foto->descripcion ?? 'Sin descripción' }}</p>
 
+        @if(Auth::user()->role === 'admin')
         <div class="d-flex justify-content-between mt-3">
           {{-- Botón de edición --}}
           <a href="{{ route('fotos.edit', $foto->id) }}" class="btn btn-primary btn-sm me-2">
@@ -33,6 +34,7 @@
             <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Borrar foto?')">Eliminar</button>
           </form>
         </div>
+        @endif
       </div>
     </div>
   </div>

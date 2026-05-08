@@ -26,6 +26,12 @@ class Analytics extends Controller
     $presupuestosPendientes = Presupuesto::where('aceptado', 0)->orWhereNull('aceptado')->count();
     $totalMateriales = Material::count();
 
+    // Dinero real en caja (Facturas pagadas)
+    $ingresosReales = Factura::where('pagado', true)->sum('importe_total') ?? 0;
+    
+    // Facturación pendiente de cobro (Trabajos entregados pero no pagados)
+    $ingresosPendientesCobro = Factura::where('pagado', false)->sum('importe_total') ?? 0;
+
     // ========== ALERTAS DE CITAS ==========
 
     // Citas para hoy
@@ -95,6 +101,8 @@ class Analytics extends Controller
       'totalCitasPendientes' => $totalCitasPendientes,
       'entregasUrgentes' => $entregasUrgentes,
       'ultimosEncargos' => $ultimosEncargos,
+      'ingresosReales' => $ingresosReales,
+      'ingresosPendientesCobro' => $ingresosPendientesCobro,
     ]);
   }
 }

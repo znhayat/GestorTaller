@@ -83,42 +83,48 @@ document.addEventListener("DOMContentLoaded", function () {
 
     <!-- KPI ROW -->
     <div class="row g-4 mb-4">
+        @if(Auth::user()->role === 'admin')
+        <!-- INGRESOS REALES -->
         <div class="col-sm-6 col-xl-3">
             <div class="card card-pro card-accent-success h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <div class="kpi-title">Por Aceptar</div>
-                        <i class="ri-history-line text-success fs-4"></i>
+                        <div class="kpi-title text-success">Ingresos Reales</div>
+                        <i class="ri-money-euro-circle-line text-success fs-4"></i>
                     </div>
-                    <h3 class="fw-bold mt-2 mb-0">{{ number_format($dineroPendiente, 2) }} €</h3>
-                    <small class="text-muted">Valor de presupuestos enviados</small>
+                    <h3 class="fw-bold mt-2 mb-0 text-success">{{ number_format($ingresosReales, 2) }} €</h3>
+                    <small class="text-muted">Total trabajos pagados</small>
                 </div>
             </div>
         </div>
+
+        <!-- PENDIENTE DE COBRO -->
         <div class="col-sm-6 col-xl-3">
-            <div class="card card-pro card-accent-primary h-100">
+            <div class="card card-pro card-accent-danger h-100" style="border-top: 4px solid #ff4d4f;">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <div class="kpi-title">Carga de Trabajo</div>
-                        <i class="ri-tools-line text-primary fs-4"></i>
+                        <div class="kpi-title text-danger">Pendiente Cobro</div>
+                        <i class="ri-error-warning-line text-danger fs-4"></i>
                     </div>
-                    <h3 class="fw-bold mt-2 mb-0">{{ $encargosActivos }}</h3>
-                    <small class="text-muted">Vehículos en proceso técnico</small>
+                    <h3 class="fw-bold mt-2 mb-0 text-danger">{{ number_format($ingresosPendientesCobro, 2) }} €</h3>
+                    <small class="text-muted">Facturado por cobrar</small>
                 </div>
             </div>
         </div>
+
         <div class="col-sm-6 col-xl-3">
             <div class="card card-pro card-accent-warning h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <div class="kpi-title">Recepciones Hoy</div>
-                        <i class="ri-calendar-event-line text-warning fs-4"></i>
+                        <div class="kpi-title text-warning">Por Aceptar</div>
+                        <i class="ri-history-line text-warning fs-4"></i>
                     </div>
-                    <h3 class="fw-bold mt-2 mb-0">{{ $citasHoy->count() }}</h3>
-                    <small class="text-muted">Entradas programadas para hoy</small>
+                    <h3 class="fw-bold mt-2 mb-0">{{ number_format($dineroPendiente, 2) }} €</h3>
+                    <small class="text-muted">Presupuestos enviados</small>
                 </div>
             </div>
         </div>
+        @else
         <div class="col-sm-6 col-xl-3">
             <div class="card card-pro card-accent-info h-100">
                 <div class="card-body">
@@ -127,7 +133,21 @@ document.addEventListener("DOMContentLoaded", function () {
                         <i class="ri-user-star-line text-info fs-4"></i>
                     </div>
                     <h3 class="fw-bold mt-2 mb-0">{{ $totalClientes }}</h3>
-                    <small class="text-muted">Total clientes registrados</small>
+                    <small class="text-muted">Clientes registrados</small>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        <div class="col-sm-6 col-xl-3">
+            <div class="card card-pro card-accent-primary h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div class="kpi-title">Carga Taller</div>
+                        <i class="ri-tools-line text-primary fs-4"></i>
+                    </div>
+                    <h3 class="fw-bold mt-2 mb-0">{{ $encargosActivos }}</h3>
+                    <small class="text-muted">Coches en proceso</small>
                 </div>
             </div>
         </div>
@@ -225,6 +245,7 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
         </div>
 
+        @if(Auth::user()->role === 'admin')
         <!-- ÚLTIMAS FACTURAS -->
         <div class="col-md-6">
             <div class="card card-pro h-100">
@@ -260,6 +281,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             </div>
         </div>
+        @endif
     </div>
 </div>
 @endsection
